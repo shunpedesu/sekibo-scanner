@@ -139,6 +139,8 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fff8e7; font-f
 .detail-close { background:none; border:none; font-size:1.3rem; color:#ccc; cursor:pointer; }
 
 /* ── Toast ── */
+.home-goal { font-size:.72rem; color:#b08040; text-align:center; letter-spacing:.04em; line-height:1.7; margin-top:10px; margin-bottom:2px; }
+.col-goal { font-size:.68rem; color:#b08040; text-align:center; letter-spacing:.04em; padding:4px 16px 6px; }
 .how-to-btn { margin-top:18px; background:none; border:1.5px solid #c0a070; color:#a07040; border-radius:30px; padding:7px 20px; font-size:.8rem; font-family:inherit; font-weight:700; letter-spacing:.1em; cursor:pointer; }
 .how-to-btn:active { background:#f5edd8; }
 
@@ -169,6 +171,7 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fff8e7; font-f
   <button class="big-btn btn-scan" onclick="goScan()">📷 スキャンする</button>
   <button class="big-btn btn-collection" onclick="goCollection()">📚 図鑑を見る</button>
   <div class="collection-count" id="homeCount"></div>
+  <div class="home-goal">石棒クラブ Sketchfab の<br>全3Dデータをコンプリートしよう！</div>
   <button class="how-to-btn" onclick="openHowTo()">？ 遊び方</button>
 </div>
 
@@ -232,6 +235,7 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fff8e7; font-f
   <div class="col-progress">
     <div class="col-prog-track"><div class="col-prog-bar" id="colProgBar" style="width:0%"></div></div>
     <div class="col-prog-label" id="colProgLabel">0 / 208 体</div>
+  <div class="col-goal">石棒クラブ Sketchfab の全3Dデータをコンプリートしよう！</div>
   </div>
   <div class="col-grid" id="colGrid"></div>
 </div>
