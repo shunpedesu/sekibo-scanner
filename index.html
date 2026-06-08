@@ -24,8 +24,11 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fff8e7; font-f
   text-shadow:3px 3px 0 #f0a040,5px 5px 0 rgba(0,0,0,.1);
   margin-bottom:6px; text-align:center;
 }
-.home-sub { font-size:.9rem; color:#a07040; letter-spacing:.12em; margin-bottom:36px; text-align:center; }
-.home-stones { display:flex; gap:12px; margin-bottom:40px; justify-content:center; }
+.home-sub { font-size:.85rem; color:#a07040; letter-spacing:.1em; margin-bottom:8px; text-align:center; line-height:1.6; }
+.home-credit { font-size:.68rem; color:#c0a070; margin-bottom:28px; text-align:center; }
+.home-thumbs { display:flex; gap:6px; margin-bottom:32px; justify-content:center; }
+.home-thumb { width:52px; height:38px; border-radius:8px; object-fit:cover; box-shadow:0 2px 8px rgba(0,0,0,.15); }
+.home-thumb-placeholder { width:52px; height:38px; border-radius:8px; background:#e8e0d0; }
 .big-btn {
   width:220px; padding:18px; font-size:1.2rem; font-weight:900; letter-spacing:.2em;
   border:none; border-radius:50px; cursor:pointer;
@@ -33,174 +36,123 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fff8e7; font-f
   display:flex; align-items:center; justify-content:center; gap:8px;
 }
 .big-btn:active { transform:translateY(3px); box-shadow:0 3px 0 rgba(0,0,0,.2); }
-.btn-scan      { background:linear-gradient(135deg,#ff6b6b,#ff8e53); color:#fff; margin-bottom:14px; }
-.btn-collection{ background:linear-gradient(135deg,#4ecdc4,#44b3ac); color:#fff; }
+.btn-scan       { background:linear-gradient(135deg,#ff6b6b,#ff8e53); color:#fff; margin-bottom:14px; }
+.btn-collection { background:linear-gradient(135deg,#4ecdc4,#44b3ac); color:#fff; }
 .collection-count { margin-top:16px; font-size:.8rem; color:#b08040; letter-spacing:.1em; }
 
 /* ── SCAN ── */
 #scanScreen { background:#111; }
-.scan-header {
-  display:flex; align-items:center; padding:16px;
-  background:rgba(0,0,0,.6); z-index:10; position:relative;
-}
-.back-btn {
-  background:rgba(255,255,255,.15); border:none; color:#fff;
-  border-radius:50%; width:38px; height:38px;
-  font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center;
-}
+.scan-header { display:flex; align-items:center; padding:16px; background:rgba(0,0,0,.6); z-index:10; position:relative; }
+.back-btn { background:rgba(255,255,255,.15); border:none; color:#fff; border-radius:50%; width:38px; height:38px; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 .scan-title { flex:1; text-align:center; color:#fff; font-size:1rem; letter-spacing:.15em; font-weight:700; }
 .video-wrap { position:relative; flex:1; overflow:hidden; display:flex; align-items:center; justify-content:center; }
 #scanVideo { width:100%; height:100%; object-fit:cover; display:block; }
 .scan-overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }
 .scan-frame { width:min(280px,80vw); height:min(140px,40vw); position:relative; }
-.scan-frame::before,.scan-frame::after,.scan-corner-br,.scan-corner-bl {
-  content:''; position:absolute; width:28px; height:28px; border-color:#ffcc00; border-style:solid;
-}
+.scan-frame::before,.scan-frame::after,.scan-corner-br,.scan-corner-bl { content:''; position:absolute; width:28px; height:28px; border-color:#ffcc00; border-style:solid; }
 .scan-frame::before { top:0;left:0;border-width:4px 0 0 4px;border-radius:6px 0 0 0; }
 .scan-frame::after  { top:0;right:0;border-width:4px 4px 0 0;border-radius:0 6px 0 0; }
 .scan-corner-br { bottom:0;right:0;border-width:0 4px 4px 0;border-radius:0 0 6px 0; }
 .scan-corner-bl { bottom:0;left:0;border-width:0 0 4px 4px;border-radius:0 0 0 6px; }
-.scan-line {
-  position:absolute; left:0; right:0; height:3px;
-  background:linear-gradient(90deg,transparent,#ffcc00,transparent);
-  border-radius:2px; animation:scanMove 1.8s ease-in-out infinite; top:0;
-}
-@keyframes scanMove {
-  0%{top:0%;opacity:1} 50%{top:100%;opacity:1} 51%{top:100%;opacity:0}
-  52%{top:0%;opacity:0} 53%{top:0%;opacity:1} 100%{top:0%;opacity:1}
-}
-.scan-hint {
-  position:absolute; bottom:24px; left:0; right:0; text-align:center;
-  color:rgba(255,255,255,.8); font-size:.85rem; letter-spacing:.1em;
-  background:rgba(0,0,0,.4); padding:10px;
-}
+.scan-line { position:absolute; left:0; right:0; height:3px; background:linear-gradient(90deg,transparent,#ffcc00,transparent); border-radius:2px; animation:scanMove 1.8s ease-in-out infinite; top:0; }
+@keyframes scanMove { 0%{top:0%;opacity:1} 50%{top:100%;opacity:1} 51%{top:100%;opacity:0} 52%{top:0%;opacity:0} 53%{top:0%;opacity:1} 100%{top:0%;opacity:1} }
+.scan-hint { position:absolute; bottom:24px; left:0; right:0; text-align:center; color:rgba(255,255,255,.8); font-size:.85rem; letter-spacing:.1em; background:rgba(0,0,0,.4); padding:10px; }
 .scan-result-flash { position:absolute; inset:0; background:rgba(255,255,220,.9); opacity:0; pointer-events:none; transition:opacity .1s; }
 .scan-result-flash.on { opacity:1; }
 
 /* ── RESULT ── */
 #resultScreen { background:linear-gradient(160deg,#fff8e7,#ffe4b5); align-items:center; }
 .result-header { width:100%; display:flex; align-items:center; padding:16px; background:rgba(255,255,255,.5); }
-.result-body { flex:1; display:flex; flex-direction:column; align-items:center; padding:12px 24px 24px; width:100%; max-width:420px; margin:0 auto; }
-.result-new-label {
-  font-size:.85rem; letter-spacing:.2em; margin-bottom:10px;
-  font-weight:700;
-}
+.result-body { flex:1; display:flex; flex-direction:column; align-items:center; padding:12px 24px 24px; width:100%; max-width:380px; margin:0 auto; }
+.result-new-label { font-size:.85rem; letter-spacing:.15em; margin-bottom:10px; font-weight:700; }
 
 /* ── Stone Card ── */
 .stone-card {
   background:#fff; border-radius:20px; width:100%; max-width:300px;
-  box-shadow:0 8px 32px rgba(0,0,0,.13);
-  overflow:hidden; position:relative;
+  box-shadow:0 8px 32px rgba(0,0,0,.13); overflow:hidden; position:relative;
   animation:cardPop .5s cubic-bezier(.17,.89,.32,1.28) both;
 }
-@keyframes cardPop { from{transform:scale(0) rotate(-5deg);opacity:0} to{transform:scale(1) rotate(0deg);opacity:1} }
+@keyframes cardPop { from{transform:scale(0) rotate(-5deg);opacity:0} to{transform:scale(1);opacity:1} }
 
-.card-header {
-  padding:12px 14px 10px;
-  display:flex; justify-content:space-between; align-items:center;
-}
-.card-no { font-size:.7rem; color:#bbb; letter-spacing:.1em; font-family:monospace; }
-.card-rarity-badge {
-  font-size:.7rem; font-weight:900; letter-spacing:.08em;
-  padding:3px 10px; border-radius:20px;
-}
+.card-header { padding:10px 14px 8px; display:flex; justify-content:space-between; align-items:center; }
+.card-no { font-size:.68rem; color:#ccc; letter-spacing:.1em; font-family:monospace; }
+.card-rarity-badge { font-size:.7rem; font-weight:900; letter-spacing:.08em; padding:3px 10px; border-radius:20px; }
 .rarity-ふつう    { background:#e8e8e8; color:#888; }
 .rarity-めずらしい{ background:#c8eaf8; color:#2288aa; }
 .rarity-レア      { background:linear-gradient(135deg,#ffe066,#ffaa00); color:#7a5000; }
 .rarity-でんせつ  { background:linear-gradient(135deg,#ee88ff,#aa44ff); color:#fff; animation:legendGlow 1.5s ease-in-out infinite; }
 @keyframes legendGlow { 0%,100%{box-shadow:0 0 8px rgba(180,80,255,.4)} 50%{box-shadow:0 0 18px rgba(180,80,255,.9)} }
 
-.card-stone-area {
-  display:flex; justify-content:center; align-items:flex-end;
-  padding:8px 0 12px;
-  min-height:180px;
-}
+.stone-thumb-wrap { background:#f0ece6; display:flex; align-items:center; justify-content:center; height:160px; overflow:hidden; }
+.stone-thumb { width:100%; height:160px; object-fit:contain; display:block; }
+.stone-thumb-err { display:flex; align-items:center; justify-content:center; height:160px; font-size:2.5rem; background:#f0ece6; }
 
-.card-body { padding:0 18px 18px; }
-.card-name { font-size:1.5rem; font-weight:900; color:#2a1a0a; letter-spacing:.05em; margin-bottom:2px; }
-.card-site { font-size:.72rem; color:#aaa; letter-spacing:.08em; margin-bottom:10px; }
+.card-body { padding:12px 16px 16px; }
+.card-name { font-size:1.15rem; font-weight:900; color:#2a1a0a; letter-spacing:.04em; margin-bottom:2px; line-height:1.3; }
+.card-ref  { font-size:.68rem; color:#bbb; letter-spacing:.06em; margin-bottom:8px; font-family:monospace; }
+.card-site { font-size:.72rem; color:#aaa; letter-spacing:.06em; margin-bottom:10px; }
 
-.card-info-row {
-  display:flex; gap:8px; margin-bottom:10px;
-}
-.info-chip {
-  background:#f5f0ea; border-radius:20px; padding:5px 12px;
-  font-size:.72rem; color:#7a5828; font-weight:700; letter-spacing:.05em;
-}
-.state-chip { background:var(--state-bg); color:var(--state-color); }
+.card-info-row { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:10px; }
+.info-chip { border-radius:20px; padding:4px 11px; font-size:.7rem; font-weight:700; letter-spacing:.04em; }
+.chip-state-0 { background:#f0ece6; color:#9a7860; }
+.chip-state-1 { background:#e8e4dc; color:#7a6040; }
+.chip-state-2 { background:#e4e0d8; color:#5a5040; }
+.chip-state-3 { background:#e0ddd5; color:#3a3028; }
 
-.card-note {
-  font-size:.78rem; color:#888; line-height:1.6; letter-spacing:.04em;
-  border-top:1px solid #f0ece8; padding-top:10px;
+.card-sketchfab-btn {
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  width:100%; padding:9px; border:1.5px solid #e0d8cc; border-radius:10px;
+  background:none; font-size:.75rem; color:#a08860; letter-spacing:.1em;
+  cursor:pointer; font-family:inherit; font-weight:700; transition:background .15s;
+  text-decoration:none;
 }
+.card-sketchfab-btn:hover { background:#f8f4ee; }
 
 /* ── result buttons ── */
 .result-btns { display:flex; flex-direction:column; gap:10px; width:100%; max-width:280px; margin-top:16px; }
-.result-btn {
-  padding:14px; font-size:1rem; font-weight:900; letter-spacing:.15em;
-  border:none; border-radius:40px; cursor:pointer;
-  box-shadow:0 4px 0 rgba(0,0,0,.15); transition:transform .1s,box-shadow .1s;
-}
+.result-btn { padding:14px; font-size:1rem; font-weight:900; letter-spacing:.15em; border:none; border-radius:40px; cursor:pointer; box-shadow:0 4px 0 rgba(0,0,0,.15); transition:transform .1s,box-shadow .1s; }
 .result-btn:active { transform:translateY(2px); box-shadow:0 2px 0 rgba(0,0,0,.15); }
 .btn-again { background:linear-gradient(135deg,#ff6b6b,#ff8e53); color:#fff; }
 .btn-col   { background:linear-gradient(135deg,#4ecdc4,#44b3ac); color:#fff; }
 
 /* ── COLLECTION ── */
-#colScreen { background:linear-gradient(160deg,#fff8e7,#ffe4b5); padding:0; }
-.col-header {
-  display:flex; align-items:center; padding:16px;
-  background:rgba(255,255,255,.6); position:sticky; top:0; z-index:10;
-  backdrop-filter:blur(8px);
-}
+#colScreen { background:linear-gradient(160deg,#fff8e7,#ffe4b5); }
+.col-header { display:flex; align-items:center; padding:16px; background:rgba(255,255,255,.6); position:sticky; top:0; z-index:10; backdrop-filter:blur(8px); }
 .col-title { flex:1; text-align:center; font-size:1rem; letter-spacing:.2em; color:#5c3317; font-weight:900; }
 .col-count-badge { background:#ff6b6b; color:#fff; border-radius:20px; padding:3px 10px; font-size:.75rem; font-weight:900; }
-.col-progress {
-  padding:10px 16px 4px; display:flex; align-items:center; gap:10px;
-}
+.col-progress { padding:8px 16px 2px; display:flex; align-items:center; gap:10px; }
 .col-prog-track { flex:1; height:6px; background:#e8e0d0; border-radius:3px; overflow:hidden; }
 .col-prog-bar   { height:100%; background:linear-gradient(90deg,#ff8e53,#ff6b6b); border-radius:3px; transition:width .4s; }
 .col-prog-label { font-size:.7rem; color:#b08040; white-space:nowrap; }
 
-.col-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:12px 16px 24px; }
+.col-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding:10px 12px 24px; }
 .col-item {
-  background:#fff; border-radius:14px; padding:10px 6px 8px;
-  display:flex; flex-direction:column; align-items:center; gap:3px;
-  box-shadow:0 3px 10px rgba(0,0,0,.08); cursor:pointer;
-  transition:transform .15s; position:relative; overflow:hidden;
+  background:#fff; border-radius:12px; overflow:hidden;
+  box-shadow:0 2px 8px rgba(0,0,0,.08); cursor:pointer;
+  transition:transform .15s; position:relative;
+  display:flex; flex-direction:column;
 }
 .col-item:active { transform:scale(.95); }
-.col-item-name { font-size:.65rem; font-weight:900; color:#2a1a0a; text-align:center; line-height:1.2; }
-.col-item-no   { font-size:.55rem; color:#ccc; font-family:monospace; }
-.col-item-new  {
-  position:absolute; top:4px; right:4px;
-  background:#ff6b6b; color:#fff; font-size:.5rem; font-weight:900;
-  padding:2px 5px; border-radius:8px;
-}
-.col-item-dup { position:absolute; bottom:5px; right:7px; font-size:.55rem; color:#bbb; }
-.col-empty {
-  grid-column:1/-1; text-align:center; padding:60px 20px;
-  color:#c0a080; font-size:.9rem; letter-spacing:.1em; line-height:2;
-}
+.col-item-img { width:100%; height:64px; object-fit:cover; background:#f0ece6; display:block; }
+.col-item-body { padding:5px 6px 6px; }
+.col-item-name { font-size:.6rem; font-weight:900; color:#2a1a0a; line-height:1.3; }
+.col-item-no   { font-size:.52rem; color:#ccc; font-family:monospace; }
+.col-item-new  { position:absolute; top:3px; right:3px; background:#ff6b6b; color:#fff; font-size:.5rem; font-weight:900; padding:2px 5px; border-radius:8px; }
+.col-item-dup  { position:absolute; bottom:4px; right:5px; font-size:.52rem; color:#bbb; }
+.col-item-mystery { background:#f0ece8; display:flex; flex-direction:column; align-items:center; }
+.col-item-mystery .mystery-icon { width:100%; height:64px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; color:#d8d0c8; background:#f0ece8; }
+.col-item-mystery .col-item-name { color:#ccc; text-align:center; width:100%; }
+.col-empty { grid-column:1/-1; text-align:center; padding:60px 20px; color:#c0a080; font-size:.9rem; letter-spacing:.1em; line-height:2; }
 
 /* ── Detail modal ── */
 #detailModal { display:none; position:fixed; inset:0; z-index:100; background:rgba(0,0,0,.6); align-items:center; justify-content:center; padding:20px; }
 #detailModal.on { display:flex; }
-.detail-inner {
-  background:#fff; border-radius:20px; width:100%; max-width:300px;
-  max-height:90vh; overflow-y:auto;
-  display:flex; flex-direction:column; align-items:center;
-  animation:cardPop .3s ease both; overflow:hidden;
-}
-.detail-close-row { width:100%; display:flex; justify-content:flex-end; padding:12px 14px 0; }
+.detail-inner { background:#fff; border-radius:20px; width:100%; max-width:300px; max-height:90vh; overflow-y:auto; animation:cardPop .3s ease both; }
+.detail-close-row { display:flex; justify-content:flex-end; padding:10px 12px 0; }
 .detail-close { background:none; border:none; font-size:1.3rem; color:#ccc; cursor:pointer; }
 
 /* ── Toast ── */
-#toast {
-  position:fixed; bottom:32px; left:50%; transform:translateX(-50%);
-  background:rgba(40,20,0,.85); color:#fff; padding:10px 24px;
-  border-radius:30px; font-size:.85rem; letter-spacing:.1em;
-  z-index:200; opacity:0; transition:opacity .3s; pointer-events:none; white-space:nowrap;
-}
+#toast { position:fixed; bottom:32px; left:50%; transform:translateX(-50%); background:rgba(40,20,0,.85); color:#fff; padding:10px 24px; border-radius:30px; font-size:.85rem; letter-spacing:.1em; z-index:200; opacity:0; transition:opacity .3s; pointer-events:none; white-space:nowrap; }
 #toast.show { opacity:1; }
 #confettiCanvas { position:fixed; inset:0; pointer-events:none; z-index:50; }
 </style>
@@ -212,7 +164,8 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fff8e7; font-f
   <div class="home-deco">🪨</div>
   <div class="home-title">石棒スキャナー</div>
   <div class="home-sub">バーコードから縄文の石棒を発掘せよ</div>
-  <div class="home-stones" id="homeStones"></div>
+  <div class="home-credit">3Dデータ提供：石棒クラブ／飛騨みやがわ考古民俗館</div>
+  <div class="home-thumbs" id="homeThumbs"></div>
   <button class="big-btn btn-scan" onclick="goScan()">📷 スキャンする</button>
   <button class="big-btn btn-collection" onclick="goCollection()">📚 図鑑を見る</button>
   <div class="collection-count" id="homeCount"></div>
@@ -251,12 +204,17 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fff8e7; font-f
         <span class="card-no" id="cardNo"></span>
         <span class="card-rarity-badge" id="rarityBadge"></span>
       </div>
-      <div class="card-stone-area"><canvas id="resultCanvas" width="100" height="160"></canvas></div>
+      <div class="stone-thumb-wrap" id="thumbWrap">
+        <img id="resultThumb" class="stone-thumb" src="" alt="">
+      </div>
       <div class="card-body">
         <div class="card-name" id="cardName"></div>
+        <div class="card-ref"  id="cardRef"></div>
         <div class="card-site" id="cardSite"></div>
         <div class="card-info-row" id="cardInfoRow"></div>
-        <div class="card-note" id="cardNote"></div>
+        <a id="cardSketchfabBtn" class="card-sketchfab-btn" target="_blank" rel="noopener">
+          🔲 Sketchfabで3Dを見る
+        </a>
       </div>
     </div>
     <div class="result-btns">
@@ -271,11 +229,11 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fff8e7; font-f
   <div class="col-header">
     <button class="back-btn" style="background:rgba(0,0,0,.1);color:#5c3317" onclick="goHome()">←</button>
     <div class="col-title">石棒図鑑</div>
-    <div class="col-count-badge" id="colCountBadge">0/30</div>
+    <div class="col-count-badge" id="colCountBadge">0/21</div>
   </div>
   <div class="col-progress">
     <div class="col-prog-track"><div class="col-prog-bar" id="colProgBar" style="width:0%"></div></div>
-    <div class="col-prog-label" id="colProgLabel">0 / 30 体</div>
+    <div class="col-prog-label" id="colProgLabel">0 / 21 体</div>
   </div>
   <div class="col-grid" id="colGrid"></div>
 </div>
@@ -289,372 +247,351 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fff8e7; font-f
 <canvas id="confettiCanvas"></canvas>
 
 <script>
-// ── 石棒スペシメンデータ（架空・後で本物に差し替え可能） ──────────────────────
-// stateIdx: 0=原石 1=剥離 2=敲打 3=研磨
+// ── 実際の石棒データ（石棒クラブ Sketchfab） ─────────────────────────────────
+// stateIdx: 0=原石 1=剥離 2=敲打 3=研磨/完成
 // rarityIdx: 0=ふつう 1=めずらしい 2=レア 3=でんせつ
 const SPECIMENS = [
-  { no:'001', name:'大王',     site:'塩屋金清神社遺跡', h:48.5, w:9.2,  stateIdx:3, rarityIdx:3, note:'飛騨最大級の研磨石棒。発掘時に周囲から歓声があがった。' },
-  { no:'002', name:'小太郎',   site:'中橋遺跡',         h:12.4, w:5.8,  stateIdx:2, rarityIdx:0, note:'小ぶりだが精巧な敲打痕が残る。子どもの手のひらサイズ。' },
-  { no:'003', name:'雷神',     site:'島遺跡',           h:35.2, w:7.6,  stateIdx:3, rarityIdx:2, note:'頭部に稲妻状の線刻が入る。儀礼用と推定される。' },
-  { no:'004', name:'丸子',     site:'向町遺跡',         h:22.8, w:8.9,  stateIdx:1, rarityIdx:0, note:'丸みのある愛らしい形。剥離の跡がやさしい曲線を生む。' },
-  { no:'005', name:'白鷹',     site:'松之木遺跡',       h:30.1, w:6.3,  stateIdx:3, rarityIdx:2, note:'石英が混じり白く輝く。研磨が丁寧で表面は鏡面に近い。' },
-  { no:'006', name:'原始',     site:'宮川左岸遺跡',     h:18.6, w:10.2, stateIdx:0, rarityIdx:0, note:'ほぼ手を加えていない塩屋石の原石。自然の形そのまま。' },
-  { no:'007', name:'細長',     site:'本郷ヶ原遺跡',     h:41.3, w:5.1,  stateIdx:3, rarityIdx:1, note:'異様に細長い研磨品。折れずに残ったのが奇跡といわれる。' },
-  { no:'008', name:'ずんぐり', site:'塩屋金清神社遺跡', h:14.2, w:9.8,  stateIdx:2, rarityIdx:0, note:'太くて短い独特のフォルム。似た形がほかに見つかっていない。' },
-  { no:'009', name:'深淵',     site:'下切遺跡',         h:27.5, w:7.2,  stateIdx:3, rarityIdx:2, note:'黒みが強く神秘的な光沢を放つ。暗がりで見ると吸い込まれそう。' },
-  { no:'010', name:'若葉',     site:'中橋遺跡',         h:16.8, w:6.4,  stateIdx:1, rarityIdx:0, note:'剥離直後の状態で出土。縄文人の仕事の途中を覗いているよう。' },
-  { no:'011', name:'巨人',     site:'坂下遺跡',         h:52.0, w:10.5, stateIdx:3, rarityIdx:3, note:'飛騨史上最大の石棒。出土時は土の中で立っていた。' },
-  { no:'012', name:'稲荷',     site:'宮田遺跡',         h:23.4, w:7.8,  stateIdx:2, rarityIdx:1, note:'遺跡の祭祀区画のほぼ中央で発見。重要な儀礼に使われたか。' },
-  { no:'013', name:'子守',     site:'向町遺跡',         h:9.6,  w:4.8,  stateIdx:3, rarityIdx:1, note:'掌にすっぽり収まる小型品。研磨は丁寧で愛用された形跡がある。' },
-  { no:'014', name:'荒武者',   site:'島遺跡',           h:33.7, w:8.3,  stateIdx:1, rarityIdx:1, note:'表面に無数の剥離痕。力強い打撃の跡が残る豪快な一本。' },
-  { no:'015', name:'月読',     site:'松之木遺跡',       h:28.9, w:6.9,  stateIdx:3, rarityIdx:2, note:'満月の夜に水田で発見されたと地元に伝わる縁起物。' },
-  { no:'016', name:'双子A',    site:'塩屋金清神社遺跡', h:19.1, w:6.6,  stateIdx:2, rarityIdx:1, note:'同じ場所で同じ形の2本が並んで出土。相棒は双子B。' },
-  { no:'017', name:'双子B',    site:'塩屋金清神社遺跡', h:19.3, w:6.7,  stateIdx:2, rarityIdx:1, note:'双子Aとほぼ同寸。数ミリの差が個性を生む。' },
-  { no:'018', name:'山神',     site:'宮川左岸遺跡',     h:38.4, w:8.8,  stateIdx:3, rarityIdx:2, note:'山の神への奉納品と推定。遺跡の最高所で発見された。' },
-  { no:'019', name:'砕けかけ', site:'本郷ヶ原遺跡',     h:20.5, w:7.1,  stateIdx:0, rarityIdx:0, note:'先端部が欠けた状態で出土。縄文時代にすでに割れていたらしい。' },
-  { no:'020', name:'まんまる', site:'下切遺跡',         h:11.2, w:10.8, stateIdx:2, rarityIdx:1, note:'高さと幅がほぼ同じ球状。石棒というより石球に近い珍品。' },
-  { no:'021', name:'仙人',     site:'坂下遺跡',         h:44.8, w:7.4,  stateIdx:3, rarityIdx:3, note:'縄文中期の最高傑作との呼び声が高い。研磨の完成度が別格。' },
-  { no:'022', name:'赤鬼',     site:'宮田遺跡',         h:25.6, w:8.0,  stateIdx:0, rarityIdx:1, note:'酸化鉄の影響で赤みを帯びる。原石のままで強い存在感を放つ。' },
-  { no:'023', name:'寝坊助',   site:'中橋遺跡',         h:17.3, w:8.5,  stateIdx:1, rarityIdx:0, note:'少し傾いた状態で出土。のんびりした雰囲気で発掘者に愛された。' },
-  { no:'024', name:'飛騨の龍', site:'向町遺跡',         h:36.2, w:7.0,  stateIdx:3, rarityIdx:2, note:'頭部が龍の頭に見えると話題。縄文のドラゴンボールと呼ぶ人も。' },
-  { no:'025', name:'古老',     site:'松之木遺跡',       h:29.8, w:8.2,  stateIdx:3, rarityIdx:2, note:'5000年前の出土と推定される最古級の一本。風格がにじみ出る。' },
-  { no:'026', name:'ちびっこ', site:'宮川左岸遺跡',     h:7.4,  w:3.9,  stateIdx:2, rarityIdx:0, note:'確認されている完形品の中で最小クラス。かわいいと大人気。' },
-  { no:'027', name:'霧の石',   site:'塩屋金清神社遺跡', h:31.5, w:7.7,  stateIdx:1, rarityIdx:1, note:'霧の朝に田んぼを耕していた農家が発見。百姓の縁起物に。' },
-  { no:'028', name:'武将',     site:'本郷ヶ原遺跡',     h:40.0, w:9.1,  stateIdx:2, rarityIdx:2, note:'力強い敲打痕が全面に残る大型品。縄文の力強さの象徴。' },
-  { no:'029', name:'おてんば', site:'島遺跡',           h:21.7, w:7.3,  stateIdx:1, rarityIdx:0, note:'斜めに欠けた個性的な形。完形でないのに妙に愛嬌がある。' },
-  { no:'030', name:'千年守',   site:'坂下遺跡',         h:34.4, w:6.8,  stateIdx:3, rarityIdx:3, note:'千年以上完全な形で地中に眠り続けた。土の番人とも呼ばれる。' },
+  {
+    no:'001', name:'大型石棒（完成）', ref:'№391',
+    site:'飛騨市教育委員会2012 島遺跡2・塩屋金清神社遺跡3',
+    stateIdx:3, rarityIdx:3,
+    uid:'d502e31d211d44ca8b2e78a857a10aa3',
+    thumb:'https://media.sketchfab.com/models/d502e31d211d44ca8b2e78a857a10aa3/thumbnails/902c81fa61ce424194bafc0227d47f88/b159d8dddd1a44ab85f83035f6794d92.jpeg',
+  },
+  {
+    no:'002', name:'大型石棒（研磨）', ref:'№715',
+    site:'飛騨市教育委員会2012 島遺跡2・塩屋金清神社遺跡3',
+    stateIdx:3, rarityIdx:3,
+    uid:'65b59a9d43e84d1ab389bc1ca902d1fc',
+    thumb:'https://media.sketchfab.com/models/65b59a9d43e84d1ab389bc1ca902d1fc/thumbnails/f7262c4903a54eb683f6a2c19a406285/3f155335fe0948558177fca85e5cfe89.jpeg',
+  },
+  {
+    no:'003', name:'石棒原石', ref:'飛騨みやがわ考古民俗館',
+    site:'飛騨みやがわ考古民俗館',
+    stateIdx:0, rarityIdx:2,
+    uid:'8d4fbf92d8f64b368515224906ac2f6e',
+    thumb:'https://media.sketchfab.com/models/8d4fbf92d8f64b368515224906ac2f6e/thumbnails/4569b2099caa457ba2c6da9cb5dc8063/b38701234d514a7b973e5618336390b6.jpeg',
+  },
+  {
+    no:'004', name:'石棒剥離', ref:'飛騨みやがわ考古民俗館',
+    site:'飛騨みやがわ考古民俗館',
+    stateIdx:1, rarityIdx:2,
+    uid:'a2bfa2c8aeb14b7b9e0a91b52230d038',
+    thumb:'https://media.sketchfab.com/models/a2bfa2c8aeb14b7b9e0a91b52230d038/thumbnails/2885ea3e66d94fc6a61d52babfb37b0c/5e9f03f7faa143d984e59c56a27a2400.jpeg',
+  },
+  {
+    no:'005', name:'石棒敲打', ref:'飛騨みやがわ考古民俗館',
+    site:'飛騨みやがわ考古民俗館',
+    stateIdx:2, rarityIdx:2,
+    uid:'13c4db052fea49c0842d990603be7d37',
+    thumb:'https://media.sketchfab.com/models/13c4db052fea49c0842d990603be7d37/thumbnails/3a1d6a3d57234937b5b930d5f10beca1/452a3fad89c0492683a23fff41d1a82c.jpeg',
+  },
+  {
+    no:'006', name:'石棒研磨', ref:'飛騨みやがわ考古民俗館・第79図11',
+    site:'飛騨みやがわ考古民俗館／塩屋金清神社遺跡A地点',
+    stateIdx:3, rarityIdx:2,
+    uid:'ea510ce736104fbbb5f63a47f235a4a3',
+    thumb:'https://media.sketchfab.com/models/ea510ce736104fbbb5f63a47f235a4a3/thumbnails/c4fbf2b84f3d4139afd9452dff81738d/6831a8da92094a5497e9f4763c1d224c.jpeg',
+  },
+  {
+    no:'007', name:'石棒研磨2', ref:'飛騨みやがわ考古民俗館',
+    site:'飛騨みやがわ考古民俗館',
+    stateIdx:3, rarityIdx:2,
+    uid:'4b085742bf21423585e2d12fa009bdda',
+    thumb:'https://media.sketchfab.com/models/4b085742bf21423585e2d12fa009bdda/thumbnails/3a15f695d4a741f8970998cb8cce7f3f/d5a2cf409608402bb9585e4f63f5ebc4.jpeg',
+  },
+  {
+    no:'008', name:'石棒', ref:'第74図',
+    site:'宮川村教育委員会1996 堂ノ前遺跡',
+    stateIdx:3, rarityIdx:1,
+    uid:'64b4fa034a8d4a3fb39a68a894889502',
+    thumb:'https://media.sketchfab.com/models/64b4fa034a8d4a3fb39a68a894889502/thumbnails/14c8a42f9c4b416794fd1d368bb06a34/569de48488e84b8cbb508f94ac3b09f5.jpeg',
+  },
+  {
+    no:'009', name:'石棒', ref:'第62図4',
+    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    stateIdx:3, rarityIdx:0,
+    uid:'5e851dbafadc44eca255ddfde1483d18',
+    thumb:'https://media.sketchfab.com/models/5e851dbafadc44eca255ddfde1483d18/thumbnails/9ffd1add1e2549b9a69b67bd23318a17/e5a10f906982450a8ff24e7ddfb8d64d.jpeg',
+  },
+  {
+    no:'010', name:'石棒', ref:'第64図3',
+    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    stateIdx:3, rarityIdx:0,
+    uid:'aa67fb06babe425eb6ecfeaaea74c53d',
+    thumb:'https://media.sketchfab.com/models/aa67fb06babe425eb6ecfeaaea74c53d/thumbnails/ea3d01fb7e4c4fa28aaa2cca44cb2201/daa60892b01f421b8484b93d5c29b1e0.jpeg',
+  },
+  {
+    no:'011', name:'石棒', ref:'第69図8',
+    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    stateIdx:3, rarityIdx:1,
+    uid:'b0ceb5c40b4844a79bc8eb5817171578',
+    thumb:'https://media.sketchfab.com/models/b0ceb5c40b4844a79bc8eb5817171578/thumbnails/5132faa3df1e4c028875e1a9210898d5/20b83dfbcb744194884f8277df2ecf83.jpeg',
+  },
+  {
+    no:'012', name:'石棒', ref:'第73図1',
+    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    stateIdx:3, rarityIdx:0,
+    uid:'6c6e6975187c4a6a88d6d812315c627a',
+    thumb:'https://media.sketchfab.com/models/6c6e6975187c4a6a88d6d812315c627a/thumbnails/86a2564627d04093af80cb657c8ee448/1003c24921994729b830cea7fffdc180.jpeg',
+  },
+  {
+    no:'013', name:'石棒', ref:'第75図3',
+    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    stateIdx:3, rarityIdx:0,
+    uid:'e54deb0b853947f0bb8ff817d30f02ca',
+    thumb:'https://media.sketchfab.com/models/e54deb0b853947f0bb8ff817d30f02ca/thumbnails/b44b112022bf417482225e498974f2f8/9b0ef49382b346eca02a8a5337c8b398.jpeg',
+  },
+  {
+    no:'014', name:'石棒', ref:'第76図7',
+    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    stateIdx:3, rarityIdx:0,
+    uid:'c752fb8fe68045fe9d17430410f29a2d',
+    thumb:'https://media.sketchfab.com/models/c752fb8fe68045fe9d17430410f29a2d/thumbnails/9477f0d7ac114bce8c8523c2ecfca313/d3579332cac04d30bf383059be4234ac.jpeg',
+  },
+  {
+    no:'015', name:'石棒', ref:'第77図9',
+    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    stateIdx:3, rarityIdx:0,
+    uid:'3fbcd5541a4b4d8488a0b99473af2942',
+    thumb:'https://media.sketchfab.com/models/3fbcd5541a4b4d8488a0b99473af2942/thumbnails/e6b7ea54b28941acb44dc5a2888dd48e/4a48782340684889b2cab65ded9991c3.jpeg',
+  },
+  {
+    no:'016', name:'石棒', ref:'第79図1',
+    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    stateIdx:3, rarityIdx:0,
+    uid:'0a9711aca7464523910a0e765a0dd73e',
+    thumb:'https://media.sketchfab.com/models/0a9711aca7464523910a0e765a0dd73e/thumbnails/ad6ef7058bb84b3385898ab83d9763d6/d3b08d7bbaa74edd9372fae88e7ca00e.jpeg',
+  },
+  {
+    no:'017', name:'石棒', ref:'第79図3',
+    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    stateIdx:3, rarityIdx:0,
+    uid:'09ebace0da42403e9c12b020424b9783',
+    thumb:'https://media.sketchfab.com/models/09ebace0da42403e9c12b020424b9783/thumbnails/1c8ad736c915485496628b97c7c0f227/3123929d4e77466095f90eb6ef4d487a.jpeg',
+  },
+  {
+    no:'018', name:'石棒', ref:'第79図7',
+    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    stateIdx:3, rarityIdx:0,
+    uid:'dd5c40f5d4d94da98b5ec21a92d19f0a',
+    thumb:'https://media.sketchfab.com/models/dd5c40f5d4d94da98b5ec21a92d19f0a/thumbnails/c005822909d54f91a138d5452f3bc1ce/52df3922e08143189069ff3ba513e206.jpeg',
+  },
+  {
+    no:'019', name:'石棒', ref:'第79図11',
+    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    stateIdx:3, rarityIdx:1,
+    uid:'6f66868f2ac8404891d332f4768fcdbd',
+    thumb:'https://media.sketchfab.com/models/6f66868f2ac8404891d332f4768fcdbd/thumbnails/cecc821a002342149ace02ad2ab1a7f1/abd86ce7573f445cb3548c679542ed6b.jpeg',
+  },
+  {
+    no:'020', name:'石棒', ref:'第79図14',
+    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    stateIdx:3, rarityIdx:1,
+    uid:'9b83bffafcdc40138231d64ebb6bbe0f',
+    thumb:'https://media.sketchfab.com/models/9b83bffafcdc40138231d64ebb6bbe0f/thumbnails/b833aaebb17a429eac77ab2bc5c1dd62/efd6cd1b39c640f7a49140589fa9424c.jpeg',
+  },
+  {
+    no:'021', name:'石棒', ref:'第80図13',
+    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    stateIdx:3, rarityIdx:0,
+    uid:'45f250a287a240d1aaa8928705329463',
+    thumb:'https://media.sketchfab.com/models/45f250a287a240d1aaa8928705329463/thumbnails/8c1dc244120d4752a8bfaf136b0eebdc/c7a02441f99d4159bd72c235f3a1a29e.jpeg',
+  },
 ];
 
-const STATES = [
-  { id:'genseki', name:'原石', baseMod:.72, shineMod:.28, pitting:60, hlAlpha:.03, bg:'#f2ede8', color:'#9a7860', chipBg:'#ede8e2' },
-  { id:'hakuri',  name:'剥離', baseMod:.88, shineMod:.55, pitting:34, hlAlpha:.09, bg:'#eeebe4', color:'#7a6848', chipBg:'#e4e0d6' },
-  { id:'kouda',   name:'敲打', baseMod:1.0, shineMod:.78, pitting:14, hlAlpha:.16, bg:'#eae8e0', color:'#5a5040', chipBg:'#dedad0' },
-  { id:'kenma',   name:'研磨', baseMod:1.08,shineMod:1.0, pitting:0,  hlAlpha:.32, bg:'#e8e6de', color:'#3a3028', chipBg:'#d4d0c4' },
-];
-const RARITY = [
-  { name:'ふつう',    stars:1 },
-  { name:'めずらしい',stars:2 },
-  { name:'レア',      stars:3 },
-  { name:'でんせつ',  stars:4 },
-];
-const SHIOYA = { base:'#7a7468', shine:'#a89e90', dark:'#3e3a36' };
+const STATES   = ['原石','剥離','敲打','研磨'];
+const STATE_CHIP_CLASS = ['chip-state-0','chip-state-1','chip-state-2','chip-state-3'];
+const RARITY   = ['ふつう','めずらしい','レア','でんせつ'];
+const TOTAL    = SPECIMENS.length;
 
 // ── Hash ─────────────────────────────────────────────────────────────────────
 function hashCode(str) {
   let h = 2166136261;
-  for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = (h * 16777619) >>> 0; }
+  for (let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=(h*16777619)>>>0;}
   return h;
 }
-function seededRand(seed) {
-  let s = seed;
-  return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 0xFFFFFFFF; };
-}
 
-// ── Stone generation ──────────────────────────────────────────────────────────
+// ── Generate stone from barcode ───────────────────────────────────────────────
 function generateStone(barcode) {
   const h = hashCode(barcode);
-  const spec = SPECIMENS[h % SPECIMENS.length];
-  return {
-    barcode,
-    id: h.toString(16).padStart(8,'0'),
-    spec,
-    state: STATES[spec.stateIdx],
-    rarity: RARITY[spec.rarityIdx],
-    ts: Date.now(),
-    isNew: true,
-  };
+  const spec = SPECIMENS[h % TOTAL];
+  return { barcode, id:h.toString(16).padStart(8,'0'), spec, ts:Date.now(), isNew:true };
 }
 
-// ── Canvas drawing ────────────────────────────────────────────────────────────
-function drawStoneOnCanvas(canvas, stone) {
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  ctx.clearRect(0, 0, W, H);
-
-  const st   = stone.state;
-  const spec = stone.spec;
-
-  // 実際の高さ/幅比率を形に反映
-  const ratio  = Math.min(spec.h / spec.w, 7);   // 高さ÷幅（最大7）
-  const ftNorm = Math.max(0, Math.min(1, 1 - (ratio - 1) / 6)); // 太さ：ratio小→太い
-
-  const baseCol  = scaleColor(SHIOYA.base,  st.baseMod);
-  const shineCol = scaleColor(SHIOYA.shine, st.shineMod);
-  const darkCol  = SHIOYA.dark;
-
-  const cw = W * (.28 + ftNorm * .26);
-  const ch = Math.min(H * .92, H * (.40 + ratio * .08));
-  const cx = W / 2;
-  const cy = H / 2 + H * .04;
-  const top = cy - ch / 2, bot = cy + ch / 2;
-  const headR    = cw * .52;
-  const bodyHalf = cw * .46;
-  const baseHalf = cw * .30;
-
-  function path() {
-    ctx.beginPath();
-    ctx.arc(cx, top + headR, headR, Math.PI, 0);
-    ctx.bezierCurveTo(cx+bodyHalf*1.1, top+headR+ch*.25, cx+bodyHalf, top+ch*.55, cx+baseHalf, bot);
-    ctx.lineTo(cx-baseHalf, bot);
-    ctx.bezierCurveTo(cx-bodyHalf, top+ch*.55, cx-bodyHalf*1.1, top+headR+ch*.25, cx-headR, top+headR);
-    ctx.closePath();
-  }
-
-  // 影
-  ctx.save();
-  ctx.shadowColor='rgba(0,0,0,.25)'; ctx.shadowBlur=12; ctx.shadowOffsetY=5;
-  path();
-  const grad = ctx.createLinearGradient(cx-cw, top, cx+cw*.5, bot);
-  grad.addColorStop(0, shineCol); grad.addColorStop(.3, baseCol);
-  grad.addColorStop(.85, baseCol); grad.addColorStop(1, darkCol);
-  ctx.fillStyle=grad; ctx.fill();
-  ctx.restore();
-
-  // クリップ
-  ctx.save(); path(); ctx.clip();
-
-  // テクスチャ
-  const rng2 = seededRand(hashCode(stone.barcode+'t'));
-  for (let i=0; i<st.pitting; i++) {
-    const tx=cx-cw*.9+rng2()*cw*1.8, ty=top+rng2()*ch;
-    const tr=.6+rng2()*(st.id==='kouda'?2.2:1.2);
-    ctx.fillStyle=`rgba(0,0,0,${.05+rng2()*.07})`;
-    ctx.beginPath();
-    if (st.id==='kouda') ctx.ellipse(tx,ty,tr,tr*.5,rng2()*Math.PI,0,Math.PI*2);
-    else ctx.arc(tx,ty,tr,0,Math.PI*2);
-    ctx.fill();
-  }
-
-  // ハイライト
-  const hl = ctx.createLinearGradient(cx-cw*.35, top, cx*.8, bot*.65);
-  hl.addColorStop(0,`rgba(255,255,255,${st.hlAlpha*.5})`);
-  hl.addColorStop(.25,`rgba(255,255,255,${st.hlAlpha})`);
-  hl.addColorStop(.6,'rgba(255,255,255,0)');
-  ctx.fillStyle=hl; ctx.fillRect(0,0,W,H);
-
-  // 研磨：縦光沢
-  if (st.id==='kenma') {
-    const sg=ctx.createLinearGradient(cx-cw*.22,top,cx-cw*.06,bot);
-    sg.addColorStop(0,'rgba(255,255,248,0)');
-    sg.addColorStop(.35,'rgba(255,255,248,.18)');
-    sg.addColorStop(.55,'rgba(255,255,248,.22)');
-    sg.addColorStop(1,'rgba(255,255,248,0)');
-    ctx.fillStyle=sg; ctx.fillRect(0,0,W,H);
-  }
-  // でんせつ
-  if (stone.rarity.name==='でんせつ') { ctx.fillStyle='rgba(255,210,60,.12)'; ctx.fillRect(0,0,W,H); }
-  ctx.restore();
-
-  // アウトライン
-  ctx.save(); path();
-  ctx.strokeStyle=darkCol; ctx.lineWidth=1.5; ctx.stroke();
-  ctx.restore();
-}
-
-function scaleColor(hex, f) {
-  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
-  const c=v=>Math.min(255,Math.max(0,Math.round(v*f)));
-  return `rgb(${c(r)},${c(g)},${c(b)})`;
-}
-
-// ── Collection storage ────────────────────────────────────────────────────────
+// ── Collection ────────────────────────────────────────────────────────────────
 function loadCollection() { try{return JSON.parse(localStorage.getItem('sekiboCol')||'[]')}catch{return[]} }
 function saveCollection(col) { localStorage.setItem('sekiboCol',JSON.stringify(col)); }
 function addToCollection(stone) {
   const col=loadCollection();
   const ex=col.find(s=>s.spec.no===stone.spec.no);
-  if (ex) { ex.count=(ex.count||1)+1; saveCollection(col); return false; }
-  stone.count=1; col.unshift(stone); saveCollection(col); return true;
+  if(ex){ex.count=(ex.count||1)+1;saveCollection(col);return false;}
+  stone.count=1;col.unshift(stone);saveCollection(col);return true;
 }
 
 // ── Screens ───────────────────────────────────────────────────────────────────
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-function goHome() { stopScan(); showScreen('homeScreen'); updateHomeCount(); }
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function goHome(){stopScan();showScreen('homeScreen');updateHomeCount();}
 
-function updateHomeCount() {
+function updateHomeCount(){
   const col=loadCollection();
-  document.getElementById('homeCount').textContent =
-    col.length===0 ? 'まだ石棒がない。スキャンしてみよう！' : `図鑑：${col.length} / ${SPECIMENS.length} 体`;
-  renderHomeStones(col.slice(0,5));
+  document.getElementById('homeCount').textContent=
+    col.length===0?'まだ石棒がない。スキャンしてみよう！':`図鑑：${col.length} / ${TOTAL} 体`;
+  renderHomeThumbs(col.slice(0,5));
 }
-function renderHomeStones(col) {
-  const wrap=document.getElementById('homeStones');
+function renderHomeThumbs(col){
+  const wrap=document.getElementById('homeThumbs');
   wrap.innerHTML='';
   col.forEach(s=>{
-    const cvs=document.createElement('canvas');
-    cvs.width=36; cvs.height=60;
-    wrap.appendChild(cvs);
-    drawStoneOnCanvas(cvs,s);
+    const img=document.createElement('img');
+    img.src=s.spec.thumb; img.className='home-thumb'; img.alt=s.spec.name;
+    img.onerror=()=>{img.style.display='none';};
+    wrap.appendChild(img);
   });
 }
 
 // ── Scan ──────────────────────────────────────────────────────────────────────
-let codeReader=null, scanning=false;
-async function goScan() { showScreen('scanScreen'); await startScan(); }
-async function startScan() {
-  if(scanning) return;
-  try {
-    codeReader=new ZXing.BrowserMultiFormatReader(); scanning=true;
+let codeReader=null,scanning=false;
+async function goScan(){showScreen('scanScreen');await startScan();}
+async function startScan(){
+  if(scanning)return;
+  try{
+    codeReader=new ZXing.BrowserMultiFormatReader();scanning=true;
     await codeReader.decodeFromVideoDevice(null,'scanVideo',(result,err)=>{
-      if(result&&scanning){ scanning=false; onBarcodeDetected(result.getText()); }
+      if(result&&scanning){scanning=false;onBarcodeDetected(result.getText());}
     });
-  } catch(e) { showToast('カメラを起動できませんでした'); goHome(); }
+  }catch(e){showToast('カメラを起動できませんでした');goHome();}
 }
-function stopScan() {
+function stopScan(){
   scanning=false;
-  if(codeReader){try{codeReader.reset();}catch(e){} codeReader=null;}
+  if(codeReader){try{codeReader.reset();}catch(e){}codeReader=null;}
 }
-function onBarcodeDetected(barcode) {
+function onBarcodeDetected(barcode){
   stopScan();
   const flash=document.getElementById('scanFlash');
-  flash.classList.add('on'); setTimeout(()=>flash.classList.remove('on'),200);
-  setTimeout(()=>{ const stone=generateStone(barcode); const isNew=addToCollection(stone); showResult(stone,isNew); },300);
+  flash.classList.add('on');setTimeout(()=>flash.classList.remove('on'),200);
+  setTimeout(()=>{const stone=generateStone(barcode);const isNew=addToCollection(stone);showResult(stone,isNew);},300);
 }
 
 // ── Result ────────────────────────────────────────────────────────────────────
-function showResult(stone, isNew) {
+function showResult(stone,isNew){
   showScreen('resultScreen');
+  const spec=stone.spec;
 
   const lbl=document.getElementById('resultLabel');
-  lbl.textContent= isNew ? '✨ あたらしい石棒を発掘！' : '📦 すでに持っている石棒だ！';
-  lbl.style.color= isNew ? '#e06020' : '#aaa';
+  lbl.textContent=isNew?'✨ あたらしい石棒を発掘！':'📦 すでに持っている石棒だ！';
+  lbl.style.color=isNew?'#e06020':'#aaa';
 
-  document.getElementById('cardNo').textContent='No.'+stone.spec.no;
-
+  document.getElementById('cardNo').textContent='No.'+spec.no;
   const badge=document.getElementById('rarityBadge');
-  badge.textContent=stone.rarity.name;
-  badge.className='card-rarity-badge rarity-'+stone.rarity.name;
+  badge.textContent=RARITY[spec.rarityIdx];
+  badge.className='card-rarity-badge rarity-'+RARITY[spec.rarityIdx];
 
-  const cvs=document.getElementById('resultCanvas');
-  drawStoneOnCanvas(cvs,stone);
+  const img=document.getElementById('resultThumb');
+  img.src=spec.thumb; img.alt=spec.name;
 
-  document.getElementById('cardName').textContent=stone.spec.name;
-  document.getElementById('cardSite').textContent='📍 '+stone.spec.site;
+  document.getElementById('cardName').textContent=spec.name;
+  document.getElementById('cardRef').textContent=spec.ref;
+  document.getElementById('cardSite').textContent='📍 '+spec.site;
 
-  const infoRow=document.getElementById('cardInfoRow');
-  infoRow.innerHTML=`
-    <div class="info-chip">${stone.spec.h}×${stone.spec.w} cm</div>
-    <div class="info-chip state-chip" style="--state-bg:${stone.state.chipBg};--state-color:${stone.state.color}">${stone.state.name}</div>
-  `;
-  document.getElementById('cardNote').textContent=stone.spec.note;
+  document.getElementById('cardInfoRow').innerHTML=
+    `<span class="info-chip ${STATE_CHIP_CLASS[spec.stateIdx]}">${STATES[spec.stateIdx]}</span>`;
 
-  document.getElementById('stoneCard').style.background=stone.state.bg;
+  document.getElementById('cardSketchfabBtn').href='https://sketchfab.com/3d-models/'+spec.uid;
 
   const card=document.getElementById('stoneCard');
-  card.style.animation='none'; card.offsetHeight; card.style.animation='';
+  card.style.animation='none';card.offsetHeight;card.style.animation='';
 
-  if(isNew&&stone.rarity.stars>=3) setTimeout(()=>launchConfetti(),400);
+  if(isNew&&spec.rarityIdx>=2) setTimeout(()=>launchConfetti(),400);
 }
 
 // ── Collection ────────────────────────────────────────────────────────────────
-function goCollection() { stopScan(); showScreen('colScreen'); renderCollection(); }
-function renderCollection() {
+function goCollection(){stopScan();showScreen('colScreen');renderCollection();}
+function renderCollection(){
   const col=loadCollection();
-  const total=SPECIMENS.length;
   const got=col.length;
-  document.getElementById('colCountBadge').textContent=`${got}/${total}`;
-  document.getElementById('colProgBar').style.width=(got/total*100)+'%';
-  document.getElementById('colProgLabel').textContent=`${got} / ${total} 体`;
+  document.getElementById('colCountBadge').textContent=`${got}/${TOTAL}`;
+  document.getElementById('colProgBar').style.width=(got/TOTAL*100)+'%';
+  document.getElementById('colProgLabel').textContent=`${got} / ${TOTAL} 体`;
 
   const grid=document.getElementById('colGrid');
   grid.innerHTML='';
-  if(col.length===0){
-    grid.innerHTML='<div class="col-empty">まだ石棒がない…<br>バーコードをスキャンして<br>石棒を集めよう！</div>';
-    return;
-  }
-  // 図鑑順（No.順）に表示
+  if(got===0){grid.innerHTML='<div class="col-empty">まだ石棒がない…<br>バーコードをスキャンして<br>石棒を集めよう！</div>';return;}
+
   const map=Object.fromEntries(col.map(s=>[s.spec.no,s]));
   SPECIMENS.forEach(spec=>{
     const stone=map[spec.no];
     const item=document.createElement('div');
     item.className='col-item';
-
     if(stone){
-      item.style.background=STATES[spec.stateIdx].bg;
-      const cvs=document.createElement('canvas');
-      cvs.width=52; cvs.height=84; cvs.style.cssText='width:52px;height:84px';
-      item.appendChild(cvs);
-      item.innerHTML+=`<div class="col-item-name">${spec.name}</div><div class="col-item-no">No.${spec.no}</div>`;
+      item.innerHTML=`
+        <img class="col-item-img" src="${spec.thumb}" alt="${spec.name}" onerror="this.style.background='#e0ddd5'">
+        <div class="col-item-body">
+          <div class="col-item-name">${spec.name} ${spec.ref}</div>
+          <div class="col-item-no">No.${spec.no}</div>
+        </div>`;
       if(stone.isNew){const nb=document.createElement('div');nb.className='col-item-new';nb.textContent='NEW';item.appendChild(nb);}
       if((stone.count||1)>1){const cb=document.createElement('div');cb.className='col-item-dup';cb.textContent='×'+stone.count;item.appendChild(cb);}
       item.addEventListener('click',()=>openDetail(stone));
-      grid.appendChild(item);
-      drawStoneOnCanvas(cvs,stone);
-    } else {
-      // 未発見：シルエット
-      item.style.background='#f0ece8';
-      item.style.opacity='.45';
-      item.innerHTML=`
-        <div style="width:52px;height:84px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:#ccc">?</div>
-        <div class="col-item-name" style="color:#ccc">${spec.name}</div>
-        <div class="col-item-no" style="color:#ddd">No.${spec.no}</div>`;
-      grid.appendChild(item);
+    }else{
+      item.classList.add('col-item-mystery');
+      item.innerHTML=`<div class="mystery-icon">？</div><div class="col-item-body"><div class="col-item-name" style="color:#ccc">???</div><div class="col-item-no" style="color:#ddd">No.${spec.no}</div></div>`;
     }
+    grid.appendChild(item);
   });
-
-  // clear isNew flags
   saveCollection(col.map(s=>({...s,isNew:false})));
 }
 
 // ── Detail modal ──────────────────────────────────────────────────────────────
-function openDetail(stone) {
-  const modal=document.getElementById('detailModal');
-  const inner=document.getElementById('detailInner');
-  inner.innerHTML=`
+function openDetail(stone){
+  const spec=stone.spec;
+  document.getElementById('detailInner').innerHTML=`
     <div class="detail-close-row"><button class="detail-close" onclick="closeDetail()">✕</button></div>
-    <div class="card-header" style="width:100%;padding:0 14px 8px">
-      <span class="card-no">No.${stone.spec.no}</span>
-      <span class="card-rarity-badge rarity-${stone.rarity.name}">${stone.rarity.name}</span>
+    <div class="card-header">
+      <span class="card-no">No.${spec.no}</span>
+      <span class="card-rarity-badge rarity-${RARITY[spec.rarityIdx]}">${RARITY[spec.rarityIdx]}</span>
     </div>
-    <div class="card-stone-area"><canvas id="detailCanvas" width="100" height="160"></canvas></div>
-    <div class="card-body" style="width:100%;padding:0 18px 20px">
-      <div class="card-name">${stone.spec.name}</div>
-      <div class="card-site">📍 ${stone.spec.site}</div>
-      <div class="card-info-row">
-        <div class="info-chip">${stone.spec.h}×${stone.spec.w} cm</div>
-        <div class="info-chip state-chip" style="--state-bg:${stone.state.chipBg};--state-color:${stone.state.color}">${stone.state.name}</div>
-      </div>
-      <div class="card-note">${stone.spec.note}</div>
-      ${(stone.count||1)>1?`<div style="font-size:.72rem;color:#bbb;margin-top:8px">所持数：${stone.count}本</div>`:''}
+    <div class="stone-thumb-wrap"><img class="stone-thumb" src="${spec.thumb}" alt="${spec.name}"></div>
+    <div class="card-body">
+      <div class="card-name">${spec.name}</div>
+      <div class="card-ref">${spec.ref}</div>
+      <div class="card-site">📍 ${spec.site}</div>
+      <div class="card-info-row"><span class="info-chip ${STATE_CHIP_CLASS[spec.stateIdx]}">${STATES[spec.stateIdx]}</span></div>
+      <a class="card-sketchfab-btn" href="https://sketchfab.com/3d-models/${spec.uid}" target="_blank" rel="noopener">🔲 Sketchfabで3Dを見る</a>
+      ${(stone.count||1)>1?`<div style="font-size:.72rem;color:#bbb;margin-top:10px">所持数：${stone.count}本</div>`:''}
     </div>`;
-  modal.classList.add('on');
-  drawStoneOnCanvas(document.getElementById('detailCanvas'),stone);
+  document.getElementById('detailModal').classList.add('on');
 }
-function closeDetail(e) {
+function closeDetail(e){
   if(!e||e.target===document.getElementById('detailModal'))
     document.getElementById('detailModal').classList.remove('on');
 }
 
 // ── Confetti ──────────────────────────────────────────────────────────────────
 let confettiAnim=null;
-function launchConfetti() {
+function launchConfetti(){
   const cvs=document.getElementById('confettiCanvas');
-  cvs.width=window.innerWidth; cvs.height=window.innerHeight;
+  cvs.width=window.innerWidth;cvs.height=window.innerHeight;
   const ctx=cvs.getContext('2d');
   const pieces=Array.from({length:80},()=>({
-    x:Math.random()*cvs.width, y:-10-Math.random()*40,
-    vy:2+Math.random()*4, vx:(Math.random()-.5)*3,
-    rot:Math.random()*Math.PI*2, rv:(Math.random()-.5)*.2,
-    w:6+Math.random()*8, h:3+Math.random()*5,
+    x:Math.random()*cvs.width,y:-10-Math.random()*40,
+    vy:2+Math.random()*4,vx:(Math.random()-.5)*3,
+    rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.2,
+    w:6+Math.random()*8,h:3+Math.random()*5,
     col:['#ffcc00','#ff6b6b','#4ecdc4','#ffffff','#ffaa44'][Math.floor(Math.random()*5)],
   }));
-  if(confettiAnim) cancelAnimationFrame(confettiAnim);
+  if(confettiAnim)cancelAnimationFrame(confettiAnim);
   function frame(){
     ctx.clearRect(0,0,cvs.width,cvs.height);
     let alive=false;
     for(const p of pieces){
-      p.x+=p.vx; p.y+=p.vy; p.rot+=p.rv;
-      if(p.y<cvs.height+20) alive=true;
-      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
-      ctx.fillStyle=p.col;
-      ctx.globalAlpha=Math.min(1,(cvs.height-p.y)/cvs.height*3);
-      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
-      ctx.restore();
+      p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;
+      if(p.y<cvs.height+20)alive=true;
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);
+      ctx.fillStyle=p.col;ctx.globalAlpha=Math.min(1,(cvs.height-p.y)/cvs.height*3);
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();
     }
-    if(alive) confettiAnim=requestAnimationFrame(frame);
+    if(alive)confettiAnim=requestAnimationFrame(frame);
     else{ctx.clearRect(0,0,cvs.width,cvs.height);confettiAnim=null;}
   }
   frame();
@@ -664,11 +601,10 @@ function launchConfetti() {
 let toastTimer=null;
 function showToast(msg){
   const el=document.getElementById('toast');
-  el.textContent=msg; el.classList.add('show');
-  clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),2500);
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2500);
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
 updateHomeCount();
 </script>
 </body>
