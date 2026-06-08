@@ -728,7 +728,7 @@ function openDetail(stone){
     <div class="card-body">
       <div class="card-name">${spec.name}</div>
       <a class="card-sketchfab-btn" href="https://sketchfab.com/3d-models/${spec.uid}" target="_blank" rel="noopener">🔲 Sketchfabで3Dを見る</a>
-      ${(stone.count||1)>1?`<div style="font-size:.72rem;color:#bbb;margin-top:10px">所持数：${stone.count}本</div>`:''}
+      ${(stone.count||1)>1?`<div style="font-size:.72rem;color:#bbb;margin-top:10px">所持数：${stone.count}点</div>`:''}
     </div>`;
   document.getElementById('detailModal').classList.add('on');
 }
