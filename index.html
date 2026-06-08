@@ -17,7 +17,7 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fff8e7; font-f
   background:linear-gradient(160deg,#fff8e7 0%,#ffe4b5 100%);
   align-items:center; justify-content:center; padding:32px 24px;
 }
-.home-deco { font-size:5rem; margin-bottom:8px; animation:bounce 2s ease-in-out infinite; }
+.home-deco { width:110px; height:110px; border-radius:50%; object-fit:cover; margin-bottom:14px; animation:bounce 2s ease-in-out infinite; box-shadow:0 6px 24px rgba(0,0,0,.18); border:4px solid rgba(255,255,255,.9); }
 @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
 .home-title {
   font-size:2.2rem; font-weight:900; letter-spacing:.1em; color:#5c3317;
@@ -157,13 +157,79 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fff8e7; font-f
 #toast { position:fixed; bottom:32px; left:50%; transform:translateX(-50%); background:rgba(40,20,0,.85); color:#fff; padding:10px 24px; border-radius:30px; font-size:.85rem; letter-spacing:.1em; z-index:200; opacity:0; transition:opacity .3s; pointer-events:none; white-space:nowrap; }
 #toast.show { opacity:1; }
 #confettiCanvas { position:fixed; inset:0; pointer-events:none; z-index:50; }
+
+/* ── Settings button ── */
+.settings-btn { position:absolute; top:16px; right:16px; background:none; border:none; font-size:1.3rem; cursor:pointer; opacity:.5; padding:4px; transition:opacity .2s; }
+.settings-btn:hover { opacity:.9; }
+
+/* ── Settings modal ── */
+#settingsModal { display:none; position:fixed; inset:0; z-index:150; background:rgba(0,0,0,.6); align-items:center; justify-content:center; padding:20px; }
+#settingsModal.on { display:flex; }
+.settings-inner { background:#fff; border-radius:20px; width:100%; max-width:300px; padding:0 0 24px; animation:cardPop .3s ease both; }
+.settings-header { display:flex; align-items:center; padding:16px 16px 0; }
+.settings-title { flex:1; font-size:1rem; font-weight:900; color:#5c3317; letter-spacing:.1em; }
+.settings-section { padding:12px 20px 0; }
+.settings-section-label { font-size:.72rem; color:#a08060; letter-spacing:.1em; font-weight:700; margin-bottom:10px; }
+.theme-option { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid #f0ece6; cursor:pointer; }
+.theme-option:last-child { border-bottom:none; }
+.theme-preview { width:44px; height:44px; border-radius:10px; overflow:hidden; flex-shrink:0; box-shadow:0 2px 8px rgba(0,0,0,.12); }
+.theme-preview-light { background:linear-gradient(160deg,#fff8e7,#ffe4b5); }
+.theme-preview-dark  { background:linear-gradient(160deg,#1a0e05,#2d1a08); }
+.theme-option-text { flex:1; }
+.theme-option-name { font-size:.88rem; font-weight:900; color:#3a2010; }
+.theme-option-desc { font-size:.72rem; color:#a08060; margin-top:2px; }
+.theme-radio { width:20px; height:20px; accent-color:#ff6b6b; cursor:pointer; }
+
+/* ── Dark theme overrides ── */
+body.theme-dark #homeScreen { background:linear-gradient(160deg,#1a0e05 0%,#2d1a08 100%); }
+body.theme-dark .home-deco  { border-color:rgba(200,130,40,.6); box-shadow:0 0 30px rgba(200,130,40,.5),0 0 60px rgba(200,130,40,.2); filter:sepia(10%) contrast(1.1); }
+body.theme-dark .home-title { color:#f0c060; text-shadow:0 0 20px rgba(240,160,40,.5),2px 2px 0 rgba(0,0,0,.5); }
+body.theme-dark .home-sub   { color:#b08840; }
+body.theme-dark .home-credit{ color:#6a5030; }
+body.theme-dark .collection-count { color:#806040; }
+body.theme-dark .home-goal  { color:#806040; }
+body.theme-dark .how-to-btn { border-color:rgba(200,150,50,.4); color:#906840; }
+body.theme-dark .settings-btn { color:#c8a040; }
+body.theme-dark .btn-scan   { background:linear-gradient(135deg,#c05020,#e07030); box-shadow:0 6px 0 rgba(0,0,0,.4); }
+body.theme-dark .btn-collection { background:rgba(200,150,50,.1); border:2px solid rgba(200,150,50,.4); color:#c8a040; box-shadow:0 6px 0 rgba(0,0,0,.3); }
+body.theme-dark #colScreen  { background:linear-gradient(160deg,#1a0e05,#2d1a08); }
+body.theme-dark .col-header { background:rgba(0,0,0,.4); backdrop-filter:blur(8px); }
+body.theme-dark .col-title  { color:#f0c060; }
+body.theme-dark .col-count-badge { background:#c05020; }
+body.theme-dark .col-prog-track { background:#3a2010; }
+body.theme-dark .col-prog-bar { background:linear-gradient(90deg,#c05020,#e07030); }
+body.theme-dark .col-prog-label { color:#806040; }
+body.theme-dark .col-goal   { color:#806040; }
+body.theme-dark .col-item   { background:#2a1808; box-shadow:0 2px 8px rgba(0,0,0,.3); }
+body.theme-dark .col-item-name { color:#e8c880; }
+body.theme-dark .col-item-mystery { background:#221208; }
+body.theme-dark .col-empty  { color:#6a5030; }
+body.theme-dark #resultScreen { background:linear-gradient(160deg,#1a0e05,#2d1a08); }
+body.theme-dark .result-header { background:rgba(0,0,0,.3); }
+body.theme-dark .result-new-label { color:#f0c060; }
+body.theme-dark .stone-card { background:#2a1808; box-shadow:0 8px 32px rgba(0,0,0,.4); }
+body.theme-dark .card-no    { color:#6a5030; }
+body.theme-dark .stone-thumb-wrap { background:#1a0e05; }
+body.theme-dark .card-name  { color:#e8c880; }
+body.theme-dark .card-sketchfab-btn { border-color:#3a2810; color:#906840; }
+body.theme-dark .card-sketchfab-btn:hover { background:#2a1808; }
+body.theme-dark .btn-again  { background:linear-gradient(135deg,#c05020,#e07030); }
+body.theme-dark .btn-col    { background:rgba(200,150,50,.1); border:2px solid rgba(200,150,50,.4); color:#c8a040; }
+body.theme-dark .settings-inner { background:#1e1008; }
+body.theme-dark .settings-title { color:#f0c060; }
+body.theme-dark .settings-section-label { color:#806040; }
+body.theme-dark .theme-option { border-color:#3a2010; }
+body.theme-dark .theme-option-name { color:#e8c880; }
+body.theme-dark .theme-option-desc { color:#806040; }
+body.theme-dark .detail-inner { background:#1e1008; }
 </style>
 </head>
 <body>
 
 <!-- HOME -->
 <div class="screen active" id="homeScreen">
-  <div class="home-deco">🪨</div>
+  <button class="settings-btn" onclick="openSettings()" title="設定">⚙</button>
+  <img class="home-deco" src="https://media.sketchfab.com/models/d502e31d211d44ca8b2e78a857a10aa3/thumbnails/902c81fa61ce424194bafc0227d47f88/b159d8dddd1a44ab85f83035f6794d92.jpeg" alt="石棒">
   <div class="home-title">石棒スキャナー</div>
   <div class="home-sub">バーコードから縄文の石棒を発掘せよ</div>
   <div class="home-credit">3Dデータ提供：石棒クラブ／飛騨みやがわ考古民俗館</div>
@@ -251,7 +317,7 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fff8e7; font-f
     <div class="howto-close-row"><button class="detail-close" onclick="closeHowTo()">✕</button></div>
     <div class="howto-title">🪨 石棒スキャナーとは？</div>
     <p class="howto-lead"><strong>身近なバーコードが、縄文の扉を開く！</strong></p>
-    <p class="howto-body">スーパーの商品、本、お菓子のパッケージ——どんなバーコードでも読み込んでみよう。バーコードの数字が計算され、<strong>208種類の縄文遺物</strong>の中からひとつが「発掘」されます。</p>
+    <p class="howto-body">スーパーの商品、本、お菓子のパッケージ——どんなバーコードでも読み込んでみよう。バーコードの数字が計算され、<strong>208種類の遺物・民俗資料</strong>の中からひとつが「発掘」されます。石棒はもちろん、土器・石冠・御物石器など縄文時代の遺物が中心ですが、須恵器（古墳〜奈良時代）や国指定民俗文化財のシュウタン（積雪期用具）など、縄文以外のデータも混じっているよ。</p>
     <p class="howto-body">同じバーコードからは、いつも同じ遺物が出てくるよ。</p>
     <div class="howto-steps">
       <div class="howto-step"><span class="howto-icon">📷</span><div><strong>スキャンする</strong><br>バーコードをカメラに向けて、枠に合わせるだけ。</div></div>
@@ -259,6 +325,35 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fff8e7; font-f
       <div class="howto-step"><span class="howto-icon">🔲</span><div><strong>Sketchfabで3Dを見る</strong><br>カードのボタンから、本物の3Dモデルを360度ぐるぐる見られる。</div></div>
     </div>
     <p class="howto-credit">3Dデータ提供：石棒クラブ（飛騨みやがわ考古民俗館）</p>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" onclick="closeSettings(event)">
+  <div class="settings-inner">
+    <div class="settings-header">
+      <div class="settings-title">⚙ 設定</div>
+      <button class="detail-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-label">テーマ</div>
+      <label class="theme-option">
+        <div class="theme-preview theme-preview-light"></div>
+        <div class="theme-option-text">
+          <div class="theme-option-name">ライト</div>
+          <div class="theme-option-desc">明るく温かみのある配色</div>
+        </div>
+        <input type="radio" class="theme-radio" name="theme" value="light" onchange="applyTheme('light')">
+      </label>
+      <label class="theme-option">
+        <div class="theme-preview theme-preview-dark"></div>
+        <div class="theme-option-text">
+          <div class="theme-option-name">ダーク</div>
+          <div class="theme-option-desc">神秘的な暗い配色</div>
+        </div>
+        <input type="radio" class="theme-radio" name="theme" value="dark" onchange="applyTheme('dark')">
+      </label>
+    </div>
   </div>
 </div>
 
@@ -678,6 +773,25 @@ function closeHowTo(e){
   if(!e||e.target===m) m.style.display='none';
 }
 
+// ── Theme ─────────────────────────────────────────────────────────────────────
+function applyTheme(theme){
+  document.body.classList.toggle('theme-dark', theme==='dark');
+  localStorage.setItem('theme', theme);
+  document.querySelectorAll('input[name="theme"]').forEach(r=>{ r.checked=(r.value===theme); });
+}
+function openSettings(){
+  document.getElementById('settingsModal').classList.add('on');
+}
+function closeSettings(e){
+  const m=document.getElementById('settingsModal');
+  if(!e||e.target===m) m.classList.remove('on');
+}
+
+// init
+(function(){
+  const saved=localStorage.getItem('theme')||'light';
+  applyTheme(saved);
+})();
 updateHomeCount();
 </script>
 </body>
