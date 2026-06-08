@@ -88,9 +88,7 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fff8e7; font-f
 .stone-thumb-err { display:flex; align-items:center; justify-content:center; height:160px; font-size:2.5rem; background:#f0ece6; }
 
 .card-body { padding:12px 16px 16px; }
-.card-name { font-size:1.15rem; font-weight:900; color:#2a1a0a; letter-spacing:.04em; margin-bottom:2px; line-height:1.3; }
-.card-ref  { font-size:.68rem; color:#bbb; letter-spacing:.06em; margin-bottom:8px; font-family:monospace; }
-.card-site { font-size:.72rem; color:#aaa; letter-spacing:.06em; margin-bottom:10px; }
+.card-name { font-size:.88rem; font-weight:900; color:#2a1a0a; letter-spacing:.02em; margin-bottom:10px; line-height:1.5; }
 
 .card-info-row { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:10px; }
 .info-chip { border-radius:20px; padding:4px 11px; font-size:.7rem; font-weight:700; letter-spacing:.04em; }
@@ -209,8 +207,6 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fff8e7; font-f
       </div>
       <div class="card-body">
         <div class="card-name" id="cardName"></div>
-        <div class="card-ref"  id="cardRef"></div>
-        <div class="card-site" id="cardSite"></div>
         <div class="card-info-row" id="cardInfoRow"></div>
         <a id="cardSketchfabBtn" class="card-sketchfab-btn" target="_blank" rel="noopener">
           🔲 Sketchfabで3Dを見る
@@ -252,148 +248,127 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fff8e7; font-f
 // rarityIdx: 0=ふつう 1=めずらしい 2=レア 3=でんせつ
 const SPECIMENS = [
   {
-    no:'001', name:'大型石棒（完成）', ref:'№391',
-    site:'飛騨市教育委員会2012 島遺跡2・塩屋金清神社遺跡3',
+    no:'001', name:"大型石棒（完成）（飛騨市教育委員会2012『島遺跡2・塩屋金清神社遺跡3』№391）",
     stateIdx:3, rarityIdx:3,
     uid:'d502e31d211d44ca8b2e78a857a10aa3',
     thumb:'https://media.sketchfab.com/models/d502e31d211d44ca8b2e78a857a10aa3/thumbnails/902c81fa61ce424194bafc0227d47f88/b159d8dddd1a44ab85f83035f6794d92.jpeg',
   },
   {
-    no:'002', name:'大型石棒（研磨）', ref:'№715',
-    site:'飛騨市教育委員会2012 島遺跡2・塩屋金清神社遺跡3',
+    no:'002', name:"大型石棒（研磨）（飛騨市教育委員会2012『島遺跡2・塩屋金清神社遺跡3』№715）",
     stateIdx:3, rarityIdx:3,
     uid:'65b59a9d43e84d1ab389bc1ca902d1fc',
     thumb:'https://media.sketchfab.com/models/65b59a9d43e84d1ab389bc1ca902d1fc/thumbnails/f7262c4903a54eb683f6a2c19a406285/3f155335fe0948558177fca85e5cfe89.jpeg',
   },
   {
-    no:'003', name:'石棒原石', ref:'飛騨みやがわ考古民俗館',
-    site:'飛騨みやがわ考古民俗館',
+    no:'003', name:'石棒原石（飛騨みやがわ考古民俗館）',
     stateIdx:0, rarityIdx:2,
     uid:'8d4fbf92d8f64b368515224906ac2f6e',
     thumb:'https://media.sketchfab.com/models/8d4fbf92d8f64b368515224906ac2f6e/thumbnails/4569b2099caa457ba2c6da9cb5dc8063/b38701234d514a7b973e5618336390b6.jpeg',
   },
   {
-    no:'004', name:'石棒剥離', ref:'飛騨みやがわ考古民俗館',
-    site:'飛騨みやがわ考古民俗館',
+    no:'004', name:'石棒剥離（飛騨みやがわ考古民俗館）',
     stateIdx:1, rarityIdx:2,
     uid:'a2bfa2c8aeb14b7b9e0a91b52230d038',
     thumb:'https://media.sketchfab.com/models/a2bfa2c8aeb14b7b9e0a91b52230d038/thumbnails/2885ea3e66d94fc6a61d52babfb37b0c/5e9f03f7faa143d984e59c56a27a2400.jpeg',
   },
   {
-    no:'005', name:'石棒敲打', ref:'飛騨みやがわ考古民俗館',
-    site:'飛騨みやがわ考古民俗館',
+    no:'005', name:'石棒敲打（飛騨みやがわ考古民俗館）',
     stateIdx:2, rarityIdx:2,
     uid:'13c4db052fea49c0842d990603be7d37',
     thumb:'https://media.sketchfab.com/models/13c4db052fea49c0842d990603be7d37/thumbnails/3a1d6a3d57234937b5b930d5f10beca1/452a3fad89c0492683a23fff41d1a82c.jpeg',
   },
   {
-    no:'006', name:'石棒研磨', ref:'飛騨みやがわ考古民俗館・第79図11',
-    site:'飛騨みやがわ考古民俗館／塩屋金清神社遺跡A地点',
+    no:'006', name:"石棒研磨（飛騨みやがわ考古民俗館、宮川村教育委員会2000『塩屋金清神社遺跡A地点』79-11）",
     stateIdx:3, rarityIdx:2,
     uid:'ea510ce736104fbbb5f63a47f235a4a3',
     thumb:'https://media.sketchfab.com/models/ea510ce736104fbbb5f63a47f235a4a3/thumbnails/c4fbf2b84f3d4139afd9452dff81738d/6831a8da92094a5497e9f4763c1d224c.jpeg',
   },
   {
-    no:'007', name:'石棒研磨2', ref:'飛騨みやがわ考古民俗館',
-    site:'飛騨みやがわ考古民俗館',
+    no:'007', name:'石棒研磨2（飛騨みやがわ考古民俗館）',
     stateIdx:3, rarityIdx:2,
     uid:'4b085742bf21423585e2d12fa009bdda',
     thumb:'https://media.sketchfab.com/models/4b085742bf21423585e2d12fa009bdda/thumbnails/3a15f695d4a741f8970998cb8cce7f3f/d5a2cf409608402bb9585e4f63f5ebc4.jpeg',
   },
   {
-    no:'008', name:'石棒', ref:'第74図',
-    site:'宮川村教育委員会1996 堂ノ前遺跡',
+    no:'008', name:"石棒（宮川村教育委員会1996『堂ノ前遺跡』第74図）",
     stateIdx:3, rarityIdx:1,
     uid:'64b4fa034a8d4a3fb39a68a894889502',
     thumb:'https://media.sketchfab.com/models/64b4fa034a8d4a3fb39a68a894889502/thumbnails/14c8a42f9c4b416794fd1d368bb06a34/569de48488e84b8cbb508f94ac3b09f5.jpeg',
   },
   {
-    no:'009', name:'石棒', ref:'第62図4',
-    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    no:'009', name:"石棒（宮川村教育委員会2000『塩屋金清神社遺跡(A地点)』第62図4）",
     stateIdx:3, rarityIdx:0,
     uid:'5e851dbafadc44eca255ddfde1483d18',
     thumb:'https://media.sketchfab.com/models/5e851dbafadc44eca255ddfde1483d18/thumbnails/9ffd1add1e2549b9a69b67bd23318a17/e5a10f906982450a8ff24e7ddfb8d64d.jpeg',
   },
   {
-    no:'010', name:'石棒', ref:'第64図3',
-    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    no:'010', name:"石棒（宮川村教育委員会2000『塩屋金清神社遺跡(A地点)』第64図3）",
     stateIdx:3, rarityIdx:0,
     uid:'aa67fb06babe425eb6ecfeaaea74c53d',
     thumb:'https://media.sketchfab.com/models/aa67fb06babe425eb6ecfeaaea74c53d/thumbnails/ea3d01fb7e4c4fa28aaa2cca44cb2201/daa60892b01f421b8484b93d5c29b1e0.jpeg',
   },
   {
-    no:'011', name:'石棒', ref:'第69図8',
-    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    no:'011', name:"石棒（宮川村教育委員会2000『塩屋金清神社遺跡(A地点)』第69図8）",
     stateIdx:3, rarityIdx:1,
     uid:'b0ceb5c40b4844a79bc8eb5817171578',
     thumb:'https://media.sketchfab.com/models/b0ceb5c40b4844a79bc8eb5817171578/thumbnails/5132faa3df1e4c028875e1a9210898d5/20b83dfbcb744194884f8277df2ecf83.jpeg',
   },
   {
-    no:'012', name:'石棒', ref:'第73図1',
-    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    no:'012', name:"石棒（宮川村教育委員会2000『塩屋金清神社遺跡(A地点)』第73図1）",
     stateIdx:3, rarityIdx:0,
     uid:'6c6e6975187c4a6a88d6d812315c627a',
     thumb:'https://media.sketchfab.com/models/6c6e6975187c4a6a88d6d812315c627a/thumbnails/86a2564627d04093af80cb657c8ee448/1003c24921994729b830cea7fffdc180.jpeg',
   },
   {
-    no:'013', name:'石棒', ref:'第75図3',
-    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    no:'013', name:"石棒（宮川村教育委員会2000『塩屋金清神社遺跡(A地点)』第75図3）",
     stateIdx:3, rarityIdx:0,
     uid:'e54deb0b853947f0bb8ff817d30f02ca',
     thumb:'https://media.sketchfab.com/models/e54deb0b853947f0bb8ff817d30f02ca/thumbnails/b44b112022bf417482225e498974f2f8/9b0ef49382b346eca02a8a5337c8b398.jpeg',
   },
   {
-    no:'014', name:'石棒', ref:'第76図7',
-    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    no:'014', name:"石棒（宮川村教育委員会2000『塩屋金清神社遺跡(A地点)』第76図7）",
     stateIdx:3, rarityIdx:0,
     uid:'c752fb8fe68045fe9d17430410f29a2d',
     thumb:'https://media.sketchfab.com/models/c752fb8fe68045fe9d17430410f29a2d/thumbnails/9477f0d7ac114bce8c8523c2ecfca313/d3579332cac04d30bf383059be4234ac.jpeg',
   },
   {
-    no:'015', name:'石棒', ref:'第77図9',
-    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    no:'015', name:"石棒（宮川村教育委員会2000『塩屋金清神社遺跡(A地点)』第77図9）",
     stateIdx:3, rarityIdx:0,
     uid:'3fbcd5541a4b4d8488a0b99473af2942',
     thumb:'https://media.sketchfab.com/models/3fbcd5541a4b4d8488a0b99473af2942/thumbnails/e6b7ea54b28941acb44dc5a2888dd48e/4a48782340684889b2cab65ded9991c3.jpeg',
   },
   {
-    no:'016', name:'石棒', ref:'第79図1',
-    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    no:'016', name:"石棒（宮川村教育委員会2000『塩屋金清神社遺跡(A地点)』第79図1）",
     stateIdx:3, rarityIdx:0,
     uid:'0a9711aca7464523910a0e765a0dd73e',
     thumb:'https://media.sketchfab.com/models/0a9711aca7464523910a0e765a0dd73e/thumbnails/ad6ef7058bb84b3385898ab83d9763d6/d3b08d7bbaa74edd9372fae88e7ca00e.jpeg',
   },
   {
-    no:'017', name:'石棒', ref:'第79図3',
-    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    no:'017', name:"石棒（宮川村教育委員会2000『塩屋金清神社遺跡(A地点)』第79図3）",
     stateIdx:3, rarityIdx:0,
     uid:'09ebace0da42403e9c12b020424b9783',
     thumb:'https://media.sketchfab.com/models/09ebace0da42403e9c12b020424b9783/thumbnails/1c8ad736c915485496628b97c7c0f227/3123929d4e77466095f90eb6ef4d487a.jpeg',
   },
   {
-    no:'018', name:'石棒', ref:'第79図7',
-    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    no:'018', name:"石棒（宮川村教育委員会2000『塩屋金清神社遺跡(A地点)』第79図7）",
     stateIdx:3, rarityIdx:0,
     uid:'dd5c40f5d4d94da98b5ec21a92d19f0a',
     thumb:'https://media.sketchfab.com/models/dd5c40f5d4d94da98b5ec21a92d19f0a/thumbnails/c005822909d54f91a138d5452f3bc1ce/52df3922e08143189069ff3ba513e206.jpeg',
   },
   {
-    no:'019', name:'石棒', ref:'第79図11',
-    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    no:'019', name:"石棒（飛騨みやがわ考古民俗館、宮川村教育委員会2000『塩屋金清神社遺跡A地点』第79図11）",
     stateIdx:3, rarityIdx:1,
     uid:'6f66868f2ac8404891d332f4768fcdbd',
     thumb:'https://media.sketchfab.com/models/6f66868f2ac8404891d332f4768fcdbd/thumbnails/cecc821a002342149ace02ad2ab1a7f1/abd86ce7573f445cb3548c679542ed6b.jpeg',
   },
   {
-    no:'020', name:'石棒', ref:'第79図14',
-    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    no:'020', name:"石棒（宮川村教育委員会2000『塩屋金清神社遺跡（A地点）』第79図14_739ip）",
     stateIdx:3, rarityIdx:1,
     uid:'9b83bffafcdc40138231d64ebb6bbe0f',
     thumb:'https://media.sketchfab.com/models/9b83bffafcdc40138231d64ebb6bbe0f/thumbnails/b833aaebb17a429eac77ab2bc5c1dd62/efd6cd1b39c640f7a49140589fa9424c.jpeg',
   },
   {
-    no:'021', name:'石棒', ref:'第80図13',
-    site:'宮川村教育委員会2000 塩屋金清神社遺跡A地点',
+    no:'021', name:"石棒（宮川村教育委員会2000『塩屋金清神社遺跡(A地点)』第80図13）",
     stateIdx:3, rarityIdx:0,
     uid:'45f250a287a240d1aaa8928705329463',
     thumb:'https://media.sketchfab.com/models/45f250a287a240d1aaa8928705329463/thumbnails/8c1dc244120d4752a8bfaf136b0eebdc/c7a02441f99d4159bd72c235f3a1a29e.jpeg',
@@ -491,8 +466,6 @@ function showResult(stone,isNew){
   img.src=spec.thumb; img.alt=spec.name;
 
   document.getElementById('cardName').textContent=spec.name;
-  document.getElementById('cardRef').textContent=spec.ref;
-  document.getElementById('cardSite').textContent='📍 '+spec.site;
 
   document.getElementById('cardInfoRow').innerHTML=
     `<span class="info-chip ${STATE_CHIP_CLASS[spec.stateIdx]}">${STATES[spec.stateIdx]}</span>`;
@@ -527,7 +500,7 @@ function renderCollection(){
       item.innerHTML=`
         <img class="col-item-img" src="${spec.thumb}" alt="${spec.name}" onerror="this.style.background='#e0ddd5'">
         <div class="col-item-body">
-          <div class="col-item-name">${spec.name} ${spec.ref}</div>
+          <div class="col-item-name">${spec.name}</div>
           <div class="col-item-no">No.${spec.no}</div>
         </div>`;
       if(stone.isNew){const nb=document.createElement('div');nb.className='col-item-new';nb.textContent='NEW';item.appendChild(nb);}
@@ -554,8 +527,6 @@ function openDetail(stone){
     <div class="stone-thumb-wrap"><img class="stone-thumb" src="${spec.thumb}" alt="${spec.name}"></div>
     <div class="card-body">
       <div class="card-name">${spec.name}</div>
-      <div class="card-ref">${spec.ref}</div>
-      <div class="card-site">📍 ${spec.site}</div>
       <div class="card-info-row"><span class="info-chip ${STATE_CHIP_CLASS[spec.stateIdx]}">${STATES[spec.stateIdx]}</span></div>
       <a class="card-sketchfab-btn" href="https://sketchfab.com/3d-models/${spec.uid}" target="_blank" rel="noopener">🔲 Sketchfabで3Dを見る</a>
       ${(stone.count||1)>1?`<div style="font-size:.72rem;color:#bbb;margin-top:10px">所持数：${stone.count}本</div>`:''}
