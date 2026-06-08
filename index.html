@@ -139,6 +139,19 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fff8e7; font-f
 .detail-close { background:none; border:none; font-size:1.3rem; color:#ccc; cursor:pointer; }
 
 /* ── Toast ── */
+.how-to-btn { margin-top:18px; background:none; border:1.5px solid #c0a070; color:#a07040; border-radius:30px; padding:7px 20px; font-size:.8rem; font-family:inherit; font-weight:700; letter-spacing:.1em; cursor:pointer; }
+.how-to-btn:active { background:#f5edd8; }
+
+.howto-inner { background:#fff; border-radius:20px; width:100%; max-width:340px; max-height:88vh; overflow-y:auto; padding:0 0 20px; animation:cardPop .3s ease both; }
+.howto-close-row { display:flex; justify-content:flex-end; padding:10px 12px 0; }
+.howto-title { font-size:1.1rem; font-weight:900; color:#5c3317; text-align:center; padding:0 20px 10px; }
+.howto-lead { font-size:.9rem; text-align:center; padding:0 20px 10px; color:#3a2010; }
+.howto-body { font-size:.82rem; color:#5a4030; line-height:1.7; padding:0 20px 10px; }
+.howto-steps { display:flex; flex-direction:column; gap:12px; padding:10px 20px; }
+.howto-step { display:flex; align-items:flex-start; gap:12px; font-size:.82rem; color:#3a2010; line-height:1.6; }
+.howto-icon { font-size:1.5rem; flex-shrink:0; }
+.howto-credit { font-size:.7rem; color:#b08050; text-align:center; padding:14px 20px 0; }
+
 #toast { position:fixed; bottom:32px; left:50%; transform:translateX(-50%); background:rgba(40,20,0,.85); color:#fff; padding:10px 24px; border-radius:30px; font-size:.85rem; letter-spacing:.1em; z-index:200; opacity:0; transition:opacity .3s; pointer-events:none; white-space:nowrap; }
 #toast.show { opacity:1; }
 #confettiCanvas { position:fixed; inset:0; pointer-events:none; z-index:50; }
@@ -156,6 +169,7 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fff8e7; font-f
   <button class="big-btn btn-scan" onclick="goScan()">📷 スキャンする</button>
   <button class="big-btn btn-collection" onclick="goCollection()">📚 図鑑を見る</button>
   <div class="collection-count" id="homeCount"></div>
+  <button class="how-to-btn" onclick="openHowTo()">？ 遊び方</button>
 </div>
 
 <!-- SCAN -->
@@ -225,6 +239,23 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fff8e7; font-f
 <!-- Detail Modal -->
 <div id="detailModal" onclick="closeDetail(event)">
   <div class="detail-inner" id="detailInner"></div>
+</div>
+
+<!-- How To Modal -->
+<div id="howToModal" onclick="closeHowTo(event)" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:20px;">
+  <div class="howto-inner">
+    <div class="howto-close-row"><button class="detail-close" onclick="closeHowTo()">✕</button></div>
+    <div class="howto-title">🪨 石棒スキャナーとは？</div>
+    <p class="howto-lead"><strong>身近なバーコードが、縄文の扉を開く！</strong></p>
+    <p class="howto-body">スーパーの商品、本、お菓子のパッケージ——どんなバーコードでも読み込んでみよう。バーコードの数字が計算され、<strong>208種類の縄文遺物</strong>の中からひとつが「発掘」されます。</p>
+    <p class="howto-body">同じバーコードからは、いつも同じ遺物が出てくるよ。</p>
+    <div class="howto-steps">
+      <div class="howto-step"><span class="howto-icon">📷</span><div><strong>スキャンする</strong><br>バーコードをカメラに向けて、枠に合わせるだけ。</div></div>
+      <div class="howto-step"><span class="howto-icon">📚</span><div><strong>図鑑を見る</strong><br>集めた遺物はここに記録される。全208種コンプリートを目指せ！</div></div>
+      <div class="howto-step"><span class="howto-icon">🔲</span><div><strong>Sketchfabで3Dを見る</strong><br>カードのボタンから、本物の3Dモデルを360度ぐるぐる見られる。</div></div>
+    </div>
+    <p class="howto-credit">3Dデータ提供：石棒クラブ（飛騨みやがわ考古民俗館）</p>
+  </div>
 </div>
 
 <div id="toast"></div>
@@ -632,6 +663,15 @@ function showToast(msg){
   const el=document.getElementById('toast');
   el.textContent=msg;el.classList.add('show');
   clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+function openHowTo(){
+  const m=document.getElementById('howToModal');
+  m.style.display='flex';
+}
+function closeHowTo(e){
+  const m=document.getElementById('howToModal');
+  if(!e||e.target===m) m.style.display='none';
 }
 
 updateHomeCount();
