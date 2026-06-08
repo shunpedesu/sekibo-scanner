@@ -650,7 +650,7 @@ function showResult(stone,isNew){
   const spec=stone.spec;
 
   const lbl=document.getElementById('resultLabel');
-  lbl.textContent=isNew?'✨ あたらしい石棒を発掘！':'📦 すでに持っている石棒だ！';
+  lbl.textContent=isNew?'✨ あたらしい発見！':'📦 すでに持っているよ！';
   lbl.style.color=isNew?'#e06020':'#aaa';
 
   document.getElementById('cardNo').textContent='No.'+spec.no;
