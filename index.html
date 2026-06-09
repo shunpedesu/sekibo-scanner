@@ -15,6 +15,11 @@
 <meta name="twitter:title" content="石棒スキャナー">
 <meta name="twitter:description" content="バーコードをスキャンして縄文の遺物を発掘しよう！208種類コンプリートを目指せ。">
 <meta name="twitter:image" content="https://media.sketchfab.com/models/d502e31d211d44ca8b2e78a857a10aa3/thumbnails/902c81fa61ce424194bafc0227d47f88/b159d8dddd1a44ab85f83035f6794d92.jpeg">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="石棒スキャナー">
+<link rel="apple-touch-icon" href="https://media.sketchfab.com/models/d502e31d211d44ca8b2e78a857a10aa3/thumbnails/902c81fa61ce424194bafc0227d47f88/b159d8dddd1a44ab85f83035f6794d92.jpeg">
 <script src="https://unpkg.com/@zxing/library@0.20.0/umd/index.min.js"></script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; }
@@ -168,6 +173,26 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fff8e7; font-f
 #toast { position:fixed; bottom:32px; left:50%; transform:translateX(-50%); background:rgba(40,20,0,.85); color:#fff; padding:10px 24px; border-radius:30px; font-size:.85rem; letter-spacing:.1em; z-index:200; opacity:0; transition:opacity .3s; pointer-events:none; white-space:nowrap; }
 #toast.show { opacity:1; }
 #confettiCanvas { position:fixed; inset:0; pointer-events:none; z-index:50; }
+
+/* ── Install banner ── */
+#installBanner {
+  display:none; position:fixed; bottom:0; left:0; right:0; z-index:300;
+  background:#fff; border-top:1px solid #e8e0d0;
+  padding:12px 16px 20px; box-shadow:0 -4px 20px rgba(0,0,0,.1);
+  animation:slideUp .3s ease both;
+}
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+#installBanner.on { display:block; }
+.install-banner-inner { display:flex; align-items:center; gap:12px; max-width:400px; margin:0 auto; }
+.install-banner-icon { width:44px; height:44px; border-radius:10px; object-fit:cover; flex-shrink:0; }
+.install-banner-text { flex:1; }
+.install-banner-title { font-size:.88rem; font-weight:900; color:#3a2010; }
+.install-banner-desc  { font-size:.75rem; color:#a08060; margin-top:2px; line-height:1.5; }
+.install-banner-btn { background:linear-gradient(135deg,#ff6b6b,#ff8e53); color:#fff; border:none; border-radius:20px; padding:8px 16px; font-size:.82rem; font-weight:900; cursor:pointer; white-space:nowrap; font-family:inherit; }
+.install-banner-close { background:none; border:none; color:#ccc; font-size:1.2rem; cursor:pointer; padding:4px; flex-shrink:0; }
+body.theme-dark #installBanner { background:#1e1008; border-top-color:#3a2010; }
+body.theme-dark .install-banner-title { color:#e8c880; }
+body.theme-dark .install-banner-desc  { color:#806040; }
 
 /* ── Settings button ── */
 .settings-btn { position:absolute; top:16px; right:16px; background:none; border:none; font-size:1.3rem; cursor:pointer; opacity:.5; padding:4px; transition:opacity .2s; }
@@ -336,6 +361,19 @@ body.theme-dark .detail-inner { background:#1e1008; }
       <div class="howto-step"><span class="howto-icon">🔲</span><div><strong>Sketchfabで3Dを見る</strong><br>カードのボタンから、本物の3Dモデルを360度ぐるぐる見られる。</div></div>
     </div>
     <p class="howto-credit">3Dデータ提供：石棒クラブ（飛騨みやがわ考古民俗館）</p>
+  </div>
+</div>
+
+<!-- Install Banner -->
+<div id="installBanner">
+  <div class="install-banner-inner">
+    <img class="install-banner-icon" src="https://media.sketchfab.com/models/d502e31d211d44ca8b2e78a857a10aa3/thumbnails/902c81fa61ce424194bafc0227d47f88/b159d8dddd1a44ab85f83035f6794d92.jpeg" alt="">
+    <div class="install-banner-text">
+      <div class="install-banner-title" id="installBannerTitle">ホーム画面に追加しよう</div>
+      <div class="install-banner-desc"  id="installBannerDesc">いつでもすぐ起動できるよ！</div>
+    </div>
+    <button class="install-banner-btn" id="installBannerBtn" onclick="doInstall()">追加</button>
+    <button class="install-banner-close" onclick="dismissInstall()">✕</button>
   </div>
 </div>
 
@@ -797,6 +835,59 @@ function closeSettings(e){
   const m=document.getElementById('settingsModal');
   if(!e||e.target===m) m.classList.remove('on');
 }
+
+// ── PWA Install ───────────────────────────────────────────────────────────────
+let deferredPrompt = null;
+
+// Service Worker 登録
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+
+// Android/Chrome: インストールプロンプトをキャッチ
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallBanner('android');
+});
+
+function showInstallBanner(type) {
+  if (localStorage.getItem('installDismissed')) return;
+  // すでにインストール済みならスキップ
+  if (window.matchMedia('(display-mode: standalone)').matches) return;
+  const banner = document.getElementById('installBanner');
+  if (type === 'ios') {
+    document.getElementById('installBannerDesc').textContent = '画面下の 共有ボタン → 「ホーム画面に追加」でOK！';
+    document.getElementById('installBannerBtn').textContent = '方法を見た';
+    document.getElementById('installBannerBtn').onclick = dismissInstall;
+  }
+  banner.classList.add('on');
+}
+
+function doInstall() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+  }
+  dismissInstall();
+}
+
+function dismissInstall() {
+  localStorage.setItem('installDismissed', '1');
+  document.getElementById('installBanner').classList.remove('on');
+}
+
+// iOS Safari 判定（初回訪問のみ）
+(function(){
+  const isIos = /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
+  const isSafari = /safari/.test(navigator.userAgent.toLowerCase()) && !/chrome/.test(navigator.userAgent.toLowerCase());
+  if (isIos && isSafari && !localStorage.getItem('installDismissed') &&
+      !window.matchMedia('(display-mode: standalone)').matches) {
+    setTimeout(() => showInstallBanner('ios'), 2000);
+  }
+})();
 
 // init
 (function(){
