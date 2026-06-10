@@ -4,8 +4,8 @@
   "description": "バーコードをスキャンして縄文の遺物を発掘しよう！",
   "start_url": "/sekibo-scanner/",
   "display": "standalone",
-  "background_color": "#fff8e7",
-  "theme_color": "#5c3317",
+  "background_color": "#fdf3e0",
+  "theme_color": "#4a2810",
   "lang": "ja",
   "icons": [
     {
