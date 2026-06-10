@@ -259,6 +259,12 @@ body.theme-dark .theme-option-name { color:#e8c880; }
 body.theme-dark .theme-option-desc { color:#806040; }
 body.theme-dark .detail-inner { background:#1e1008; }
 
+/* ── Backup buttons ── */
+.backup-btn { width:100%; padding:10px; font-size:.82rem; font-weight:700; letter-spacing:.05em; border:1.5px solid #c8a050; border-radius:10px; background:none; color:#4a2810; font-family:inherit; cursor:pointer; display:block; transition:background .15s; }
+.backup-btn:active { background:#f0e4c0; }
+body.theme-dark .backup-btn { border-color:#c8960c; color:#e8c880; }
+body.theme-dark .backup-btn:active { background:#2a1808; }
+
 /* ── Transform overlay ── */
 #transformOverlay {
   display:none; position:fixed; inset:0; z-index:80;
@@ -429,6 +435,13 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
         </div>
         <input type="radio" class="theme-radio" name="theme" value="dark" onchange="applyTheme('dark')">
       </label>
+    </div>
+    <div class="settings-section" style="margin-top:4px;">
+      <div class="settings-section-label">コレクションのバックアップ</div>
+      <div style="font-size:.72rem;color:#a08060;line-height:1.6;margin-bottom:10px;">ブラウザのデータを消去するとコレクションが消えることがあります。定期的にバックアップを保存しておきましょう。</div>
+      <button class="backup-btn" onclick="exportCollection()">📥 バックアップを保存</button>
+      <button class="backup-btn" onclick="document.getElementById('importFile').click()" style="margin-top:8px;">📤 バックアップから復元</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importCollection(event)">
     </div>
   </div>
 </div>
@@ -942,6 +955,33 @@ function applyTheme(theme){
   document.body.classList.toggle('theme-dark', theme==='dark');
   localStorage.setItem('theme', theme);
   document.querySelectorAll('input[name="theme"]').forEach(r=>{ r.checked=(r.value===theme); });
+}
+function exportCollection(){
+  const col=loadCollection();
+  const data={version:1,exported:new Date().toISOString(),collection:col};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='sekibo-collection-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  showToast('バックアップを保存しました');
+}
+function importCollection(e){
+  const file=e.target.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      const col=data.collection||data;
+      if(!Array.isArray(col))throw new Error();
+      saveCollection(col);
+      showToast('復元しました（'+col.length+'件）');
+      updateHomeCount(); renderCollection();
+      closeSettings();
+    }catch{showToast('ファイルの形式が正しくありません');}
+    e.target.value='';
+  };
+  reader.readAsText(file);
 }
 function openSettings(){
   document.getElementById('settingsModal').classList.add('on');
