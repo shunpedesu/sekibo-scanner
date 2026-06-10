@@ -258,6 +258,25 @@ body.theme-dark .theme-option { border-color:#3a2010; }
 body.theme-dark .theme-option-name { color:#e8c880; }
 body.theme-dark .theme-option-desc { color:#806040; }
 body.theme-dark .detail-inner { background:#1e1008; }
+
+/* ── Transform overlay ── */
+#transformOverlay {
+  display:none; position:fixed; inset:0; z-index:80;
+  background:#000; flex-direction:column; align-items:center; justify-content:center;
+}
+#txStage { position:relative; width:100%; max-width:340px; aspect-ratio:4/3; overflow:hidden; background:#111; }
+#txCamImg { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+#txArtImg { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; opacity:0; transition:opacity .5s; }
+#txScanline { position:absolute; left:0; right:0; height:4px; background:linear-gradient(90deg,transparent,#0ff 40%,#fff 50%,#0ff 60%,transparent); top:0; transition:top .8s linear; }
+#txStatus { color:#0ff; font-size:.9rem; letter-spacing:.2em; margin-top:20px; min-height:1.4em; text-align:center; }
+
+/* ── Special card styles ── */
+.stone-card.ultra-rare { border:2px solid #ffd700; box-shadow:0 8px 32px rgba(255,215,0,.35); }
+.stone-card.museum-rare { border:2px solid #a050e0; box-shadow:0 8px 32px rgba(160,80,224,.25); }
+.badge-ultra { background:#ffd700; color:#7a5000; font-size:.65rem; padding:2px 8px; border-radius:10px; font-weight:900; letter-spacing:.05em; }
+.badge-museum { background:#e8d8ff; color:#5a28a0; font-size:.65rem; padding:2px 8px; border-radius:10px; font-weight:900; letter-spacing:.05em; }
+body.theme-dark .stone-card.ultra-rare { background:#2a2000; }
+body.theme-dark .stone-card.museum-rare { background:#1e1030; }
 </style>
 </head>
 <body>
@@ -375,6 +394,16 @@ body.theme-dark .detail-inner { background:#1e1008; }
     <button class="install-banner-btn" id="installBannerBtn" onclick="doInstall()">追加</button>
     <button class="install-banner-close" onclick="dismissInstall()">✕</button>
   </div>
+</div>
+
+<!-- Transform Overlay -->
+<div id="transformOverlay">
+  <div id="txStage">
+    <img id="txCamImg" src="" alt="">
+    <img id="txArtImg" src="" alt="">
+    <div id="txScanline"></div>
+  </div>
+  <div id="txStatus"></div>
 </div>
 
 <!-- Settings Modal -->
@@ -620,6 +649,8 @@ const SPECIMENS = [
   { no:'206', name:"須恵器長頸瓶（飛騨市教委2017『信包中原田瓦窯跡』№122）", uid:'492c75c3b242460dbef5af04e76ac3c5', thumb:'https://media.sketchfab.com/models/492c75c3b242460dbef5af04e76ac3c5/thumbnails/fe69045f3624406eb095d538e19036f2/eec9b16e207246e687a6544c87880800.jpeg' },
   { no:'207', name:"徳利型土器（飛騨市教育委員会2012『島遺跡2・塩屋金清神社遺跡3』№282）", uid:'b076e9af1d134d3a8c1282c34fedc2cf', thumb:'https://media.sketchfab.com/models/b076e9af1d134d3a8c1282c34fedc2cf/thumbnails/16f67fd3e94541bc98f149c2428b2e35/8bab168ac874442c81242369486fee86.jpeg' },
   { no:'208', name:"縄文土器・注口土器（宮川村教育委員会2000『塩屋金清神社遺跡A地点』第23図12（3）", uid:'2fcb812c8aaa4be789ac67955581a0e8', thumb:'https://media.sketchfab.com/models/2fcb812c8aaa4be789ac67955581a0e8/thumbnails/fea4380b09df427b83cad08f2c4e2051/7e9f4622ee734087b894f6f43a4cfcdc.jpeg' },
+  { no:'209', name:"石棒くん", uid:'sekibo-kun', thumb:'sekibo-kun.svg', isSpecial:true },
+  { no:'210', name:"特別展示品（飛騨みやがわ考古民俗館 館内限定）", uid:'museum-210', thumb:'https://media.sketchfab.com/models/f3192fb2281944ee99a9201bceac9ab5/thumbnails/c09c8a435da4414e8b50e94472584574/9ec26fb281f34937ab7489fe2cc2383c.jpeg', isMuseum:true },
 ];
 
 
@@ -634,8 +665,14 @@ function hashCode(str) {
 
 // ── Generate stone from barcode ───────────────────────────────────────────────
 function generateStone(barcode) {
+  if (barcode === 'HIDAMIYAGAWA_SEKIBOSCANNER') {
+    return { barcode, id:'museum-special', spec:SPECIMENS[209], ts:Date.now(), isNew:true, isMuseum:true };
+  }
   const h = hashCode(barcode);
-  const spec = SPECIMENS[h % TOTAL];
+  if (h % 500 === 0) {
+    return { barcode, id:h.toString(16).padStart(8,'0'), spec:SPECIMENS[208], ts:Date.now(), isNew:true, isUltraRare:true };
+  }
+  const spec = SPECIMENS[h % 208];
   return { barcode, id:h.toString(16).padStart(8,'0'), spec, ts:Date.now(), isNew:true };
 }
 
@@ -686,35 +723,100 @@ function stopScan(){
   scanning=false;
   if(codeReader){try{codeReader.reset();}catch(e){}codeReader=null;}
 }
+function captureVideoFrame(){
+  const v=document.getElementById('scanVideo');
+  if(!v||!v.videoWidth)return null;
+  try{const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);return c.toDataURL('image/jpeg',.7);}
+  catch(e){return null;}
+}
 function onBarcodeDetected(barcode){
+  if(!scanning)return;
+  scanning=false;
+  const capturedFrame=captureVideoFrame();
   stopScan();
   const flash=document.getElementById('scanFlash');
   flash.classList.add('on');setTimeout(()=>flash.classList.remove('on'),200);
-  setTimeout(()=>{const stone=generateStone(barcode);const isNew=addToCollection(stone);showResult(stone,isNew);},300);
+  setTimeout(()=>{const stone=generateStone(barcode);const isNew=addToCollection(stone);showResult(stone,isNew,capturedFrame);},300);
 }
 
 // ── Result ────────────────────────────────────────────────────────────────────
-function showResult(stone,isNew){
+function showResult(stone,isNew,capturedFrame){
   showScreen('resultScreen');
   const spec=stone.spec;
 
   const lbl=document.getElementById('resultLabel');
-  lbl.textContent=isNew?'✨ あたらしい発見！':'📦 すでに持っているよ！';
-  lbl.style.color=isNew?'#e06020':'#aaa';
+  if(stone.isUltraRare){
+    lbl.innerHTML='👑 激レア！石棒くん発見！';
+    lbl.style.color='#c8960c';
+  } else if(stone.isMuseum){
+    lbl.innerHTML='🏛 館内限定！特別遺物を発見！';
+    lbl.style.color=document.body.classList.contains('theme-dark')?'#c090ff':'#6030b0';
+  } else {
+    lbl.textContent=isNew?'✨ あたらしい発見！':'📦 すでに持っているよ！';
+    lbl.style.color=isNew?'#e06020':'#aaa';
+  }
 
   document.getElementById('cardNo').textContent='No.'+spec.no;
-
   const img=document.getElementById('resultThumb');
   img.src=spec.thumb; img.alt=spec.name;
-
   document.getElementById('cardName').textContent=spec.name;
-  document.getElementById('cardInfoRow').innerHTML='';
-  document.getElementById('cardSketchfabBtn').href='https://sketchfab.com/3d-models/'+spec.uid;
+  document.getElementById('cardInfoRow').innerHTML=
+    spec.isSpecial?'<span class="badge-ultra">激レア</span>':
+    spec.isMuseum?'<span class="badge-museum">館内限定</span>':'';
+
+  const sfBtn=document.getElementById('cardSketchfabBtn');
+  if(spec.uid==='sekibo-kun'||spec.uid==='museum-210'){
+    sfBtn.style.display='none';
+  } else {
+    sfBtn.style.display='';
+    sfBtn.href='https://sketchfab.com/3d-models/'+spec.uid;
+  }
 
   const card=document.getElementById('stoneCard');
-  card.style.animation='none';card.offsetHeight;card.style.animation='';
+  card.classList.toggle('ultra-rare',!!stone.isUltraRare);
+  card.classList.toggle('museum-rare',!!stone.isMuseum);
 
-  if(isNew) setTimeout(()=>launchConfetti(),400);
+  if(capturedFrame && isNew){
+    card.style.animation='none'; card.style.opacity='0';
+    runTransformEffect(capturedFrame, spec.thumb, ()=>{
+      card.style.opacity='1';
+      card.style.animation='';
+      setTimeout(()=>launchCelebration(stone.isUltraRare||stone.isMuseum),300);
+    });
+  } else {
+    card.style.animation='none'; card.offsetHeight; card.style.animation='';
+    if(isNew) setTimeout(()=>launchCelebration(stone.isUltraRare||stone.isMuseum),400);
+  }
+}
+
+function runTransformEffect(camSrc, artSrc, onDone){
+  const ov=document.getElementById('transformOverlay');
+  const ci=document.getElementById('txCamImg');
+  const ai=document.getElementById('txArtImg');
+  const sl=document.getElementById('txScanline');
+  const st=document.getElementById('txStatus');
+  ci.src=camSrc||''; ci.style.opacity='1';
+  ai.src=artSrc; ai.style.opacity='0'; ai.style.transition='none';
+  sl.style.transition='none'; sl.style.top='0px';
+  st.textContent='解析中...';
+  ov.style.display='flex'; ov.style.opacity='1'; ov.style.transition='';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    sl.style.transition='top .85s linear'; sl.style.top='100%';
+  }));
+  setTimeout(()=>{
+    st.textContent='✨ 発見！';
+    ai.style.transition='opacity .5s'; ai.style.opacity='1';
+    ci.style.transition='opacity .4s'; ci.style.opacity='0';
+  },950);
+  setTimeout(()=>{
+    ov.style.transition='opacity .4s'; ov.style.opacity='0';
+    setTimeout(()=>{
+      ov.style.display='none'; ov.style.opacity='1'; ov.style.transition='';
+      ci.style.transition=''; ci.style.opacity='1';
+      ai.style.transition='none'; ai.style.opacity='0';
+      onDone();
+    },400);
+  },1700);
 }
 
 // ── Collection ────────────────────────────────────────────────────────────────
@@ -757,15 +859,17 @@ function renderCollection(){
 // ── Detail modal ──────────────────────────────────────────────────────────────
 function openDetail(stone){
   const spec=stone.spec;
+  const showSF=spec.uid!=='sekibo-kun'&&spec.uid!=='museum-210';
+  const badge=spec.isSpecial?'<span class="badge-ultra">激レア</span>':spec.isMuseum?'<span class="badge-museum">館内限定</span>':'';
   document.getElementById('detailInner').innerHTML=`
     <div class="detail-close-row"><button class="detail-close" onclick="closeDetail()">✕</button></div>
     <div class="card-header">
-      <span class="card-no">No.${spec.no}</span>
+      <span class="card-no">No.${spec.no}</span>${badge}
     </div>
     <div class="stone-thumb-wrap"><img class="stone-thumb" src="${spec.thumb}" alt="${spec.name}"></div>
     <div class="card-body">
       <div class="card-name">${spec.name}</div>
-      <a class="card-sketchfab-btn" href="https://sketchfab.com/3d-models/${spec.uid}" target="_blank" rel="noopener">🔲 Sketchfabで3Dを見る</a>
+      ${showSF?`<a class="card-sketchfab-btn" href="https://sketchfab.com/3d-models/${spec.uid}" target="_blank" rel="noopener">🔲 Sketchfabで3Dを見る</a>`:''}
       ${(stone.count||1)>1?`<div style="font-size:.72rem;color:#bbb;margin-top:10px">所持数：${stone.count}点</div>`:''}
     </div>`;
   document.getElementById('detailModal').classList.add('on');
@@ -775,28 +879,41 @@ function closeDetail(e){
     document.getElementById('detailModal').classList.remove('on');
 }
 
-// ── Confetti ──────────────────────────────────────────────────────────────────
+// ── Celebration ───────────────────────────────────────────────────────────────
 let confettiAnim=null;
-function launchConfetti(){
+function launchCelebration(isSpecial){
   const cvs=document.getElementById('confettiCanvas');
-  cvs.width=window.innerWidth;cvs.height=window.innerHeight;
+  cvs.width=window.innerWidth; cvs.height=window.innerHeight;
   const ctx=cvs.getContext('2d');
-  const pieces=Array.from({length:80},()=>({
-    x:Math.random()*cvs.width,y:-10-Math.random()*40,
-    vy:2+Math.random()*4,vx:(Math.random()-.5)*3,
-    rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.2,
-    w:6+Math.random()*8,h:3+Math.random()*5,
-    col:['#ffcc00','#ff6b6b','#4ecdc4','#ffffff','#ffaa44'][Math.floor(Math.random()*5)],
-  }));
+  const cx=cvs.width/2, cy=cvs.height*.38;
+  const colors=isSpecial
+    ?['#ffd700','#ffaa00','#fff','#ff6b6b','#ffe066','#ffd700']
+    :['#ffcc00','#ff6b6b','#4ecdc4','#ffffff','#ffaa44','#a8edea'];
+  const count=isSpecial?150:90;
+  const pieces=Array.from({length:count},()=>{
+    const a=Math.random()*Math.PI*2;
+    const sp=isSpecial?5+Math.random()*11:3+Math.random()*8;
+    return{x:cx+(Math.random()-.5)*30,y:cy+(Math.random()-.5)*30,
+      vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-3,
+      rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.3,
+      w:isSpecial?8+Math.random()*10:5+Math.random()*7,
+      h:isSpecial?4+Math.random()*7:3+Math.random()*5,
+      col:colors[Math.floor(Math.random()*colors.length)],life:1};
+  });
+  const glow=document.createElement('div');
+  glow.style.cssText=`position:fixed;inset:0;z-index:49;pointer-events:none;opacity:1;transition:opacity .7s;background:${isSpecial?'rgba(255,215,0,.35)':'rgba(255,220,60,.22)'};`;
+  document.body.appendChild(glow);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{glow.style.opacity='0';}));
+  setTimeout(()=>glow.remove(),800);
   if(confettiAnim)cancelAnimationFrame(confettiAnim);
   function frame(){
     ctx.clearRect(0,0,cvs.width,cvs.height);
     let alive=false;
     for(const p of pieces){
-      p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;
-      if(p.y<cvs.height+20)alive=true;
+      p.x+=p.vx;p.y+=p.vy;p.vy+=.18;p.rot+=p.rv;p.life-=.013;
+      if(p.life>0&&p.y<cvs.height+20)alive=true;
       ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);
-      ctx.fillStyle=p.col;ctx.globalAlpha=Math.min(1,(cvs.height-p.y)/cvs.height*3);
+      ctx.fillStyle=p.col;ctx.globalAlpha=Math.max(0,p.life);
       ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();
     }
     if(alive)confettiAnim=requestAnimationFrame(frame);
