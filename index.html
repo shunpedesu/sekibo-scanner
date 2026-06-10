@@ -31,30 +31,131 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fdf3e0; font-f
 /* ── HOME ── */
 #homeScreen {
   background:linear-gradient(160deg,#fdf3e0 0%,#f5e8c8 100%);
-  align-items:center; justify-content:center; padding:32px 24px;
+  align-items:center; justify-content:center; padding:28px 24px 24px;
+  overflow:hidden; position:relative;
 }
-.home-deco { width:110px; height:110px; border-radius:50%; object-fit:cover; margin-bottom:14px; animation:bounce 2s ease-in-out infinite; box-shadow:0 6px 24px rgba(0,0,0,.18); border:4px solid rgba(255,255,255,.9); }
-@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+#homeDustCanvas {
+  position:absolute; inset:0; pointer-events:none; z-index:0; width:100%; height:100%;
+}
+#homeScreen > *:not(#homeDustCanvas) { position:relative; z-index:1; }
+
+/* deco image: float + aura */
+@keyframes floatDeco {
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-14px)}
+}
+@keyframes auraGlow {
+  0%,100%{box-shadow:0 0 20px 6px rgba(200,150,50,.45),0 0 44px 12px rgba(200,100,30,.2),0 6px 24px rgba(0,0,0,.18)}
+  50%{box-shadow:0 0 32px 12px rgba(220,180,80,.65),0 0 64px 20px rgba(200,120,40,.3),0 6px 24px rgba(0,0,0,.18)}
+}
+@keyframes decoTap {
+  0%{transform:scale(1)} 30%{transform:scale(.92)} 70%{transform:scale(1.06)} 100%{transform:scale(1)}
+}
+.home-deco {
+  width:110px; height:110px; border-radius:50%; object-fit:cover; margin-bottom:14px;
+  animation:floatDeco 3.2s ease-in-out infinite, auraGlow 2.4s ease-in-out infinite;
+  border:4px solid rgba(255,255,255,.9); cursor:pointer;
+}
+.home-deco.tapped { animation:decoTap .35s ease both, auraGlow 2.4s ease-in-out infinite; }
+
+/* title: rise in + shine */
+.home-title-wrap { position:relative; margin-bottom:6px; }
 .home-title {
   font-size:2.2rem; font-weight:900; letter-spacing:.1em; color:#4a2810;
   text-shadow:3px 3px 0 #c8a050,5px 5px 0 rgba(0,0,0,.1);
-  margin-bottom:6px; text-align:center;
+  text-align:center; display:block; overflow:hidden; position:relative;
+  opacity:0; transform:translateY(70px);
+  transition:transform .85s cubic-bezier(.17,.89,.32,1.28), opacity .6s;
 }
-.home-sub { font-size:.85rem; color:#8a6030; letter-spacing:.1em; margin-bottom:8px; text-align:center; line-height:1.6; }
-.home-credit { font-size:.68rem; color:#a88040; margin-bottom:28px; text-align:center; }
-.home-thumbs { display:flex; gap:6px; margin-bottom:32px; justify-content:center; }
+.home-title.risen { opacity:1; transform:translateY(0); }
+.home-title::after {
+  content:''; position:absolute; top:0; left:-120%; width:60%; height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,235,130,.75),transparent);
+  pointer-events:none;
+}
+.home-title.risen::after { animation:titleShine 3.8s ease-in-out 0.4s infinite; }
+@keyframes titleShine {
+  0%{left:-120%} 40%,100%{left:160%}
+}
+
+/* gold particles around title */
+.home-particles { position:absolute; inset:-12px; pointer-events:none; }
+.home-particle {
+  position:absolute; border-radius:50%;
+  background:radial-gradient(circle,#ffd700,rgba(200,150,40,0));
+  animation:particleFloat var(--dur,3s) ease-in-out var(--delay,0s) infinite;
+}
+@keyframes particleFloat {
+  0%,100%{transform:translate(0,0) scale(1);opacity:.6}
+  33%{transform:translate(var(--dx,6px),var(--dy,-10px)) scale(.7);opacity:.9}
+  66%{transform:translate(var(--dx2,-5px),var(--dy2,6px)) scale(1.2);opacity:.4}
+}
+
+/* sub text */
+.home-sub {
+  font-size:.85rem; color:#8a6030; letter-spacing:.1em;
+  margin-bottom:6px; text-align:center; line-height:1.6;
+  min-height:1.4em;
+}
+.home-sub::after { content:'|'; animation:blink .7s step-end infinite; }
+.home-sub.done::after { display:none; }
+@keyframes blink { 50%{opacity:0} }
+
+.home-credit { font-size:.68rem; color:#a88040; margin-bottom:14px; text-align:center; }
+
+/* excavation count */
+.home-excav-count {
+  background:rgba(74,40,16,.08); border:1.5px solid rgba(200,160,80,.4);
+  border-radius:16px; padding:8px 20px; margin-bottom:16px;
+  display:flex; align-items:baseline; gap:4px;
+}
+.excav-num {
+  font-size:1.8rem; font-weight:900; color:#4a2810;
+  font-family:monospace; letter-spacing:-.02em; line-height:1;
+}
+.excav-suffix { font-size:.75rem; color:#8a6030; letter-spacing:.08em; }
+.excav-label  { font-size:.7rem; color:#a08050; letter-spacing:.05em; margin-top:2px; text-align:center; }
+
+.home-thumbs { display:flex; gap:6px; margin-bottom:16px; justify-content:center; }
 .home-thumb { width:52px; height:38px; border-radius:8px; object-fit:cover; box-shadow:0 2px 8px rgba(0,0,0,.15); }
 .home-thumb-placeholder { width:52px; height:38px; border-radius:8px; background:#e8e0d0; }
+
+/* scan button: big + breathe + ripple */
+.btn-scan-wrap {
+  position:relative; margin-bottom:14px; display:flex; align-items:center; justify-content:center;
+}
+@keyframes btnBreathe {
+  0%,100%{transform:scale(1);filter:brightness(1)}
+  50%{transform:scale(1.05);filter:brightness(1.12)}
+}
+@keyframes scanRipple {
+  0%{transform:scale(.88);opacity:.7}
+  100%{transform:scale(1.7);opacity:0}
+}
+.scan-ripple-ring {
+  position:absolute; inset:0; border-radius:50px;
+  border:2.5px solid rgba(200,160,60,.55);
+  animation:scanRipple 2s ease-out infinite;
+  pointer-events:none;
+}
+.scan-ripple-ring:nth-child(2){animation-delay:.65s;}
+.scan-ripple-ring:nth-child(3){animation-delay:1.3s;}
+
 .big-btn {
-  width:220px; padding:18px; font-size:1.2rem; font-weight:900; letter-spacing:.2em;
+  width:240px; padding:18px; font-size:1.2rem; font-weight:900; letter-spacing:.2em;
   border:none; border-radius:50px; cursor:pointer;
-  transition:transform .15s,box-shadow .15s; box-shadow:0 6px 0 rgba(0,0,0,.2);
+  transition:transform .1s,box-shadow .1s; box-shadow:0 6px 0 rgba(0,0,0,.2);
   display:flex; align-items:center; justify-content:center; gap:8px;
+  position:relative; z-index:1;
 }
 .big-btn:active { transform:translateY(3px); box-shadow:0 3px 0 rgba(0,0,0,.2); }
-.btn-scan       { background:linear-gradient(135deg,#c8a050,#d4b060); color:#4a2810; margin-bottom:14px; }
+.btn-scan {
+  background:linear-gradient(135deg,#c8a050,#d4b060); color:#4a2810;
+  animation:btnBreathe 2.6s ease-in-out infinite;
+  font-size:1.25rem; width:260px; padding:20px;
+}
 .btn-collection { background:linear-gradient(135deg,#7a4820,#9a6030); color:#f5e8c8; }
-.collection-count { margin-top:16px; font-size:.8rem; color:#9a7030; letter-spacing:.1em; }
+.collection-count { margin-top:8px; font-size:.8rem; color:#9a7030; letter-spacing:.1em; }
 
 /* ── SCAN ── */
 #scanScreen { background:#111; }
@@ -305,16 +406,29 @@ body.theme-dark .install-banner-desc  { color:#806040; }
 .theme-radio { width:20px; height:20px; accent-color:#ff6b6b; cursor:pointer; }
 
 /* ── Dark theme overrides ── */
-body.theme-dark #homeScreen { background:linear-gradient(160deg,#1a0e05 0%,#2d1a08 100%); }
-body.theme-dark .home-deco  { border-color:rgba(200,130,40,.6); box-shadow:0 0 30px rgba(200,130,40,.5),0 0 60px rgba(200,130,40,.2); filter:sepia(10%) contrast(1.1); }
-body.theme-dark .home-title { color:#f0c060; text-shadow:0 0 20px rgba(240,160,40,.5),2px 2px 0 rgba(0,0,0,.5); }
+body.theme-dark #homeScreen { background:linear-gradient(160deg,#0e0805 0%,#1e1008 100%); }
+body.theme-dark .home-deco  {
+  border-color:rgba(200,130,40,.6);
+  animation:floatDeco 3.2s ease-in-out infinite, auraGlowDark 2.4s ease-in-out infinite;
+  filter:sepia(10%) contrast(1.1);
+}
+@keyframes auraGlowDark {
+  0%,100%{box-shadow:0 0 28px 10px rgba(220,140,40,.55),0 0 60px 18px rgba(180,80,20,.3),0 6px 24px rgba(0,0,0,.5)}
+  50%{box-shadow:0 0 44px 16px rgba(240,180,60,.75),0 0 90px 28px rgba(200,100,30,.4),0 6px 24px rgba(0,0,0,.5)}
+}
+body.theme-dark .home-title { color:#f0c060; text-shadow:0 0 20px rgba(240,160,40,.6),2px 2px 0 rgba(0,0,0,.6); }
+body.theme-dark .home-title::after { background:linear-gradient(90deg,transparent,rgba(255,240,140,.8),transparent); }
 body.theme-dark .home-sub   { color:#b08840; }
 body.theme-dark .home-credit{ color:#6a5030; }
+body.theme-dark .home-excav-count { background:rgba(0,0,0,.3); border-color:rgba(200,140,40,.35); }
+body.theme-dark .excav-num  { color:#f0c060; }
+body.theme-dark .excav-suffix,.theme-dark .excav-label { color:#a08040; }
 body.theme-dark .collection-count { color:#806040; }
 body.theme-dark .home-goal  { color:#806040; }
 body.theme-dark .how-to-btn { border-color:rgba(200,150,50,.4); color:#906840; }
 body.theme-dark .settings-btn { color:#c8a040; }
 body.theme-dark .btn-scan   { background:linear-gradient(135deg,#c05020,#e07030); box-shadow:0 6px 0 rgba(0,0,0,.4); }
+body.theme-dark .btn-scan .scan-ripple-ring { border-color:rgba(220,120,50,.55); }
 body.theme-dark .btn-collection { background:rgba(200,150,50,.1); border:2px solid rgba(200,150,50,.4); color:#c8a040; box-shadow:0 6px 0 rgba(0,0,0,.3); }
 body.theme-dark #colScreen  { background:linear-gradient(160deg,#1a0e05,#2d1a08); }
 body.theme-dark .col-header { background:rgba(0,0,0,.4); backdrop-filter:blur(8px); }
@@ -377,16 +491,38 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
 
 <!-- HOME -->
 <div class="screen active" id="homeScreen">
+  <canvas id="homeDustCanvas"></canvas>
   <button class="settings-btn" onclick="openSettings()" title="設定">⚙</button>
-  <img class="home-deco" src="https://media.sketchfab.com/models/d502e31d211d44ca8b2e78a857a10aa3/thumbnails/902c81fa61ce424194bafc0227d47f88/b159d8dddd1a44ab85f83035f6794d92.jpeg" alt="石棒">
-  <div class="home-title">石棒スキャナー</div>
-  <div class="home-sub">バーコードから縄文の石棒を発掘せよ</div>
+
+  <img class="home-deco" id="homeDeco"
+    src="https://media.sketchfab.com/models/d502e31d211d44ca8b2e78a857a10aa3/thumbnails/902c81fa61ce424194bafc0227d47f88/b159d8dddd1a44ab85f83035f6794d92.jpeg"
+    alt="石棒" onclick="tapDeco(this)">
+
+  <div class="home-title-wrap">
+    <div class="home-particles" id="homeParticles"></div>
+    <div class="home-title" id="homeTitle">石棒スキャナー</div>
+  </div>
+
+  <div class="home-sub" id="homeSub"></div>
   <div class="home-credit">3Dデータ提供：石棒クラブ／飛騨みやがわ考古民俗館</div>
+
+  <div class="home-excav-count">
+    <span class="excav-num" id="excavNum">0</span>
+    <span class="excav-suffix"> / 210体</span>
+    <span class="excav-suffix" style="font-size:.7rem;color:#a08050;margin-left:4px">発掘済み</span>
+  </div>
+
   <div class="home-thumbs" id="homeThumbs"></div>
-  <button class="big-btn btn-scan" onclick="goScan()">📷 スキャンする</button>
+
+  <div class="btn-scan-wrap">
+    <div class="scan-ripple-ring"></div>
+    <div class="scan-ripple-ring"></div>
+    <div class="scan-ripple-ring"></div>
+    <button class="big-btn btn-scan" onclick="goScanFlash()">📷 スキャンする</button>
+  </div>
+
   <button class="big-btn btn-collection" onclick="goCollection()">📚 図鑑を見る</button>
-  <div class="collection-count" id="homeCount"></div>
-  <div class="home-goal">石棒クラブ Sketchfab の<br>全3Dデータをコンプリートしよう！</div>
+  <div class="home-goal" style="margin-top:14px">石棒クラブ Sketchfab の<br>全3Dデータをコンプリートしよう！</div>
   <button class="how-to-btn" onclick="openHowTo()">？ 遊び方</button>
 </div>
 
@@ -832,9 +968,23 @@ function goHome(){stopScan();showScreen('homeScreen');updateHomeCount();}
 
 function updateHomeCount(){
   const col=loadCollection();
-  document.getElementById('homeCount').textContent=
-    col.length===0?'まだ石棒がない。スキャンしてみよう！':`図鑑：${col.length} / ${TOTAL} 体`;
   renderHomeThumbs(col.slice(0,5));
+  animateExcavCount(col.length);
+}
+function animateExcavCount(target){
+  const el=document.getElementById('excavNum');
+  if(!el)return;
+  const from=parseInt(el.textContent)||0;
+  if(from===target){el.textContent=target;return;}
+  const dur=700, start=Date.now();
+  function tick(){
+    const t=Math.min(1,(Date.now()-start)/dur);
+    const ease=1-Math.pow(1-t,3);
+    el.textContent=Math.round(from+(target-from)*ease);
+    if(t<1) requestAnimationFrame(tick);
+    else el.textContent=target;
+  }
+  tick();
 }
 function renderHomeThumbs(col){
   const wrap=document.getElementById('homeThumbs');
@@ -1358,10 +1508,101 @@ function dismissInstall() {
   }
 })();
 
+// ── Home animations ───────────────────────────────────────────────────────────
+function initHomeDust(){
+  const cvs=document.getElementById('homeDustCanvas');
+  if(!cvs)return;
+  const ctx=cvs.getContext('2d');
+  function resize(){ cvs.width=cvs.offsetWidth||window.innerWidth; cvs.height=cvs.offsetHeight||window.innerHeight; }
+  resize(); new ResizeObserver(resize).observe(cvs);
+  const pts=Array.from({length:55},()=>mkPt());
+  function mkPt(){
+    return{x:Math.random()*(cvs.width||360),y:Math.random()*(cvs.height||700),
+      vx:(Math.random()-.5)*.28,vy:-(0.08+Math.random()*.35),
+      r:0.8+Math.random()*1.8,
+      a:.08+Math.random()*.22,
+      col:`hsl(${28+Math.random()*22},${35+Math.random()*25}%,${48+Math.random()*18}%)`};
+  }
+  function frame(){
+    if(!document.getElementById('homeScreen').classList.contains('active')){requestAnimationFrame(frame);return;}
+    ctx.clearRect(0,0,cvs.width,cvs.height);
+    for(const p of pts){
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.y<-8){const n=mkPt();n.y=cvs.height+8;Object.assign(p,n);}
+      if(p.x<-8)p.x=cvs.width+8; if(p.x>cvs.width+8)p.x=-8;
+      ctx.save();ctx.globalAlpha=p.a;ctx.fillStyle=p.col;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();ctx.restore();
+    }
+    requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+function initHomeParticles(){
+  const wrap=document.getElementById('homeParticles');
+  if(!wrap)return;
+  const dxs=[-8,10,-6,12,-10,8,5,-12];
+  const dys=[-10,-8,8,6,-6,10,-8,6];
+  const dy2s=[6,-6,-8,8,8,-4,10,-10];
+  const dx2s=[5,-5,8,-8,4,-10,-6,10];
+  for(let i=0;i<8;i++){
+    const el=document.createElement('div');
+    el.className='home-particle';
+    const size=4+Math.random()*5;
+    el.style.cssText=`width:${size}px;height:${size}px;`+
+      `left:${10+Math.random()*80}%;top:${10+Math.random()*80}%;`+
+      `--dur:${2.5+Math.random()*2}s;--delay:${Math.random()*2}s;`+
+      `--dx:${dxs[i]}px;--dy:${dys[i]}px;--dx2:${dx2s[i]}px;--dy2:${dy2s[i]}px;`;
+    wrap.appendChild(el);
+  }
+}
+
+function runHomeIntro(){
+  const titleEl=document.getElementById('homeTitle');
+  const subEl=document.getElementById('homeSub');
+  const already=sessionStorage.getItem('homeIntroPlayed');
+  if(already){
+    titleEl.classList.add('risen');
+    subEl.textContent='バーコードから縄文の石棒を発掘せよ';
+    subEl.classList.add('done');
+    return;
+  }
+  sessionStorage.setItem('homeIntroPlayed','1');
+  setTimeout(()=>titleEl.classList.add('risen'),200);
+  const text='バーコードから縄文の石棒を発掘せよ';
+  let i=0;
+  function type(){
+    subEl.textContent=text.slice(0,i);
+    if(i<text.length){i++;setTimeout(type,55);}
+    else subEl.classList.add('done');
+  }
+  setTimeout(type,900);
+}
+
+function tapDeco(el){
+  el.classList.remove('tapped');
+  void el.offsetWidth;
+  el.classList.add('tapped');
+  if(navigator.vibrate)navigator.vibrate(25);
+  setTimeout(()=>el.classList.remove('tapped'),400);
+}
+
+function goScanFlash(){
+  const flash=document.createElement('div');
+  flash.style.cssText='position:fixed;inset:0;background:#fff;z-index:999;pointer-events:none;opacity:.9;transition:opacity .35s';
+  document.body.appendChild(flash);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{flash.style.opacity='0';}));
+  setTimeout(()=>flash.remove(),400);
+  goScan();
+}
+
 // init
 (function(){
   const saved=localStorage.getItem('theme')||'light';
   applyTheme(saved);
+  initHomeDust();
+  initHomeParticles();
+  runHomeIntro();
 })();
 updateHomeCount();
 </script>
