@@ -688,8 +688,36 @@ function generateStone(barcode) {
 }
 
 // ── Collection ────────────────────────────────────────────────────────────────
-function loadCollection() { try{return JSON.parse(localStorage.getItem('sekiboCol')||'[]')}catch{return[]} }
-function saveCollection(col) { localStorage.setItem('sekiboCol',JSON.stringify(col)); }
+function saveCookieBackup(col){
+  try{
+    const barcodes=col.map(s=>s.barcode);
+    const val=encodeURIComponent(JSON.stringify(barcodes));
+    const exp=new Date(Date.now()+365*24*60*60*1000).toUTCString();
+    document.cookie='sekiboBackup='+val+'; expires='+exp+'; path=/; SameSite=Lax';
+  }catch(e){}
+}
+function loadCookieBackup(){
+  try{
+    const m=document.cookie.match(/(?:^|; )sekiboBackup=([^;]*)/);
+    if(!m)return null;
+    const barcodes=JSON.parse(decodeURIComponent(m[1]));
+    if(!Array.isArray(barcodes)||barcodes.length===0)return null;
+    return barcodes.map(b=>{ const s=generateStone(b); s.isNew=false; return s; });
+  }catch(e){return null;}
+}
+function loadCollection(){
+  try{
+    const col=JSON.parse(localStorage.getItem('sekiboCol')||'[]');
+    if(col.length>0)return col;
+    const backup=loadCookieBackup();
+    if(backup&&backup.length>0){ saveCollection(backup); return backup; }
+    return [];
+  }catch{return[];}
+}
+function saveCollection(col){
+  localStorage.setItem('sekiboCol',JSON.stringify(col));
+  saveCookieBackup(col);
+}
 function addToCollection(stone) {
   const col=loadCollection();
   const ex=col.find(s=>s.spec.no===stone.spec.no);
