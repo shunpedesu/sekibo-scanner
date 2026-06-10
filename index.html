@@ -897,7 +897,7 @@ function renderCollection(){
 
 // ── Detail modal ──────────────────────────────────────────────────────────────
 function openDetail(stone){
-  const spec=stone.spec;
+  const spec=SPECIMENS.find(s=>s.no===stone.spec.no)||stone.spec;
   const showSF=spec.uid!=='sekibo-kun'&&spec.uid!=='museum-210';
   const badge=spec.isSpecial?'<span class="badge-ultra">激レア</span>':spec.isMuseum?'<span class="badge-ultra">激レア</span><span class="badge-museum" style="margin-left:4px">館内限定</span>':'';
   document.getElementById('detailInner').innerHTML=`
