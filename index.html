@@ -762,7 +762,7 @@ function showResult(stone,isNew,capturedFrame){
   document.getElementById('cardName').textContent=spec.name;
   document.getElementById('cardInfoRow').innerHTML=
     spec.isSpecial?'<span class="badge-ultra">激レア</span>':
-    spec.isMuseum?'<span class="badge-museum">館内限定</span>':'';
+    spec.isMuseum?'<span class="badge-ultra">激レア</span><span class="badge-museum" style="margin-left:4px">館内限定</span>':'';
 
   const sfBtn=document.getElementById('cardSketchfabBtn');
   if(spec.uid==='sekibo-kun'||spec.uid==='museum-210'){
@@ -860,7 +860,7 @@ function renderCollection(){
 function openDetail(stone){
   const spec=stone.spec;
   const showSF=spec.uid!=='sekibo-kun'&&spec.uid!=='museum-210';
-  const badge=spec.isSpecial?'<span class="badge-ultra">激レア</span>':spec.isMuseum?'<span class="badge-museum">館内限定</span>':'';
+  const badge=spec.isSpecial?'<span class="badge-ultra">激レア</span>':spec.isMuseum?'<span class="badge-ultra">激レア</span><span class="badge-museum" style="margin-left:4px">館内限定</span>':'';
   document.getElementById('detailInner').innerHTML=`
     <div class="detail-close-row"><button class="detail-close" onclick="closeDetail()">✕</button></div>
     <div class="card-header">
