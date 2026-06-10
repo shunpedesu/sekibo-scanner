@@ -87,8 +87,96 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fdf3e0; font-f
   background:#fff; border-radius:20px; width:100%; max-width:300px;
   box-shadow:0 8px 32px rgba(0,0,0,.13); overflow:hidden; position:relative;
   animation:cardPop .5s cubic-bezier(.17,.89,.32,1.28) both;
+  transform-style:preserve-3d;
 }
 @keyframes cardPop { from{transform:scale(0) rotate(-5deg);opacity:0} to{transform:scale(1);opacity:1} }
+
+/* ── Card flip ── */
+.card-flip-scene {
+  width:100%; max-width:300px; perspective:800px; position:relative;
+}
+.card-flip-inner {
+  position:relative; width:100%; transform-style:preserve-3d;
+  transition:transform 0.7s cubic-bezier(.4,0,.2,1);
+}
+.card-flip-inner.flipped { transform:rotateY(180deg); }
+.card-face { backface-visibility:hidden; -webkit-backface-visibility:hidden; width:100%; }
+.card-face-back {
+  position:absolute; top:0; left:0; width:100%; height:100%;
+  transform:rotateY(180deg); backface-visibility:hidden; -webkit-backface-visibility:hidden;
+  background:linear-gradient(135deg,#4a2810,#2d1a08);
+  border-radius:20px; display:flex; align-items:center; justify-content:center;
+  font-size:3rem;
+}
+
+/* ── Hologram shimmer ── */
+.card-holo {
+  position:absolute; inset:0; border-radius:20px; pointer-events:none;
+  background:linear-gradient(105deg,
+    transparent 20%, rgba(255,255,255,.06) 30%,
+    rgba(255,200,100,.18) 40%, rgba(100,220,255,.18) 50%,
+    rgba(200,100,255,.15) 60%, rgba(255,255,255,.06) 70%, transparent 80%);
+  background-size:200% 200%;
+  animation:holoShimmer 2.4s ease-in-out infinite;
+  opacity:0; transition:opacity .5s;
+  mix-blend-mode:screen;
+}
+.card-holo.active { opacity:1; }
+@keyframes holoShimmer {
+  0%   { background-position:200% 50%; }
+  100% { background-position:-200% 50%; }
+}
+
+/* ── Ray burst ── */
+#rayCanvas {
+  position:fixed; inset:0; pointer-events:none; z-index:48;
+}
+
+/* ── Card vibration ── */
+@keyframes cardLand {
+  0%   { transform:translateY(0) scale(1); }
+  20%  { transform:translateY(6px) scale(1.01); }
+  40%  { transform:translateY(-4px) scale(.99); }
+  60%  { transform:translateY(3px) scale(1.005); }
+  80%  { transform:translateY(-2px) scale(1); }
+  100% { transform:translateY(0) scale(1); }
+}
+.card-land { animation:cardLand .4s ease both; }
+
+/* ── Label bounce ── */
+@keyframes labelDrop {
+  0%   { transform:translateY(-40px); opacity:0; }
+  60%  { transform:translateY(8px); opacity:1; }
+  80%  { transform:translateY(-5px); }
+  100% { transform:translateY(0); opacity:1; }
+}
+.label-bounce { animation:labelDrop .55s cubic-bezier(.17,.89,.32,1.28) both; }
+
+/* ── No number pop ── */
+@keyframes noPop {
+  0%   { transform:scale(2.5); opacity:.6; }
+  100% { transform:scale(1); opacity:1; }
+}
+.no-pop { animation:noPop .4s cubic-bezier(.17,.89,.32,1.28) both; }
+
+/* ── Replay button ── */
+.btn-replay {
+  background:linear-gradient(135deg,#c8a050,#e0b860); color:#4a2810;
+  border:none; border-radius:40px; padding:12px; width:100%;
+  font-size:.9rem; font-weight:900; letter-spacing:.15em; cursor:pointer;
+  box-shadow:0 4px 0 rgba(0,0,0,.15); font-family:inherit;
+  transition:transform .1s,box-shadow .1s;
+}
+.btn-replay:active { transform:translateY(2px); box-shadow:0 2px 0 rgba(0,0,0,.15); }
+
+/* ── Scan badge ── */
+.card-scan-badge {
+  position:absolute; bottom:10px; right:10px;
+  background:rgba(0,0,0,.12); color:rgba(0,0,0,.45);
+  font-size:.5rem; padding:2px 7px; border-radius:8px;
+  letter-spacing:.04em; pointer-events:none;
+}
+body.theme-dark .card-scan-badge { background:rgba(255,255,255,.08); color:rgba(255,255,255,.3); }
 
 .card-header { padding:10px 14px 8px; display:flex; justify-content:space-between; align-items:center; }
 .card-no { font-size:.68rem; color:#ccc; letter-spacing:.1em; font-family:monospace; }
@@ -330,24 +418,36 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
   </div>
   <div class="result-body">
     <div class="result-new-label" id="resultLabel"></div>
-    <div class="stone-card" id="stoneCard">
-      <div class="card-header">
-        <span class="card-no" id="cardNo"></span>
-      </div>
-      <div class="stone-thumb-wrap" id="thumbWrap">
-        <img id="resultThumb" class="stone-thumb" src="" alt="">
-      </div>
-      <div class="card-body">
-        <div class="card-name" id="cardName"></div>
-        <div class="card-info-row" id="cardInfoRow"></div>
-        <a id="cardSketchfabBtn" class="card-sketchfab-btn" target="_blank" rel="noopener">
-          🔲 Sketchfabで3Dを見る
-        </a>
+    <div class="card-flip-scene" id="cardFlipScene">
+      <div class="card-flip-inner" id="cardFlipInner">
+        <!-- BACK face -->
+        <div class="card-face card-face-back">🏺</div>
+        <!-- FRONT face -->
+        <div class="card-face">
+          <div class="stone-card" id="stoneCard">
+            <div class="card-holo" id="cardHolo"></div>
+            <div class="card-header">
+              <span class="card-no" id="cardNo"></span>
+              <span id="cardInfoRow"></span>
+            </div>
+            <div class="stone-thumb-wrap" id="thumbWrap">
+              <img id="resultThumb" class="stone-thumb" src="" alt="">
+            </div>
+            <div class="card-body">
+              <div class="card-name" id="cardName"></div>
+              <a id="cardSketchfabBtn" class="card-sketchfab-btn" target="_blank" rel="noopener">
+                🔲 Sketchfabで3Dを見る
+              </a>
+            </div>
+            <div class="card-scan-badge">🎊 石棒スキャナーで発掘</div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="result-btns">
+    <div class="result-btns" id="resultBtns" style="opacity:0;pointer-events:none">
       <button class="result-btn btn-again" onclick="goScan()">📷 もう一度スキャン</button>
       <button class="result-btn btn-col"   onclick="goCollection()">📚 図鑑を見る</button>
+      <button class="btn-replay" id="replayBtn" onclick="replayEffects()" style="display:none">🎊 演出をもう一度見る</button>
     </div>
   </div>
 </div>
@@ -448,6 +548,7 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
 
 <div id="toast"></div>
 <canvas id="confettiCanvas"></canvas>
+<canvas id="rayCanvas"></canvas>
 
 <script>
 // ── 石棒クラブ Sketchfab 全公開モデル（208件） ───────────────────────────────
@@ -779,23 +880,19 @@ function onBarcodeDetected(barcode){
 }
 
 // ── Result ────────────────────────────────────────────────────────────────────
+let _currentStone=null,_currentIsNew=false,_currentCaptured=null;
+
 function showResult(stone,isNew,capturedFrame){
+  _currentStone=stone; _currentIsNew=isNew; _currentCaptured=capturedFrame;
+
   showScreen('resultScreen');
   const spec=stone.spec;
 
-  const lbl=document.getElementById('resultLabel');
-  if(stone.isUltraRare){
-    lbl.innerHTML='👑 激レア！石棒くん発見！';
-    lbl.style.color='#c8960c';
-  } else if(stone.isMuseum){
-    lbl.innerHTML='🏛 館内限定！特別遺物を発見！';
-    lbl.style.color=document.body.classList.contains('theme-dark')?'#c090ff':'#6030b0';
-  } else {
-    lbl.textContent=isNew?'✨ あたらしい発見！':'📦 すでに持っているよ！';
-    lbl.style.color=isNew?'#e06020':'#aaa';
-  }
+  // fill card data
+  const noEl=document.getElementById('cardNo');
+  noEl.textContent='No.'+spec.no;
+  noEl.classList.remove('no-pop');
 
-  document.getElementById('cardNo').textContent='No.'+spec.no;
   const img=document.getElementById('resultThumb');
   img.src=spec.thumb; img.alt=spec.name;
   document.getElementById('cardName').textContent=spec.name;
@@ -815,17 +912,105 @@ function showResult(stone,isNew,capturedFrame){
   card.classList.toggle('ultra-rare',!!stone.isUltraRare);
   card.classList.toggle('museum-rare',!!stone.isMuseum);
 
+  // reset buttons
+  const btns=document.getElementById('resultBtns');
+  btns.style.opacity='0'; btns.style.pointerEvents='none';
+  document.getElementById('replayBtn').style.display='none';
+
   if(capturedFrame && isNew){
-    card.style.animation='none'; card.style.opacity='0';
+    card.style.opacity='0';
     runTransformEffect(capturedFrame, spec.thumb, ()=>{
       card.style.opacity='1';
-      card.style.animation='';
-      setTimeout(()=>launchCelebration(stone.isUltraRare||stone.isMuseum),300);
+      playRevealSequence(stone,isNew);
     });
   } else {
-    card.style.animation='none'; card.offsetHeight; card.style.animation='';
-    if(isNew) setTimeout(()=>launchCelebration(stone.isUltraRare||stone.isMuseum),400);
+    playRevealSequence(stone,isNew);
   }
+}
+
+function playRevealSequence(stone,isNew){
+  const spec=stone.spec;
+  const isSpecial=!!(stone.isUltraRare||stone.isMuseum);
+
+  // reset flip
+  const flipInner=document.getElementById('cardFlipInner');
+  flipInner.style.transition='none';
+  flipInner.classList.remove('flipped');
+  flipInner.style.transform='rotateY(180deg) translateZ(60px) scale(.7)';
+  flipInner.style.opacity='0';
+
+  // hide label
+  const lbl=document.getElementById('resultLabel');
+  lbl.style.opacity='0'; lbl.classList.remove('label-bounce');
+
+  // step1: zoom in from back
+  setTimeout(()=>{
+    flipInner.style.transition='transform .5s cubic-bezier(.17,.89,.32,1.28), opacity .3s';
+    flipInner.style.transform='rotateY(180deg) translateZ(0) scale(1)';
+    flipInner.style.opacity='1';
+  },50);
+
+  // step2: flip to front
+  setTimeout(()=>{
+    flipInner.style.transition='transform .65s cubic-bezier(.4,0,.2,1)';
+    flipInner.style.transform='rotateY(0deg)';
+  },600);
+
+  // step3: land vibration + haptic
+  setTimeout(()=>{
+    const card=document.getElementById('stoneCard');
+    card.classList.remove('card-land');
+    void card.offsetWidth;
+    card.classList.add('card-land');
+    if(navigator.vibrate) navigator.vibrate(isSpecial?[30,20,60]:[20]);
+  },1260);
+
+  // step4: label bounce in
+  setTimeout(()=>{
+    if(stone.isUltraRare){
+      lbl.innerHTML='👑 激レア！石棒くん発見！'; lbl.style.color='#c8960c';
+    } else if(stone.isMuseum){
+      lbl.innerHTML='🏛 館内限定！特別遺物を発見！';
+      lbl.style.color=document.body.classList.contains('theme-dark')?'#c090ff':'#6030b0';
+    } else {
+      lbl.textContent=isNew?'✨ あたらしい発見！':'📦 すでに持っているよ！';
+      lbl.style.color=isNew?'#e06020':'#aaa';
+    }
+    lbl.style.opacity='1';
+    lbl.classList.remove('label-bounce');
+    void lbl.offsetWidth;
+    lbl.classList.add('label-bounce');
+  },1350);
+
+  // step5: No pop + holo shimmer
+  setTimeout(()=>{
+    const noEl=document.getElementById('cardNo');
+    noEl.classList.remove('no-pop'); void noEl.offsetWidth; noEl.classList.add('no-pop');
+    if(isNew||isSpecial){
+      document.getElementById('cardHolo').classList.add('active');
+    }
+  },1450);
+
+  // step6: rays + celebration
+  if(isNew||isSpecial){
+    setTimeout(()=>{
+      launchRays(isSpecial);
+      launchCelebration(isSpecial);
+      launchDustParticles();
+      if(isSpecial) launchGoldOrbs();
+    },1550);
+  }
+
+  // step7: show buttons
+  setTimeout(()=>{
+    const btns=document.getElementById('resultBtns');
+    btns.style.opacity='1'; btns.style.pointerEvents='auto';
+    if(isNew||isSpecial) document.getElementById('replayBtn').style.display='';
+  },isNew?2200:1700);
+}
+
+function replayEffects(){
+  if(_currentStone) playRevealSequence(_currentStone,_currentIsNew);
 }
 
 function runTransformEffect(camSrc, artSrc, onDone){
@@ -957,6 +1142,107 @@ function launchCelebration(isSpecial){
     }
     if(alive)confettiAnim=requestAnimationFrame(frame);
     else{ctx.clearRect(0,0,cvs.width,cvs.height);confettiAnim=null;}
+  }
+  frame();
+}
+
+// ── Ray burst ─────────────────────────────────────────────────────────────────
+function launchRays(isSpecial){
+  const cvs=document.getElementById('rayCanvas');
+  cvs.width=window.innerWidth; cvs.height=window.innerHeight;
+  const ctx=cvs.getContext('2d');
+  const scene=document.getElementById('cardFlipScene');
+  const rect=scene.getBoundingClientRect();
+  const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
+  const rayCount=isSpecial?18:12;
+  const rays=Array.from({length:rayCount},(_,i)=>{
+    const a=(i/rayCount)*Math.PI*2;
+    return{a, len:0, maxLen:isSpecial?window.innerHeight*.7:window.innerHeight*.5,
+      w:isSpecial?3+Math.random()*3:2+Math.random()*2,
+      col:isSpecial?`hsl(${40+Math.random()*30},100%,65%)`:`hsl(${30+Math.random()*40},90%,60%)`};
+  });
+  let t=0;
+  function frame(){
+    ctx.clearRect(0,0,cvs.width,cvs.height);
+    t++;
+    let alive=false;
+    for(const r of rays){
+      r.len=Math.min(r.maxLen, r.len+r.maxLen*.08);
+      const alpha=Math.max(0, 1-t/40);
+      if(alpha>0) alive=true;
+      ctx.save();
+      ctx.globalAlpha=alpha*.8;
+      ctx.strokeStyle=r.col;
+      ctx.lineWidth=r.w*(1-t/50);
+      ctx.beginPath();
+      ctx.moveTo(cx,cy);
+      ctx.lineTo(cx+Math.cos(r.a)*r.len, cy+Math.sin(r.a)*r.len);
+      ctx.stroke();
+      ctx.restore();
+    }
+    if(alive) requestAnimationFrame(frame);
+    else ctx.clearRect(0,0,cvs.width,cvs.height);
+  }
+  frame();
+}
+
+// ── Gold orbs (special only) ───────────────────────────────────────────────────
+function launchGoldOrbs(){
+  const cvs=document.getElementById('confettiCanvas');
+  const ctx=cvs.getContext('2d');
+  const scene=document.getElementById('cardFlipScene');
+  const rect=scene.getBoundingClientRect();
+  const cx=rect.left+rect.width/2, cy=rect.top+rect.height*.4;
+  const orbs=Array.from({length:30},()=>{
+    const a=Math.random()*Math.PI*2;
+    const sp=1.5+Math.random()*3;
+    return{x:cx+(Math.random()-.5)*60,y:cy+(Math.random()-.5)*60,
+      vx:Math.cos(a)*sp, vy:Math.sin(a)*sp-.5,
+      r:3+Math.random()*5, life:1, col:`hsl(${42+Math.random()*20},100%,${60+Math.random()*20}%)`};
+  });
+  function frame(){
+    let alive=false;
+    for(const o of orbs){
+      o.x+=o.vx; o.y+=o.vy; o.vy+=.04; o.life-=.015;
+      if(o.life>0) alive=true;
+      ctx.save();
+      ctx.globalAlpha=Math.max(0,o.life);
+      const g=ctx.createRadialGradient(o.x,o.y,0,o.x,o.y,o.r);
+      g.addColorStop(0,'#fff'); g.addColorStop(.5,o.col); g.addColorStop(1,'transparent');
+      ctx.fillStyle=g;
+      ctx.beginPath(); ctx.arc(o.x,o.y,o.r,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
+    if(alive) requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+// ── Dust particles (excavation feel) ──────────────────────────────────────────
+function launchDustParticles(){
+  const cvs=document.getElementById('confettiCanvas');
+  const ctx=cvs.getContext('2d');
+  const bx=cvs.width/2, by=cvs.height;
+  const dust=Array.from({length:40},()=>({
+    x:bx+(Math.random()-.5)*cvs.width*.8,
+    y:by+Math.random()*20,
+    vx:(Math.random()-.5)*1.5,
+    vy:-(1.5+Math.random()*4),
+    r:2+Math.random()*5,
+    life:1, col:`rgba(${180+Math.floor(Math.random()*50)},${140+Math.floor(Math.random()*40)},${80+Math.floor(Math.random()*40)},1)`
+  }));
+  function frame(){
+    let alive=false;
+    for(const d of dust){
+      d.x+=d.vx; d.y+=d.vy; d.vy+=.05; d.vx*=.98; d.life-=.018;
+      if(d.life>0&&d.y>-20) alive=true;
+      ctx.save();
+      ctx.globalAlpha=Math.max(0,d.life)*.5;
+      ctx.fillStyle=d.col;
+      ctx.beginPath(); ctx.arc(d.x,d.y,d.r,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
+    if(alive) requestAnimationFrame(frame);
   }
   frame();
 }
