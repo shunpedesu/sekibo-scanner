@@ -713,7 +713,7 @@ async function startScan(){
   try{
     codeReader=new ZXing.BrowserMultiFormatReader();scanning=true;
     await codeReader.decodeFromVideoDevice(null,'scanVideo',(result,err)=>{
-      if(result&&scanning){scanning=false;onBarcodeDetected(result.getText());}
+      if(result&&scanning){onBarcodeDetected(result.getText());}
     });
   }catch(e){showToast('カメラを起動できませんでした');goHome();}
 }
