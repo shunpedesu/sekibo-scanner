@@ -52,9 +52,9 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fdf3e0; font-f
   0%{transform:scale(1)} 30%{transform:scale(.92)} 70%{transform:scale(1.06)} 100%{transform:scale(1)}
 }
 .home-deco {
-  width:110px; height:110px; border-radius:50%; object-fit:cover; margin-bottom:14px;
+  width:165px; height:165px; border-radius:50%; object-fit:cover; margin-bottom:14px;
   animation:floatDeco 3.2s ease-in-out infinite, auraGlow 2.4s ease-in-out infinite;
-  border:4px solid rgba(255,255,255,.9); cursor:pointer;
+  border:5px solid rgba(255,255,255,.9); cursor:pointer;
 }
 .home-deco.tapped { animation:decoTap .35s ease both, auraGlow 2.4s ease-in-out infinite; }
 
@@ -110,8 +110,8 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fdf3e0; font-f
   display:flex; align-items:baseline; gap:4px;
 }
 .excav-num {
-  font-size:1.8rem; font-weight:900; color:#4a2810;
-  font-family:monospace; letter-spacing:-.02em; line-height:1;
+  font-size:2.8rem; font-weight:900; color:#4a2810;
+  font-family:monospace; letter-spacing:-.03em; line-height:1;
 }
 .excav-suffix { font-size:.75rem; color:#8a6030; letter-spacing:.08em; }
 .excav-label  { font-size:.7rem; color:#a08050; letter-spacing:.05em; margin-top:2px; text-align:center; }
@@ -1040,13 +1040,12 @@ function updateHomeCount(){
 function animateExcavCount(target){
   const el=document.getElementById('excavNum');
   if(!el)return;
-  const from=parseInt(el.textContent)||0;
-  if(from===target){el.textContent=target;return;}
-  const dur=700, start=Date.now();
+  el.textContent='0';
+  const dur=900, start=Date.now();
   function tick(){
     const t=Math.min(1,(Date.now()-start)/dur);
     const ease=1-Math.pow(1-t,3);
-    el.textContent=Math.round(from+(target-from)*ease);
+    el.textContent=Math.round(target*ease);
     if(t<1) requestAnimationFrame(tick);
     else el.textContent=target;
   }
@@ -1717,13 +1716,18 @@ function initHomeDust(){
   const ctx=cvs.getContext('2d');
   function resize(){ cvs.width=cvs.offsetWidth||window.innerWidth; cvs.height=cvs.offsetHeight||window.innerHeight; }
   resize(); new ResizeObserver(resize).observe(cvs);
-  const pts=Array.from({length:55},()=>mkPt());
+  const pts=Array.from({length:28},()=>mkPt());
   function mkPt(){
+    const rand=Math.random();
+    let col;
+    if(rand<0.45) col=`hsl(${24+Math.random()*18},${40+Math.random()*25}%,${42+Math.random()*20}%)`;      // 茶色
+    else if(rand<0.75) col=`hsl(${42+Math.random()*12},${80+Math.random()*20}%,${58+Math.random()*18}%)`; // 金色
+    else col=`hsl(${36+Math.random()*16},${50+Math.random()*30}%,${78+Math.random()*14}%)`;               // クリーム
     return{x:Math.random()*(cvs.width||360),y:Math.random()*(cvs.height||700),
-      vx:(Math.random()-.5)*.28,vy:-(0.08+Math.random()*.35),
-      r:0.8+Math.random()*1.8,
-      a:.08+Math.random()*.22,
-      col:`hsl(${28+Math.random()*22},${35+Math.random()*25}%,${48+Math.random()*18}%)`};
+      vx:(Math.random()-.5)*.32,vy:-(0.1+Math.random()*.4),
+      r:1+Math.random()*2.2,
+      a:.12+Math.random()*.3,
+      col};
   }
   function frame(){
     if(!document.getElementById('homeScreen').classList.contains('active')){requestAnimationFrame(frame);return;}
@@ -1787,6 +1791,36 @@ function tapDeco(el){
   el.classList.add('tapped');
   if(navigator.vibrate)navigator.vibrate(25);
   setTimeout(()=>el.classList.remove('tapped'),400);
+  // burst effect
+  const rect=el.getBoundingClientRect();
+  const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
+  const cvs=document.getElementById('confettiCanvas');
+  cvs.width=window.innerWidth; cvs.height=window.innerHeight;
+  const ctx=cvs.getContext('2d');
+  const cols=['#ffd700','#ffcc44','#fff8dc','#c8a050','#ffffff','#ffe880'];
+  const orbs=Array.from({length:22},()=>{
+    const a=Math.random()*Math.PI*2;
+    const sp=4+Math.random()*8;
+    return{x:cx,y:cy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-2,
+      r:3+Math.random()*5,life:1,col:cols[Math.floor(Math.random()*cols.length)]};
+  });
+  function frame(){
+    let alive=false;
+    for(const o of orbs){
+      o.x+=o.vx; o.y+=o.vy; o.vy+=.15; o.life-=.04;
+      if(o.life>0)alive=true;
+      ctx.save();
+      ctx.globalAlpha=Math.max(0,o.life);
+      const g=ctx.createRadialGradient(o.x,o.y,0,o.x,o.y,o.r);
+      g.addColorStop(0,'#fff'); g.addColorStop(.5,o.col); g.addColorStop(1,'transparent');
+      ctx.fillStyle=g;
+      ctx.beginPath(); ctx.arc(o.x,o.y,o.r,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
+    if(alive) requestAnimationFrame(frame);
+    else ctx.clearRect(0,0,cvs.width,cvs.height);
+  }
+  frame();
 }
 
 function goScanFlash(){
