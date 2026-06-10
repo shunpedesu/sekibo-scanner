@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>石棒スキャナー QRコード印刷用</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Hiragino Maru Gothic ProN','Hiragino Sans','Arial Rounded MT Bold',sans-serif;
+    background: #fdf3e0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 24px 40px;
+    min-height: 100vh;
+  }
+  .page-title {
+    font-size: 1rem;
+    color: #a08050;
+    letter-spacing: .15em;
+    margin-bottom: 28px;
+  }
+  .cards {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .card {
+    background: #2d1a08;
+    border-radius: 20px;
+    padding: 28px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 260px;
+  }
+  .card-label {
+    font-size: .75rem;
+    color: #c8a050;
+    letter-spacing: .2em;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+  .qr-wrap {
+    background: #fff;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-size: 1rem;
+    font-weight: 900;
+    color: #f5e8c8;
+    text-align: center;
+    letter-spacing: .05em;
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+  .card-sub {
+    font-size: .7rem;
+    color: #a08050;
+    text-align: center;
+    letter-spacing: .08em;
+    line-height: 1.6;
+  }
+  .divider {
+    width: 100%;
+    height: 0.5px;
+    background: #c8a050;
+    margin: 10px 0;
+    opacity: .5;
+  }
+  .badge {
+    background: #c8a050;
+    color: #2d1a08;
+    font-size: .65rem;
+    font-weight: 900;
+    padding: 3px 10px;
+    border-radius: 10px;
+    letter-spacing: .05em;
+    margin-top: 4px;
+  }
+  .no-print {
+    margin-top: 36px;
+    display: flex;
+    gap: 12px;
+  }
+  .print-btn {
+    background: #4a2810;
+    color: #f5e8c8;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 28px;
+    font-size: .9rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .print-btn:hover { background: #6a3c18; }
+
+  @media print {
+    body { background: white; padding: 20px; }
+    .no-print { display: none !important; }
+    .card { border: 2px solid #2d1a08; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title">石棒スキャナー ― QRコード</div>
+
+<div class="cards">
+
+  <!-- App QR -->
+  <div class="card">
+    <div class="card-label">▼ アプリはこちら</div>
+    <div class="qr-wrap">
+      <div id="qr-app"></div>
+    </div>
+    <div class="card-title">石棒スキャナー</div>
+    <div class="divider"></div>
+    <div class="card-sub">
+      バーコードをスキャンして<br>
+      縄文の遺物を発掘しよう！<br>
+      <br>
+      石棒クラブ × 飛騨みやがわ考古民俗館
+    </div>
+  </div>
+
+  <!-- Museum QR -->
+  <div class="card">
+    <div class="card-label">▼ 館内限定アイテム</div>
+    <div class="qr-wrap">
+      <div id="qr-museum"></div>
+    </div>
+    <div class="card-title">飛騨みやがわ考古民俗館<br>訪問記念</div>
+    <div class="divider"></div>
+    <div class="card-sub">
+      このQRコードをアプリでスキャンすると<br>
+      館内限定の特別アイテムが<br>
+      ゲットできるよ！
+    </div>
+    <div class="badge">No.210 館内限定</div>
+  </div>
+
+</div>
+
+<div class="no-print">
+  <button class="print-btn" onclick="window.print()">🖨 印刷する</button>
+</div>
+
+<script>
+new QRCode(document.getElementById('qr-app'), {
+  text: 'https://shunpedesu.github.io/sekibo-scanner/',
+  width: 180,
+  height: 180,
+  colorDark: '#2d1a08',
+  colorLight: '#ffffff',
+  correctLevel: QRCode.CorrectLevel.M
+});
+
+new QRCode(document.getElementById('qr-museum'), {
+  text: 'HIDAMIYAGAWA_SEKIBOSCANNER',
+  width: 180,
+  height: 180,
+  colorDark: '#2d1a08',
+  colorLight: '#ffffff',
+  correctLevel: QRCode.CorrectLevel.M
+});
+</script>
+</body>
+</html>
