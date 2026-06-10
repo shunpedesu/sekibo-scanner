@@ -1,4 +1,4 @@
-const CACHE = 'sekibo-v1';
+const CACHE = 'sekibo-v2';
 self.addEventListener('install', e => {
   self.skipWaiting();
 });
