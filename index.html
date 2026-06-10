@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>石棒スキャナー</title>
 <meta name="description" content="バーコードをスキャンして縄文の遺物を発掘しよう！石棒クラブ Sketchfab の208種類の3Dデータをコンプリートせよ。">
 <meta property="og:title" content="石棒スキャナー">
@@ -31,8 +31,8 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fdf3e0; font-f
 /* ── HOME ── */
 #homeScreen {
   background:linear-gradient(160deg,#fdf3e0 0%,#f5e8c8 100%);
-  align-items:center; justify-content:center; padding:28px 24px 24px;
-  overflow:hidden; position:relative;
+  align-items:center; justify-content:flex-start; padding:28px 24px max(24px,env(safe-area-inset-bottom));
+  overflow-y:auto; position:relative;
 }
 #homeDustCanvas {
   position:absolute; inset:0; pointer-events:none; z-index:0; width:100%; height:100%;
@@ -459,6 +459,10 @@ body.theme-dark .install-banner-desc  { color:#806040; }
 
 /* ── Dark theme overrides ── */
 body.theme-dark #homeScreen { background:linear-gradient(160deg,#0e0805 0%,#1e1008 100%); }
+/* safe area for all screens */
+html { background:#fdf3e0; }
+body.theme-dark { background:#0e0805; }
+body.theme-dark html { background:#0e0805; }
 body.theme-dark .home-deco  {
   border-color:rgba(200,130,40,.6);
   animation:floatDeco 3.2s ease-in-out infinite, auraGlowDark 2.4s ease-in-out infinite;
