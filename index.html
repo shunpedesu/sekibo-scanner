@@ -312,12 +312,21 @@ body.theme-dark .card-scan-badge { background:rgba(255,255,255,.08); color:rgba(
 .col-header { display:flex; align-items:center; padding:16px; background:rgba(253,243,224,.85); position:sticky; top:0; z-index:10; backdrop-filter:blur(8px); }
 .col-title { flex:1; text-align:center; font-size:1rem; letter-spacing:.2em; color:#4a2810; font-weight:900; }
 .col-count-badge { background:#c8a050; color:#4a2810; border-radius:20px; padding:3px 10px; font-size:.75rem; font-weight:900; }
-.col-progress { padding:8px 16px 2px; display:flex; align-items:center; gap:10px; }
-.col-prog-track { flex:1; height:6px; background:#e8e0d0; border-radius:3px; overflow:hidden; }
-.col-prog-bar   { height:100%; background:linear-gradient(90deg,#c8a050,#d4b870); border-radius:3px; transition:width .4s; }
+
+/* hero count */
+.col-hero { text-align:center; padding:14px 16px 2px; }
+.col-hero-num { font-size:2.4rem; font-weight:900; color:#4a2810; font-family:monospace; letter-spacing:-.02em; line-height:1; }
+.col-hero-total { font-size:1.1rem; color:#8a6030; font-weight:900; }
+.col-hero-label { font-size:.7rem; color:#a08050; letter-spacing:.1em; margin-top:3px; }
+
+.col-progress { padding:8px 16px 4px; display:flex; align-items:center; gap:10px; }
+.col-prog-track { flex:1; height:8px; background:#e8e0d0; border-radius:4px; overflow:hidden; }
+.col-prog-bar   { height:100%; background:linear-gradient(90deg,#c8a050,#d4b870); border-radius:4px; width:0%; transition:width 1.2s cubic-bezier(.25,.46,.45,.94); }
 .col-prog-label { font-size:.7rem; color:#9a7030; white-space:nowrap; }
 
 .col-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding:10px 12px 24px; }
+
+/* found item */
 .col-item {
   background:#fff; border-radius:12px; overflow:hidden;
   box-shadow:0 2px 8px rgba(0,0,0,.08); cursor:pointer;
@@ -325,16 +334,59 @@ body.theme-dark .card-scan-badge { background:rgba(255,255,255,.08); color:rgba(
   display:flex; flex-direction:column;
 }
 .col-item:active { transform:scale(.95); }
+.col-item-found { border:2px solid #c8a050; box-shadow:0 2px 12px rgba(200,160,80,.25); }
 .col-item-img { width:100%; height:64px; object-fit:cover; background:#f0ece6; display:block; }
 .col-item-body { padding:5px 6px 6px; }
 .col-item-name { font-size:.6rem; font-weight:900; color:#2a1a0a; line-height:1.3; }
 .col-item-no   { font-size:.52rem; color:#ccc; font-family:monospace; }
 .col-item-new  { position:absolute; top:3px; right:3px; background:#ff6b6b; color:#fff; font-size:.5rem; font-weight:900; padding:2px 5px; border-radius:8px; }
 .col-item-dup  { position:absolute; bottom:4px; right:5px; font-size:.52rem; color:#bbb; }
-.col-item-mystery { background:#f0ece8; display:flex; flex-direction:column; align-items:center; }
-.col-item-mystery .mystery-icon { width:100%; height:64px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; color:#d8d0c8; background:#f0ece8; }
-.col-item-mystery .col-item-name { color:#ccc; text-align:center; width:100%; }
+
+/* silhouette (unfound) */
+.col-item-sil .col-item-img { filter:brightness(0); opacity:.65; }
+.col-item-sil .sil-q {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-85%);
+  font-size:1.3rem; color:rgba(255,255,255,.85); font-weight:900;
+  pointer-events:none; text-shadow:0 2px 6px rgba(0,0,0,.7);
+}
+.col-item-sil .col-item-name { color:#bbb; }
+.col-item-sil .col-item-no { color:#ddd; }
+.col-item-sil { background:#e8e0d6; }
+
+/* rare section header */
+.col-rare-header {
+  grid-column:1/-1; display:flex; align-items:center; gap:8px;
+  padding:14px 4px 6px; color:#c8960c; font-size:.78rem; font-weight:900;
+  letter-spacing:.1em;
+}
+.col-rare-header::before,.col-rare-header::after {
+  content:''; flex:1; height:1px; background:linear-gradient(90deg,transparent,#c8960c);
+}
+.col-rare-header::after { background:linear-gradient(90deg,#c8960c,transparent); }
+
+/* rare silhouette glow */
+@keyframes rareGlow {
+  0%,100% { box-shadow:0 0 8px 3px rgba(255,215,0,.3),0 0 16px 6px rgba(200,100,255,.15); }
+  50%     { box-shadow:0 0 20px 8px rgba(255,215,0,.6),0 0 36px 12px rgba(200,100,255,.35); }
+}
+.col-item-rare-sil { animation:rareGlow 2.2s ease-in-out infinite; border:1.5px solid rgba(200,150,0,.3); }
+.col-item-rare-found { border:2px solid #ffd700; box-shadow:0 2px 16px rgba(255,215,0,.4); }
+
 .col-empty { grid-column:1/-1; text-align:center; padding:60px 20px; color:#c0a080; font-size:.9rem; letter-spacing:.1em; line-height:2; }
+
+/* ── Soil excavation overlay ── */
+#soilOverlay {
+  display:none; position:absolute; inset:0; z-index:20;
+  border-radius:20px; overflow:hidden; touch-action:none; cursor:crosshair;
+}
+#soilCanvas { display:block; width:100%; height:100%; }
+#soilGuide {
+  display:none; text-align:center; font-size:.8rem; letter-spacing:.1em;
+  color:#8a6030; margin-top:10px; pointer-events:none;
+}
+#soilGuide.on { display:block; animation:pulseGuide 1.4s ease-in-out infinite; }
+@keyframes pulseGuide { 0%,100%{opacity:.5} 50%{opacity:1} }
+body.theme-dark #soilGuide { color:#c8a060; }
 
 /* ── Detail modal ── */
 #detailModal { display:none; position:fixed; inset:0; z-index:100; background:rgba(0,0,0,.6); align-items:center; justify-content:center; padding:20px; }
@@ -434,13 +486,20 @@ body.theme-dark #colScreen  { background:linear-gradient(160deg,#1a0e05,#2d1a08)
 body.theme-dark .col-header { background:rgba(0,0,0,.4); backdrop-filter:blur(8px); }
 body.theme-dark .col-title  { color:#f0c060; }
 body.theme-dark .col-count-badge { background:#c05020; }
+body.theme-dark .col-hero-num { color:#f0c060; }
+body.theme-dark .col-hero-total { color:#a08040; }
+body.theme-dark .col-hero-label { color:#806040; }
 body.theme-dark .col-prog-track { background:#3a2010; }
 body.theme-dark .col-prog-bar { background:linear-gradient(90deg,#c05020,#e07030); }
 body.theme-dark .col-prog-label { color:#806040; }
 body.theme-dark .col-goal   { color:#806040; }
 body.theme-dark .col-item   { background:#2a1808; box-shadow:0 2px 8px rgba(0,0,0,.3); }
+body.theme-dark .col-item-found { border-color:#c8a040; box-shadow:0 2px 12px rgba(200,150,40,.2); }
 body.theme-dark .col-item-name { color:#e8c880; }
-body.theme-dark .col-item-mystery { background:#221208; }
+body.theme-dark .col-item-sil { background:#1e1208; }
+body.theme-dark .col-item-sil .col-item-name { color:#5a4030; }
+body.theme-dark .col-item-sil .col-item-no   { color:#4a3020; }
+body.theme-dark .col-rare-header { color:#ffd700; }
 body.theme-dark .col-empty  { color:#6a5030; }
 body.theme-dark #resultScreen { background:linear-gradient(160deg,#1a0e05,#2d1a08); }
 body.theme-dark .result-header { background:rgba(0,0,0,.3); }
@@ -555,6 +614,7 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
   <div class="result-body">
     <div class="result-new-label" id="resultLabel"></div>
     <div class="card-flip-scene" id="cardFlipScene">
+      <div id="soilOverlay"><canvas id="soilCanvas"></canvas></div>
       <div class="card-flip-inner" id="cardFlipInner">
         <!-- BACK face -->
         <div class="card-face card-face-back">🏺</div>
@@ -580,6 +640,7 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
         </div>
       </div>
     </div>
+    <div id="soilGuide">← 払って発掘しよう！ →</div>
     <div class="result-btns" id="resultBtns" style="opacity:0;pointer-events:none">
       <button class="result-btn btn-again" onclick="goScan()">📷 もう一度スキャン</button>
       <button class="result-btn btn-col"   onclick="goCollection()">📚 図鑑を見る</button>
@@ -595,11 +656,16 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
     <div class="col-title">石棒図鑑</div>
     <div class="col-count-badge" id="colCountBadge">0/210</div>
   </div>
+  <div class="col-hero">
+    <span class="col-hero-num" id="colHeroNum">0</span>
+    <span class="col-hero-total"> / 210体</span>
+    <div class="col-hero-label">発掘済み</div>
+  </div>
   <div class="col-progress">
     <div class="col-prog-track"><div class="col-prog-bar" id="colProgBar" style="width:0%"></div></div>
     <div class="col-prog-label" id="colProgLabel">0 / 210 体</div>
-  <div class="col-goal">石棒クラブ Sketchfab の全3Dデータをコンプリートしよう！</div>
   </div>
+  <div class="col-goal" style="padding:2px 16px 6px">石棒クラブ Sketchfab の全3Dデータをコンプリートしよう！</div>
   <div class="col-grid" id="colGrid"></div>
 </div>
 
@@ -1038,129 +1104,221 @@ function showResult(stone,isNew,capturedFrame){
   showScreen('resultScreen');
   const spec=stone.spec;
 
-  // fill card data
+  // fill card
   const noEl=document.getElementById('cardNo');
-  noEl.textContent='No.'+spec.no;
-  noEl.classList.remove('no-pop');
-
+  noEl.textContent='No.'+spec.no; noEl.classList.remove('no-pop');
   const img=document.getElementById('resultThumb');
   img.src=spec.thumb; img.alt=spec.name;
   document.getElementById('cardName').textContent=spec.name;
   document.getElementById('cardInfoRow').innerHTML=
     spec.isSpecial?'<span class="badge-ultra">激レア</span>':
     spec.isMuseum?'<span class="badge-ultra">激レア</span><span class="badge-museum" style="margin-left:4px">館内限定</span>':'';
-
   const sfBtn=document.getElementById('cardSketchfabBtn');
-  if(spec.uid==='sekibo-kun'||spec.uid==='museum-210'){
-    sfBtn.style.display='none';
-  } else {
-    sfBtn.style.display='';
-    sfBtn.href='https://sketchfab.com/3d-models/'+spec.uid;
-  }
-
+  if(spec.uid==='sekibo-kun'||spec.uid==='museum-210'){sfBtn.style.display='none';}
+  else{sfBtn.style.display='';sfBtn.href='https://sketchfab.com/3d-models/'+spec.uid;}
   const card=document.getElementById('stoneCard');
   card.classList.toggle('ultra-rare',!!stone.isUltraRare);
   card.classList.toggle('museum-rare',!!stone.isMuseum);
 
-  // reset buttons
+  // reset UI
+  document.getElementById('cardHolo').classList.remove('active');
+  const lbl=document.getElementById('resultLabel');
+  lbl.style.opacity='0'; lbl.classList.remove('label-bounce');
   const btns=document.getElementById('resultBtns');
   btns.style.opacity='0'; btns.style.pointerEvents='none';
   document.getElementById('replayBtn').style.display='none';
+  document.getElementById('soilGuide').classList.remove('on');
 
-  if(capturedFrame && isNew){
-    card.style.opacity='0';
-    runTransformEffect(capturedFrame, spec.thumb, ()=>{
-      card.style.opacity='1';
-      playRevealSequence(stone,isNew);
-    });
-  } else {
-    playRevealSequence(stone,isNew);
-  }
+  // show card face-up (scale in)
+  const flipInner=document.getElementById('cardFlipInner');
+  flipInner.style.transition='none';
+  flipInner.style.transform='scale(.8)';
+  flipInner.style.opacity='0';
+  setTimeout(()=>{
+    flipInner.style.transition='transform .4s cubic-bezier(.17,.89,.32,1.28), opacity .3s';
+    flipInner.style.transform='scale(1)';
+    flipInner.style.opacity='1';
+  },80);
+
+  // show soil after card appears
+  setTimeout(()=>startSoilExcavation(stone,isNew), 380);
 }
 
-function playRevealSequence(stone,isNew){
+function playRevealAfterExcavation(stone,isNew){
   const spec=stone.spec;
   const isSpecial=!!(stone.isUltraRare||stone.isMuseum);
 
-  // reset flip
-  const flipInner=document.getElementById('cardFlipInner');
-  flipInner.style.transition='none';
-  flipInner.classList.remove('flipped');
-  flipInner.style.transform='rotateY(180deg) translateZ(60px) scale(.7)';
-  flipInner.style.opacity='0';
+  // vibrate
+  if(navigator.vibrate) navigator.vibrate(isSpecial?[30,20,60]:[20]);
 
-  // hide label
+  // card land
+  const card=document.getElementById('stoneCard');
+  card.classList.remove('card-land'); void card.offsetWidth; card.classList.add('card-land');
+
+  // label bounce
   const lbl=document.getElementById('resultLabel');
-  lbl.style.opacity='0'; lbl.classList.remove('label-bounce');
+  if(stone.isUltraRare){
+    lbl.innerHTML='👑 激レア！石棒くん発見！'; lbl.style.color='#c8960c';
+  } else if(stone.isMuseum){
+    lbl.innerHTML='🏛 館内限定！特別遺物を発見！';
+    lbl.style.color=document.body.classList.contains('theme-dark')?'#c090ff':'#6030b0';
+  } else {
+    lbl.textContent=isNew?'✨ あたらしい発見！':'📚 すでに発掘済みの遺物です';
+    lbl.style.color=isNew?'#e06020':'#aaa';
+  }
+  lbl.style.opacity='1';
+  lbl.classList.remove('label-bounce'); void lbl.offsetWidth; lbl.classList.add('label-bounce');
 
-  // step1: zoom in from back
-  setTimeout(()=>{
-    flipInner.style.transition='transform .5s cubic-bezier(.17,.89,.32,1.28), opacity .3s';
-    flipInner.style.transform='rotateY(180deg) translateZ(0) scale(1)';
-    flipInner.style.opacity='1';
-  },50);
+  // No pop + holo
+  const noEl=document.getElementById('cardNo');
+  noEl.classList.remove('no-pop'); void noEl.offsetWidth; noEl.classList.add('no-pop');
+  if(isNew||isSpecial) document.getElementById('cardHolo').classList.add('active');
 
-  // step2: flip to front
-  setTimeout(()=>{
-    flipInner.style.transition='transform .65s cubic-bezier(.4,0,.2,1)';
-    flipInner.style.transform='rotateY(0deg)';
-  },600);
-
-  // step3: land vibration + haptic
-  setTimeout(()=>{
-    const card=document.getElementById('stoneCard');
-    card.classList.remove('card-land');
-    void card.offsetWidth;
-    card.classList.add('card-land');
-    if(navigator.vibrate) navigator.vibrate(isSpecial?[30,20,60]:[20]);
-  },1260);
-
-  // step4: label bounce in
-  setTimeout(()=>{
-    if(stone.isUltraRare){
-      lbl.innerHTML='👑 激レア！石棒くん発見！'; lbl.style.color='#c8960c';
-    } else if(stone.isMuseum){
-      lbl.innerHTML='🏛 館内限定！特別遺物を発見！';
-      lbl.style.color=document.body.classList.contains('theme-dark')?'#c090ff':'#6030b0';
-    } else {
-      lbl.textContent=isNew?'✨ あたらしい発見！':'📦 すでに持っているよ！';
-      lbl.style.color=isNew?'#e06020':'#aaa';
-    }
-    lbl.style.opacity='1';
-    lbl.classList.remove('label-bounce');
-    void lbl.offsetWidth;
-    lbl.classList.add('label-bounce');
-  },1350);
-
-  // step5: No pop + holo shimmer
-  setTimeout(()=>{
-    const noEl=document.getElementById('cardNo');
-    noEl.classList.remove('no-pop'); void noEl.offsetWidth; noEl.classList.add('no-pop');
-    if(isNew||isSpecial){
-      document.getElementById('cardHolo').classList.add('active');
-    }
-  },1450);
-
-  // step6: rays + celebration
+  // celebrations
   if(isNew||isSpecial){
     setTimeout(()=>{
       launchRays(isSpecial);
       launchCelebration(isSpecial);
       launchDustParticles();
       if(isSpecial) launchGoldOrbs();
-    },1550);
+    },150);
   }
 
-  // step7: show buttons
+  // show buttons
   setTimeout(()=>{
     const btns=document.getElementById('resultBtns');
     btns.style.opacity='1'; btns.style.pointerEvents='auto';
     if(isNew||isSpecial) document.getElementById('replayBtn').style.display='';
-  },isNew?2200:1700);
+  }, isNew?700:500);
 }
 
 function replayEffects(){
-  if(_currentStone) playRevealSequence(_currentStone,_currentIsNew);
+  if(!_currentStone) return;
+  document.getElementById('cardHolo').classList.remove('active');
+  const lbl=document.getElementById('resultLabel');
+  lbl.style.opacity='0'; lbl.classList.remove('label-bounce');
+  const btns=document.getElementById('resultBtns');
+  btns.style.opacity='0'; btns.style.pointerEvents='none';
+  document.getElementById('soilGuide').classList.remove('on');
+  startSoilExcavation(_currentStone,_currentIsNew);
+}
+
+// ── Soil excavation ───────────────────────────────────────────────────────────
+function drawSoilTexture(ctx,w,h){
+  ctx.globalCompositeOperation='source-over';
+  ctx.globalAlpha=1;
+  // base
+  ctx.fillStyle='#7a4818'; ctx.fillRect(0,0,w,h);
+  // grain
+  for(let i=0;i<800;i++){
+    const x=Math.random()*w, y=Math.random()*h;
+    const s=1.5+Math.random()*6;
+    const l=28+Math.random()*28;
+    const sat=35+Math.random()*30;
+    ctx.globalAlpha=0.35+Math.random()*0.55;
+    ctx.fillStyle=`hsl(22,${sat}%,${l}%)`;
+    ctx.fillRect(x,y,s,s*(0.4+Math.random()*.8));
+  }
+  // cracks
+  ctx.globalAlpha=0.18;
+  ctx.strokeStyle='#3a1a06';
+  for(let i=0;i<6;i++){
+    ctx.beginPath();
+    ctx.moveTo(Math.random()*w,Math.random()*h);
+    ctx.bezierCurveTo(Math.random()*w,Math.random()*h,Math.random()*w,Math.random()*h,Math.random()*w,Math.random()*h);
+    ctx.lineWidth=1+Math.random()*2; ctx.stroke();
+  }
+  ctx.globalAlpha=1;
+}
+
+let _soilHandlers=null;
+function startSoilExcavation(stone,isNew){
+  const overlay=document.getElementById('soilOverlay');
+  const cvs=document.getElementById('soilCanvas');
+  const guide=document.getElementById('soilGuide');
+
+  // remove old listeners
+  if(_soilHandlers){
+    cvs.removeEventListener('touchstart',_soilHandlers.ts);
+    cvs.removeEventListener('touchmove',_soilHandlers.tm);
+    cvs.removeEventListener('touchend',_soilHandlers.te);
+    cvs.removeEventListener('mousedown',_soilHandlers.md);
+    cvs.removeEventListener('mousemove',_soilHandlers.mm);
+    cvs.removeEventListener('mouseup',_soilHandlers.mu);
+    _soilHandlers=null;
+  }
+
+  // size canvas to card
+  const scene=document.getElementById('cardFlipScene');
+  const rect=scene.getBoundingClientRect();
+  cvs.width=rect.width||300; cvs.height=rect.height||320;
+  const ctx=cvs.getContext('2d');
+  drawSoilTexture(ctx,cvs.width,cvs.height);
+
+  overlay.style.display='block';
+  guide.classList.add('on');
+
+  let swiping=false, swipeMoved=false;
+
+  function getXY(e){
+    const r=cvs.getBoundingClientRect();
+    const src=e.touches?e.touches[0]:e;
+    return[src.clientX-r.left, src.clientY-r.top];
+  }
+  function onStart(e){
+    swiping=true; swipeMoved=false;
+    ctx.globalCompositeOperation='destination-out';
+    ctx.lineWidth=Math.max(cvs.width,cvs.height)*.28;
+    ctx.lineCap='round'; ctx.lineJoin='round';
+    ctx.globalAlpha=1;
+    const[x,y]=getXY(e);
+    ctx.beginPath(); ctx.moveTo(x,y);
+  }
+  function onMove(e){
+    if(!swiping)return;
+    swipeMoved=true;
+    guide.classList.remove('on');
+    const[x,y]=getXY(e);
+    ctx.lineTo(x,y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x,y);
+  }
+  function onEnd(){
+    if(!swiping)return; swiping=false;
+    if(swipeMoved) sweepSoil(ctx,cvs,overlay,guide,stone,isNew);
+  }
+
+  const ts=e=>{e.preventDefault();onStart(e);};
+  const tm=e=>{e.preventDefault();onMove(e);};
+  const te=e=>{e.preventDefault();onEnd();};
+  const md=e=>onStart(e);
+  const mm=e=>onMove(e);
+  const mu=()=>onEnd();
+
+  cvs.addEventListener('touchstart',ts,{passive:false});
+  cvs.addEventListener('touchmove',tm,{passive:false});
+  cvs.addEventListener('touchend',te,{passive:false});
+  cvs.addEventListener('mousedown',md);
+  cvs.addEventListener('mousemove',mm);
+  cvs.addEventListener('mouseup',mu);
+  _soilHandlers={ts,tm,te,md,mm,mu};
+}
+
+function sweepSoil(ctx,cvs,overlay,guide,stone,isNew){
+  // sweep remaining soil away
+  let step=0;
+  function sweep(){
+    ctx.globalCompositeOperation='destination-out';
+    ctx.globalAlpha=0.22;
+    ctx.fillRect(0,0,cvs.width,cvs.height);
+    step++;
+    if(step<12) requestAnimationFrame(sweep);
+    else{
+      overlay.style.display='none';
+      guide.classList.remove('on');
+      playRevealAfterExcavation(stone,isNew);
+    }
+  }
+  sweep();
 }
 
 function runTransformEffect(camSrc, artSrc, onDone){
@@ -1198,20 +1356,43 @@ function goCollection(){stopScan();showScreen('colScreen');renderCollection();}
 function renderCollection(){
   const col=loadCollection();
   const got=col.length;
+
+  // header badge
   document.getElementById('colCountBadge').textContent=`${got}/${TOTAL}`;
-  document.getElementById('colProgBar').style.width=(got/TOTAL*100)+'%';
+
+  // hero count (animate)
+  const heroEl=document.getElementById('colHeroNum');
+  const prevHero=parseInt(heroEl.textContent)||0;
+  const dur=900, start=Date.now();
+  function heroTick(){
+    const t=Math.min(1,(Date.now()-start)/dur);
+    const ease=1-Math.pow(1-t,3);
+    heroEl.textContent=Math.round(prevHero+(got-prevHero)*ease);
+    if(t<1)requestAnimationFrame(heroTick); else heroEl.textContent=got;
+  }
+  heroTick();
+
+  // progress bar: reset → animate
+  const bar=document.getElementById('colProgBar');
+  bar.style.transition='none'; bar.style.width='0%';
   document.getElementById('colProgLabel').textContent=`${got} / ${TOTAL} 体`;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    bar.style.transition='width 1.2s cubic-bezier(.25,.46,.45,.94)';
+    bar.style.width=(got/TOTAL*100)+'%';
+  }));
 
   const grid=document.getElementById('colGrid');
   grid.innerHTML='';
-  if(got===0){grid.innerHTML='<div class="col-empty">まだ石棒がない…<br>バーコードをスキャンして<br>石棒を集めよう！</div>';return;}
 
   const map=Object.fromEntries(col.map(s=>[s.spec.no,s]));
-  SPECIMENS.forEach(spec=>{
-    const stone=map[spec.no];
+  const regular=SPECIMENS.slice(0,208);
+  const rare=SPECIMENS.slice(208);
+
+  function makeItem(spec,stone,isRare){
     const item=document.createElement('div');
     item.className='col-item';
     if(stone){
+      item.classList.add(isRare?'col-item-rare-found':'col-item-found');
       item.innerHTML=`
         <img class="col-item-img" src="${spec.thumb}" alt="${spec.name}" onerror="this.style.background='#e0ddd5'">
         <div class="col-item-body">
@@ -1222,11 +1403,32 @@ function renderCollection(){
       if((stone.count||1)>1){const cb=document.createElement('div');cb.className='col-item-dup';cb.textContent='×'+stone.count;item.appendChild(cb);}
       item.addEventListener('click',()=>openDetail(stone));
     }else{
-      item.classList.add('col-item-mystery');
-      item.innerHTML=`<div class="mystery-icon">？</div><div class="col-item-body"><div class="col-item-name" style="color:#ccc">???</div><div class="col-item-no" style="color:#ddd">No.${spec.no}</div></div>`;
+      item.classList.add('col-item-sil');
+      if(isRare)item.classList.add('col-item-rare-sil');
+      item.innerHTML=`
+        <img class="col-item-img" src="${spec.thumb}" alt="" onerror="this.style.opacity=0">
+        <div class="sil-q">？</div>
+        <div class="col-item-body">
+          <div class="col-item-name">？？？</div>
+          <div class="col-item-no">No.${spec.no}</div>
+        </div>`;
+      item.addEventListener('click',()=>{
+        showToast('まだ発掘されていない遺物です。バーコードをスキャンして発掘しよう！');
+        setTimeout(()=>{goScanFlash();},1400);
+      });
     }
-    grid.appendChild(item);
-  });
+    return item;
+  }
+
+  regular.forEach(spec=>grid.appendChild(makeItem(spec,map[spec.no],false)));
+
+  // rare section separator
+  const sep=document.createElement('div');
+  sep.className='col-rare-header';
+  sep.textContent='激レア ⭐';
+  grid.appendChild(sep);
+  rare.forEach(spec=>grid.appendChild(makeItem(spec,map[spec.no],true)));
+
   saveCollection(col.map(s=>({...s,isNew:false})));
 }
 
