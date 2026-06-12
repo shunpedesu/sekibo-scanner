@@ -4,15 +4,21 @@
   "description": "バーコードをスキャンして縄文の遺物を発掘しよう！",
   "start_url": "/sekibo-scanner/",
   "display": "standalone",
-  "background_color": "#fdf3e0",
+  "background_color": "#f5d89a",
   "theme_color": "#4a2810",
   "lang": "ja",
   "icons": [
     {
-      "src": "https://media.sketchfab.com/models/d502e31d211d44ca8b2e78a857a10aa3/thumbnails/902c81fa61ce424194bafc0227d47f88/b159d8dddd1a44ab85f83035f6794d92.jpeg",
-      "sizes": "512x512",
-      "type": "image/jpeg",
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
