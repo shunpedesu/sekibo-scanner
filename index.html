@@ -576,7 +576,7 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
 
   <div class="home-excav-count">
     <span class="excav-num" id="excavNum">0</span>
-    <span class="excav-suffix"> / 210体</span>
+    <span class="excav-suffix"> / 211体</span>
     <span class="excav-suffix" style="font-size:.7rem;color:#a08050;margin-left:4px">発掘済み</span>
   </div>
 
@@ -667,7 +667,7 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
   </div>
   <div class="col-hero">
     <span class="col-hero-num" id="colHeroNum">0</span>
-    <span class="col-hero-total"> / 210体</span>
+    <span class="col-hero-total"> / 211体</span>
     <div class="col-hero-label">発掘済み</div>
   </div>
   <div class="col-progress">
@@ -974,6 +974,7 @@ const SPECIMENS = [
   { no:'208', name:"縄文土器・注口土器（宮川村教育委員会2000『塩屋金清神社遺跡A地点』第23図12（3）", uid:'2fcb812c8aaa4be789ac67955581a0e8', thumb:'https://media.sketchfab.com/models/2fcb812c8aaa4be789ac67955581a0e8/thumbnails/fea4380b09df427b83cad08f2c4e2051/7e9f4622ee734087b894f6f43a4cfcdc.jpeg' },
   { no:'209', name:"石棒くん", uid:'sekibo-kun', thumb:'sekibo-kun.png', isSpecial:true },
   { no:'210', name:"飛騨みやがわ考古民俗館 訪問記念", uid:'museum-210', thumb:'sekibo-hidamiyagawa.png', isMuseum:true },
+  { no:'211', name:"メカ石棒くん", uid:'mekasekibo', thumb:'mekasekibo.png', isSpecial:true },
 ];
 
 
@@ -994,6 +995,9 @@ function generateStone(barcode) {
   const h = hashCode(barcode);
   if (h % 500 === 0) {
     return { barcode, id:h.toString(16).padStart(8,'0'), spec:SPECIMENS[208], ts:Date.now(), isNew:true, isUltraRare:true };
+  }
+  if (h % 500 === 1) {
+    return { barcode, id:h.toString(16).padStart(8,'0'), spec:SPECIMENS[210], ts:Date.now(), isNew:true, isUltraRare:true };
   }
   const spec = SPECIMENS[h % 208];
   return { barcode, id:h.toString(16).padStart(8,'0'), spec, ts:Date.now(), isNew:true };
@@ -1122,7 +1126,7 @@ function showResult(stone,isNew,capturedFrame){
     spec.isSpecial?'<span class="badge-ultra">激レア</span>':
     spec.isMuseum?'<span class="badge-ultra">激レア</span><span class="badge-museum" style="margin-left:4px">館内限定</span>':'';
   const sfBtn=document.getElementById('cardSketchfabBtn');
-  if(spec.uid==='sekibo-kun'||spec.uid==='museum-210'){sfBtn.style.display='none';}
+  if(spec.uid==='sekibo-kun'||spec.uid==='museum-210'||spec.uid==='mekasekibo'){sfBtn.style.display='none';}
   else{sfBtn.style.display='';sfBtn.href='https://sketchfab.com/3d-models/'+spec.uid;}
   const card=document.getElementById('stoneCard');
   card.classList.toggle('ultra-rare',!!stone.isUltraRare);
@@ -1166,7 +1170,7 @@ function playRevealAfterExcavation(stone,isNew){
   // label bounce
   const lbl=document.getElementById('resultLabel');
   if(stone.isUltraRare){
-    lbl.innerHTML='👑 激レア！石棒くん発見！'; lbl.style.color='#c8960c';
+    lbl.innerHTML=`👑 激レア！${spec.name}発見！`; lbl.style.color='#c8960c';
   } else if(stone.isMuseum){
     lbl.innerHTML='🏛 館内限定！特別遺物を発見！';
     lbl.style.color=document.body.classList.contains('theme-dark')?'#c090ff':'#6030b0';
