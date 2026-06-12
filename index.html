@@ -34,10 +34,14 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fdf3e0; font-f
   align-items:center; justify-content:flex-start; padding:28px 24px max(24px,env(safe-area-inset-bottom));
   overflow-y:auto; position:relative;
 }
+#homeBgVideo {
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  opacity:.18; z-index:0; pointer-events:none;
+}
 #homeDustCanvas {
   position:absolute; inset:0; pointer-events:none; z-index:0; width:100%; height:100%;
 }
-#homeScreen > *:not(#homeDustCanvas) { position:relative; z-index:1; }
+#homeScreen > *:not(#homeDustCanvas):not(#homeBgVideo) { position:relative; z-index:1; }
 
 /* deco image: float + aura */
 @keyframes floatDeco {
@@ -554,6 +558,7 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
 
 <!-- HOME -->
 <div class="screen active" id="homeScreen">
+  <video id="homeBgVideo" src="sekibo-video.mp4" autoplay muted loop playsinline></video>
   <canvas id="homeDustCanvas"></canvas>
   <button class="settings-btn" onclick="openSettings()" title="設定">⚙</button>
 
