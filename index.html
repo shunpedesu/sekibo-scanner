@@ -750,13 +750,7 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
         <input type="radio" class="theme-radio" name="theme" value="dark" onchange="applyTheme('dark')">
       </label>
     </div>
-    <div class="settings-section" style="margin-top:4px;">
-      <div class="settings-section-label">コレクションのバックアップ</div>
-      <div style="font-size:.72rem;color:#a08060;line-height:1.6;margin-bottom:10px;">ブラウザのデータを消去するとコレクションが消えることがあります。定期的にバックアップを保存しておきましょう。</div>
-      <button class="backup-btn" onclick="exportCollection()">📥 バックアップを保存</button>
-      <button class="backup-btn" onclick="document.getElementById('importFile').click()" style="margin-top:8px;">📤 バックアップから復元</button>
       <input type="file" id="importFile" accept=".json" style="display:none" onchange="importCollection(event)">
-    </div>
   </div>
 </div>
 
