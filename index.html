@@ -160,6 +160,7 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fdf3e0; font-f
   font-size:1.25rem; width:260px; padding:20px;
 }
 .btn-collection { background:linear-gradient(135deg,#7a4820,#9a6030); color:#f5e8c8; }
+.btn-sekibocchi { background:linear-gradient(135deg,#3a6030,#5a8040); color:#f0f5e8; box-shadow:0 6px 0 rgba(30,60,20,.35); }
 .collection-count { margin-top:8px; font-size:.8rem; color:#9a7030; letter-spacing:.1em; }
 
 /* ── SCAN ── */
@@ -663,6 +664,7 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
   </div>
 
   <button class="big-btn btn-collection" onclick="goCollection()">📚 図鑑を見る</button>
+  <button class="big-btn btn-sekibocchi" onclick="goSekibocchi()">🪨 せきぼっち</button>
   <div class="home-goal" style="margin-top:14px">石棒クラブ Sketchfab の<br>全3Dデータをコンプリートしよう！</div>
   <div class="home-streak" id="homeStreak" style="display:none">🔥 <span id="streakNum">1</span>日連続発掘中！</div>
   <button class="how-to-btn" onclick="openHowTo()">？ 遊び方</button>
@@ -751,23 +753,29 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
   </div>
   <div class="col-goal" style="padding:2px 16px 6px">石棒クラブ Sketchfab の全3Dデータをコンプリートしよう！</div>
   <div class="col-grid" id="colGrid"></div>
+</div>
 
-  <!-- せきぼっち -->
-  <div class="sekibocchi-section">
-    <div class="sekibocchi-title">🪨 せきぼっち</div>
-    <div class="sevo-bar" id="sevoBar"></div>
-    <div class="sb-canvas-wrap">
+<!-- SEKIBOCCHI -->
+<div class="screen" id="sekibocchiScreen">
+  <div class="col-header" style="background:rgba(245,232,200,.85)">
+    <button class="back-btn" style="background:rgba(0,0,0,.1);color:#4a2810" onclick="goHome()">←</button>
+    <div class="col-title">せきぼっち</div>
+    <div style="width:40px"></div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;padding:16px 16px 40px;gap:0">
+    <div class="sevo-bar" id="sevoBar" style="width:100%;margin-bottom:8px"></div>
+    <div class="sb-canvas-wrap" style="width:100%">
       <div class="sb-bubble" id="sbBubble"></div>
-      <canvas id="sekibocchiCanvas" width="240" height="160"></canvas>
+      <canvas id="sekibocchiCanvas" width="240" height="170" style="display:block;margin:0 auto"></canvas>
     </div>
-    <div class="sb-prog">
+    <div class="sb-prog" style="width:100%">
       <div class="sb-prog-label">
         <span id="sprogLabel">次の進化まで</span>
         <span id="sprogNum" style="font-family:monospace;color:#c8960c"></span>
       </div>
       <div class="sb-prog-bg"><div class="sb-prog-fill" id="sprogFill" style="width:0%"></div></div>
     </div>
-    <div class="sb-stats">
+    <div class="sb-stats" style="width:100%">
       <div class="sb-stat-row">
         <span class="sb-stat-lbl">しあわせ</span>
         <div class="sb-stat-bg"><div class="sb-stat-fill sbf-happy" id="sfHappy" style="width:50%"></div></div>
@@ -779,7 +787,7 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
         <span class="sb-stat-pct" id="spHungry">50%</span>
       </div>
     </div>
-    <div class="sb-btns">
+    <div class="sb-btns" style="width:100%">
       <button class="sb-btn sbtn-pet" onclick="petSekibocchi()">なでる</button>
       <button class="sb-btn sbtn-ayu" id="ayuBtn" onclick="feedAyu()">🐟 飛騨の鮎をあげる</button>
     </div>
@@ -1466,7 +1474,8 @@ function runTransformEffect(camSrc, artSrc, onDone){
 }
 
 // ── Collection ────────────────────────────────────────────────────────────────
-function goCollection(){stopScan();showScreen('colScreen');renderCollection();setTimeout(initSekibocchi,120);}
+function goCollection(){stopScan();showScreen('colScreen');renderCollection();}
+function goSekibocchi(){stopScan();showScreen('sekibocchiScreen');setTimeout(initSekibocchi,120);}
 function renderCollection(){
   const col=loadCollection();
   const got=col.length;
