@@ -4,17 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>石棒スキャナー</title>
-<meta name="description" content="バーコードをスキャンして縄文の遺物を発掘しよう！208種類の遺物＋激レア3種、全211種コンプリートを目指せ。">
-<meta property="og:title" content="石棒スキャナー">
-<meta property="og:description" content="バーコードをスキャンして縄文の遺物を発掘しよう！208種類の遺物＋激レア3種、全211種コンプリートを目指せ。">
-<meta property="og:image" content="https://shunpedesu.github.io/sekibo-scanner/icon-512.png">
+<meta name="description" content="バーコードをスキャンして縄文の遺物を発掘しよう！208種類の遺物＋激レア3種、全211種コンプリートを目指せ。育成ゲーム「せきぼっち」も遊べる、飛騨みやがわ考古民俗館公認の発掘ゲームです。">
+<meta property="og:title" content="石棒スキャナー｜縄文の遺物発掘ゲーム">
+<meta property="og:description" content="バーコードをスキャンして縄文の遺物を発掘しよう！208種類の遺物＋激レア3種、全211種コンプリートを目指せ。育成ゲーム「せきぼっち」も遊べる、飛騨みやがわ考古民俗館公認の発掘ゲームです。">
+<meta property="og:image" content="https://shunpedesu.github.io/sekibo-scanner/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:url" content="https://shunpedesu.github.io/sekibo-scanner/">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ja_JP">
+<meta property="og:site_name" content="石棒スキャナー">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="石棒スキャナー">
-<meta name="twitter:description" content="バーコードをスキャンして縄文の遺物を発掘しよう！208種類の遺物＋激レア3種、全211種コンプリートを目指せ。">
-<meta name="twitter:image" content="https://shunpedesu.github.io/sekibo-scanner/icon-512.png">
+<meta name="twitter:title" content="石棒スキャナー｜縄文の遺物発掘ゲーム">
+<meta name="twitter:description" content="バーコードをスキャンして縄文の遺物を発掘しよう！208種類の遺物＋激レア3種、全211種コンプリートを目指せ。育成ゲーム「せきぼっち」も遊べる、飛騨みやがわ考古民俗館公認の発掘ゲームです。">
+<meta name="twitter:image" content="https://shunpedesu.github.io/sekibo-scanner/og-image.png">
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -23,7 +26,7 @@
 <script src="https://unpkg.com/@zxing/library@0.20.0/umd/index.min.js"></script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; }
-html,body { width:100%; height:100%; overflow:hidden; background:#fdf3e0; font-family:'Hiragino Maru Gothic ProN','Hiragino Sans','Arial Rounded MT Bold',sans-serif; }
+html,body { width:100%; height:100%; height:100dvh; overflow:hidden; background:#fdf3e0; font-family:'Hiragino Maru Gothic ProN','Hiragino Sans','Arial Rounded MT Bold',sans-serif; }
 
 .screen { display:none; position:absolute; inset:0; overflow-y:auto; overflow-x:hidden; }
 .screen.active { display:flex; flex-direction:column; }
@@ -32,7 +35,7 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fdf3e0; font-f
 #homeScreen {
   background:linear-gradient(160deg,#fdf3e0 0%,#f5e8c8 100%);
   align-items:center; justify-content:flex-start; padding:28px 24px max(48px,env(safe-area-inset-bottom));
-  overflow-y:auto; position:relative;
+  overflow-y:auto;
   padding-bottom:max(60px,calc(env(safe-area-inset-bottom) + 40px));
 }
 #homeBgVideo {
@@ -63,19 +66,32 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fdf3e0; font-f
 }
 .home-deco.tapped { animation:decoTap .35s ease both, auraGlow 2.4s ease-in-out infinite; }
 
-/* title: rise in + shine */
-.home-title-wrap { position:relative; margin-bottom:6px; }
+/* title: carved wooden tablet badge (石棒クラブ logo style) */
+.home-title-wrap { position:relative; margin-bottom:6px; padding:18px 22px; display:inline-block; }
+.home-title-tablet {
+  position:absolute; inset:0;
+  clip-path:polygon(6% 10%,20% 4%,35% 8%,50% 3%,65% 7%,80% 3%,94% 9%,
+    97% 25%,100% 45%,96% 62%,99% 80%,93% 95%,78% 98%,62% 94%,47% 98%,32% 94%,
+    16% 98%,5% 90%,7% 70%,2% 50%,5% 32%,3% 18%);
+  filter:blur(1px);
+  z-index:0;
+}
+.home-title-tablet.back { background:#6a4a28; transform:translate(4px,5px); }
+.home-title-tablet.front { background:linear-gradient(160deg,#f0dcac,#e0c184); }
 .home-title {
-  font-size:2.2rem; font-weight:900; letter-spacing:.1em; color:#4a2810;
-  text-shadow:3px 3px 0 #c8a050,5px 5px 0 rgba(0,0,0,.1);
-  text-align:center; display:block; overflow:hidden; position:relative;
+  font-size:1.9rem; font-weight:900; letter-spacing:.08em; white-space:nowrap;
+  color:#5a3018;
+  text-shadow:
+    0 0 7px #fdf6e6, 0 0 7px #fdf6e6, 0 0 5px #fdf6e6,
+    1px 1px 0 rgba(90,55,20,.25);
+  text-align:center; display:block; overflow:hidden; position:relative; z-index:1;
   opacity:0; transform:translateY(70px);
   transition:transform .85s cubic-bezier(.17,.89,.32,1.28), opacity .6s;
 }
 .home-title.risen { opacity:1; transform:translateY(0); }
 .home-title::after {
   content:''; position:absolute; top:0; left:-120%; width:60%; height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,235,130,.75),transparent);
+  background:linear-gradient(90deg,transparent,rgba(255,245,210,.85),transparent);
   pointer-events:none;
 }
 .home-title.risen::after { animation:titleShine 3.8s ease-in-out 0.4s infinite; }
@@ -187,7 +203,7 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fdf3e0; font-f
 /* ── RESULT ── */
 #resultScreen { background:linear-gradient(160deg,#fdf3e0,#f5e8c8); align-items:center; }
 .result-header { width:100%; display:flex; align-items:center; padding:16px; background:rgba(255,255,255,.5); }
-.result-body { flex:1; display:flex; flex-direction:column; align-items:center; padding:12px 24px 24px; width:100%; max-width:380px; margin:0 auto; }
+.result-body { flex:1; display:flex; flex-direction:column; align-items:center; padding:12px 24px max(24px,calc(env(safe-area-inset-bottom) + 16px)); width:100%; max-width:380px; margin:0 auto; }
 .result-new-label { font-size:.85rem; letter-spacing:.15em; margin-bottom:10px; font-weight:700; }
 
 /* ── Stone Card ── */
@@ -318,6 +334,9 @@ body.theme-dark .card-scan-badge { background:rgba(255,255,255,.08); color:rgba(
 #colScreen { background:linear-gradient(160deg,#fdf3e0,#f5e8c8); }
 .col-header { display:flex; align-items:center; padding:16px; background:rgba(253,243,224,.85); position:sticky; top:0; z-index:10; backdrop-filter:blur(8px); }
 .col-title { flex:1; text-align:center; font-size:1rem; letter-spacing:.2em; color:#4a2810; font-weight:900; }
+.back-btn-light { background:rgba(0,0,0,.1); color:#4a2810; }
+body.theme-dark .back-btn-light { background:rgba(255,255,255,.14); color:#e8c880; }
+body.theme-dark .col-title { color:#e8c880; }
 .col-count-badge { background:rgba(200,160,60,.15); color:#7a5010; border:1px solid rgba(200,160,60,.4); border-radius:20px; font-size:.72rem; font-weight:900; padding:2px 10px; }
 .col-hero { text-align:center; padding:12px 0 4px; }
 .col-hero-num { font-size:3rem; font-weight:900; color:#4a2810; font-family:monospace; line-height:1; }
@@ -342,7 +361,7 @@ body.theme-dark .card-scan-badge { background:rgba(255,255,255,.08); color:rgba(
 .col-prog-label { font-size:.7rem; color:#9a7030; white-space:nowrap; }
 
 .col-goal { font-size:.68rem; color:#a08040; text-align:center; letter-spacing:.04em; padding:4px 16px 6px; }
-.col-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding:10px 12px 40px; }
+.col-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding:10px 12px max(40px,calc(env(safe-area-inset-bottom) + 24px)); }
 
 /* shelf divider */
 .col-shelf {
@@ -471,7 +490,7 @@ body.theme-dark .home-streak { color:#f0a040; background:rgba(200,120,20,.2); bo
 .how-to-btn { margin-top:18px; background:none; border:1.5px solid #c8a050; color:#4a2810; border-radius:30px; padding:7px 20px; font-size:.8rem; font-family:inherit; font-weight:700; letter-spacing:.1em; cursor:pointer; }
 .how-to-btn:active { background:#f0e4c0; }
 .museum-link-btn { margin-top:10px; display:inline-block; background:none; border:none; color:#8a6030; font-size:.72rem; letter-spacing:.05em; text-decoration:underline; text-underline-offset:3px; }
-body.theme-dark .museum-link-btn { color:#a08040; }
+body.theme-dark .museum-link-btn { color:#d4ab5c; }
 
 .howto-inner { background:#fff; border-radius:20px; width:100%; max-width:340px; max-height:88vh; overflow-y:auto; padding:0 0 20px; animation:cardPop .3s ease both; }
 .howto-close-row { display:flex; justify-content:flex-end; padding:10px 12px 0; }
@@ -552,16 +571,17 @@ body.theme-dark .home-deco  {
   0%,100%{box-shadow:0 0 28px 10px rgba(220,140,40,.55),0 0 60px 18px rgba(180,80,20,.3),0 6px 24px rgba(0,0,0,.5)}
   50%{box-shadow:0 0 44px 16px rgba(240,180,60,.75),0 0 90px 28px rgba(200,100,30,.4),0 6px 24px rgba(0,0,0,.5)}
 }
-body.theme-dark .home-title { color:#f0c060; text-shadow:0 0 20px rgba(240,160,40,.6),2px 2px 0 rgba(0,0,0,.6); }
+body.theme-dark .home-title-wrap { filter:drop-shadow(0 0 18px rgba(240,180,60,.35)); }
+body.theme-dark .home-title-tablet.front { background:linear-gradient(160deg,#f5e2b4,#e8ca94); }
 body.theme-dark .home-title::after { background:linear-gradient(90deg,transparent,rgba(255,240,140,.8),transparent); }
-body.theme-dark .home-sub   { color:#b08840; }
-body.theme-dark .home-credit{ color:#6a5030; }
+body.theme-dark .home-sub   { color:#d4ab5c; }
+body.theme-dark .home-credit{ color:#c8a060; }
 body.theme-dark .home-excav-count { background:rgba(0,0,0,.3); border-color:rgba(200,140,40,.35); }
 body.theme-dark .excav-num  { color:#f0c060; }
-body.theme-dark .excav-suffix,.theme-dark .excav-label { color:#a08040; }
-body.theme-dark .collection-count { color:#806040; }
-body.theme-dark .home-goal  { color:#806040; }
-body.theme-dark .how-to-btn { border-color:rgba(200,150,50,.4); color:#906840; }
+body.theme-dark .excav-suffix,.theme-dark .excav-label { color:#c0985c; }
+body.theme-dark .collection-count { color:#c0985c; }
+body.theme-dark .home-goal  { color:#c0985c; }
+body.theme-dark .how-to-btn { border-color:rgba(200,150,50,.5); color:#d4ab5c; }
 body.theme-dark .settings-btn { color:#c8a040; }
 body.theme-dark .btn-scan   { background:linear-gradient(135deg,#c05020,#e07030); box-shadow:0 6px 0 rgba(0,0,0,.4); }
 body.theme-dark .btn-scan .scan-ripple-ring { border-color:rgba(220,120,50,.55); }
@@ -621,6 +641,10 @@ body.theme-dark .col-goal   { color:#806040; }
 .sb-pill-sick { background:rgba(200,80,40,.15); color:#a04020; }
 .sb-pill-sleep { background:rgba(60,80,160,.12); color:#3a4a90; }
 .sb-pill-dirty { background:rgba(120,90,50,.15); color:#6a4a20; }
+.sb-stats-title { font-size:1.05rem; font-weight:900; color:#4a2810; margin-bottom:18px; }
+.sb-stats-list { display:flex; flex-direction:column; gap:14px; text-align:left; font-size:.88rem; color:#3a2010; }
+body.theme-dark .sb-stats-title { color:#e8c880; }
+body.theme-dark .sb-stats-list { color:#c8a860; }
 .sb-zzz { position:absolute; top:6px; right:14px; font-size:22px; animation:sbZzzFloat 2.2s ease-in-out infinite; pointer-events:none; }
 @keyframes sbZzzFloat { 0%,100%{transform:translateY(0);opacity:.65} 50%{transform:translateY(-8px);opacity:1} }
 body.theme-dark .sekibocchi-title { color:#f0c060; }
@@ -700,6 +724,8 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
     alt="石棒" onclick="tapDeco(this)">
 
   <div class="home-title-wrap">
+    <div class="home-title-tablet back"></div>
+    <div class="home-title-tablet front"></div>
     <div class="home-particles" id="homeParticles"></div>
     <div class="home-title" id="homeTitle">石棒スキャナー</div>
   </div>
@@ -755,7 +781,7 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
 <!-- RESULT -->
 <div class="screen" id="resultScreen">
   <div class="result-header">
-    <button class="back-btn" style="background:rgba(0,0,0,.1);color:#4a2810" onclick="goHome()">✕</button>
+    <button class="back-btn back-btn-light" onclick="goHome()">✕</button>
   </div>
   <div class="result-body">
     <div class="result-new-label" id="resultLabel"></div>
@@ -798,7 +824,7 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
 <!-- COLLECTION -->
 <div class="screen" id="colScreen">
   <div class="col-header">
-    <button class="back-btn" style="background:rgba(0,0,0,.1);color:#4a2810" onclick="goHome()">←</button>
+    <button class="back-btn back-btn-light" onclick="goHome()">←</button>
     <div class="col-title">石棒図鑑</div>
     <div class="col-count-badge" id="colCountBadge">0/211</div>
   </div>
@@ -821,8 +847,8 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
 
 <!-- SEKIBOCCHI -->
 <div class="screen" id="sekibocchiScreen">
-  <div class="col-header" style="background:rgba(245,232,200,.85)">
-    <button class="back-btn" style="background:rgba(0,0,0,.1);color:#4a2810" onclick="goHome()">←</button>
+  <div class="col-header">
+    <button class="back-btn back-btn-light" onclick="goHome()">←</button>
     <div class="col-title" id="sbTitle" style="cursor:pointer" onclick="renameSekibocchi()">せきぼっち ✏️</div>
     <div style="width:40px"></div>
   </div>
@@ -2277,8 +2303,8 @@ function showSbStats(){
   document.getElementById('detailInner').innerHTML=`
     <div class="detail-close-row"><button class="detail-close" onclick="closeDetail()">✕</button></div>
     <div style="padding:0 24px 28px;text-align:center">
-      <div style="font-size:1.05rem;font-weight:900;color:#4a2810;margin-bottom:18px">📊 ${name}の記録</div>
-      <div style="display:flex;flex-direction:column;gap:14px;text-align:left;font-size:.88rem;color:#3a2010">
+      <div class="sb-stats-title">📊 ${name}の記録</div>
+      <div class="sb-stats-list">
         <div>🗓 育成日数：<b>${days}日め</b></div>
         <div>🖐 なでた回数：<b>${pets}回</b></div>
         <div>🍽 ごはんをあげた回数：<b>${feeds}回</b></div>
