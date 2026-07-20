@@ -42,7 +42,7 @@ html,body { width:100%; height:100%; overflow:hidden; background:#fdf3e0; font-f
 #homeDustCanvas {
   position:absolute; inset:0; pointer-events:none; z-index:0; width:100%; height:100%;
 }
-#homeScreen > *:not(#homeDustCanvas):not(#homeBgVideo) { position:relative; z-index:1; }
+#homeScreen > *:not(#homeDustCanvas):not(#homeBgVideo):not(.settings-btn) { position:relative; z-index:1; }
 
 /* deco image: float + aura */
 @keyframes floatDeco {
@@ -510,6 +510,14 @@ body.theme-dark .install-banner-desc  { color:#806040; }
 /* ── Settings button ── */
 .settings-btn { position:absolute; top:16px; right:16px; background:none; border:none; font-size:1.3rem; cursor:pointer; opacity:.5; padding:4px; transition:opacity .2s; }
 .settings-btn:hover { opacity:.9; }
+.mute-btn {
+  position:fixed; top:14px; right:58px; z-index:60;
+  width:34px; height:34px; border-radius:50%; border:none;
+  background:rgba(0,0,0,.35); color:#fff; font-size:1rem;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; opacity:.9; transition:transform .1s;
+}
+.mute-btn:active { transform:scale(.9); }
 
 /* ── Settings modal ── */
 #settingsModal { display:none; position:fixed; inset:0; z-index:150; background:rgba(0,0,0,.6); align-items:center; justify-content:center; padding:20px; }
@@ -584,31 +592,46 @@ body.theme-dark .col-goal   { color:#806040; }
 .sb-bubble { position:absolute; top:6px; left:50%; transform:translateX(-50%); background:#f5eedc; color:#3a1a06; font-size:10px; font-weight:700; border-radius:10px; padding:4px 10px; white-space:nowrap; opacity:0; transition:opacity .3s; pointer-events:none; z-index:2; }
 .sb-bubble.show { opacity:1; }
 .sb-bubble::after { content:''; position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); border:4px solid transparent; border-top-color:#f5eedc; border-bottom:none; }
-.sb-prog { padding:2px 0 8px; }
-.sb-prog-label { display:flex; justify-content:space-between; font-size:9px; color:#9a7030; margin-bottom:3px; }
-.sb-prog-bg { height:5px; background:rgba(0,0,0,.1); border-radius:4px; overflow:hidden; }
-.sb-prog-fill { height:100%; background:linear-gradient(90deg,#c8960c,#f0c060); border-radius:4px; transition:width .6s; }
-.sb-stats { display:flex; flex-direction:column; gap:6px; margin-bottom:10px; }
-.sb-stat-row { display:flex; align-items:center; gap:8px; }
-.sb-stat-lbl { font-size:9px; color:#9a7030; width:38px; flex-shrink:0; letter-spacing:.04em; }
-.sb-stat-bg { flex:1; height:6px; background:rgba(0,0,0,.1); border-radius:4px; overflow:hidden; }
-.sb-stat-fill { height:100%; border-radius:4px; transition:width .5s; }
+.sb-prog { padding:4px 0 10px; }
+.sb-prog-label { display:flex; justify-content:space-between; font-size:11px; color:#9a7030; margin-bottom:5px; }
+.sb-prog-bg { height:10px; background:rgba(0,0,0,.1); border-radius:6px; overflow:hidden; }
+.sb-prog-fill { height:100%; background:linear-gradient(90deg,#c8960c,#f0c060); border-radius:6px; transition:width .6s; }
+.sb-stats { display:flex; flex-direction:column; gap:11px; margin-bottom:14px; }
+.sb-stat-row { display:flex; align-items:center; gap:10px; }
+.sb-stat-lbl { font-size:12px; color:#9a7030; width:48px; flex-shrink:0; letter-spacing:.04em; font-weight:700; }
+.sb-stat-bg { flex:1; height:11px; background:rgba(0,0,0,.1); border-radius:6px; overflow:hidden; }
+.sb-stat-fill { height:100%; border-radius:6px; transition:width .5s; }
 .sbf-happy { background:#c8960c; }
 .sbf-hungry { background:#c8602a; }
-.sb-stat-pct { font-size:9px; color:#9a7030; width:28px; text-align:right; font-family:monospace; flex-shrink:0; }
-.sb-btns { display:flex; gap:8px; }
-.sb-btn { flex:1; padding:9px 4px; border-radius:20px; border:none; font-size:11px; font-weight:900; font-family:inherit; cursor:pointer; letter-spacing:.04em; transition:transform .1s,opacity .1s; }
+.sb-stat-pct { font-size:12px; color:#9a7030; width:36px; text-align:right; font-family:monospace; flex-shrink:0; }
+.sb-btns { display:flex; gap:10px; margin-bottom:12px; }
+.sb-btn { flex:1; padding:15px 8px; border-radius:24px; border:none; font-size:14px; font-weight:900; font-family:inherit; cursor:pointer; letter-spacing:.04em; transition:transform .1s,opacity .1s; }
 .sb-btn:active { transform:scale(.95); opacity:.85; }
 .sb-btn:disabled { opacity:.4; cursor:not-allowed; }
 .sb-btn:disabled:active { transform:none; }
 .sbtn-pet { background:#c8a050; color:#1c0e04; }
-.sbtn-ayu { background:rgba(40,80,40,.12); color:#3a7030; border:1.5px solid rgba(60,120,40,.3); font-size:10px; }
+.sbtn-clean { background:rgba(120,90,50,.15); color:#7a5010; border:1.5px solid rgba(160,120,60,.3); font-size:13px; }
+.sb-food-row { display:flex; gap:10px; width:100%; margin-bottom:12px; }
+.sb-food-btn { flex:1; display:flex; flex-direction:column; align-items:center; gap:5px; padding:14px 6px; border-radius:16px; border:1.5px solid rgba(160,120,60,.3); background:rgba(255,255,255,.5); font-size:28px; cursor:pointer; font-family:inherit; transition:transform .1s,opacity .1s; }
+.sb-food-btn span { font-size:11px; color:#7a5010; font-weight:700; letter-spacing:.02em; }
+.sb-food-btn:active { transform:scale(.95); }
+.sb-food-btn:disabled { opacity:.35; cursor:not-allowed; }
+.sb-status-row { display:none; gap:6px; margin-bottom:8px; flex-wrap:wrap; justify-content:center; }
+.sb-pill { font-size:10px; font-weight:700; padding:3px 10px; border-radius:12px; background:rgba(0,0,0,.08); color:#7a5010; letter-spacing:.02em; }
+.sb-pill-sick { background:rgba(200,80,40,.15); color:#a04020; }
+.sb-pill-sleep { background:rgba(60,80,160,.12); color:#3a4a90; }
+.sb-pill-dirty { background:rgba(120,90,50,.15); color:#6a4a20; }
+.sb-zzz { position:absolute; top:6px; right:14px; font-size:22px; animation:sbZzzFloat 2.2s ease-in-out infinite; pointer-events:none; }
+@keyframes sbZzzFloat { 0%,100%{transform:translateY(0);opacity:.65} 50%{transform:translateY(-8px);opacity:1} }
 body.theme-dark .sekibocchi-title { color:#f0c060; }
 body.theme-dark .sevo-name.current { color:#f0c060; }
 body.theme-dark .sb-stat-lbl,.theme-dark .sb-stat-pct,.theme-dark .sb-prog-label { color:#a08040; }
 body.theme-dark .sb-stat-bg,.theme-dark .sb-prog-bg { background:rgba(255,255,255,.08); }
 body.theme-dark .sekibocchi-section { background:rgba(0,0,0,.2); border-color:rgba(200,160,80,.15); }
-body.theme-dark .sbtn-ayu { color:#7ecc7e; border-color:rgba(80,160,60,.3); background:rgba(30,60,30,.3); }
+body.theme-dark .sbtn-clean { color:#c8a040; border-color:rgba(200,160,80,.3); background:rgba(0,0,0,.2); }
+body.theme-dark .sb-food-btn { background:rgba(0,0,0,.2); border-color:rgba(200,160,80,.2); }
+body.theme-dark .sb-food-btn span { color:#c8a040; }
+body.theme-dark .sb-pill { background:rgba(255,255,255,.08); color:#c8a040; }
 body.theme-dark .col-item   { background:#2a1808; box-shadow:0 2px 8px rgba(0,0,0,.3); }
 body.theme-dark .col-item-found { border-color:#c8a040; box-shadow:0 2px 12px rgba(200,150,40,.2); }
 body.theme-dark .col-item-name { color:#e8c880; }
@@ -663,6 +686,8 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
 </style>
 </head>
 <body>
+
+<button id="muteBtn" class="mute-btn" onclick="toggleMute()" title="音量ON/OFF">🔊</button>
 
 <!-- HOME -->
 <div class="screen active" id="homeScreen">
@@ -805,9 +830,11 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
     <div class="sevo-bar" id="sevoBar" style="width:100%;margin-bottom:8px"></div>
     <div class="sb-canvas-wrap" style="width:100%">
       <div class="sb-bubble" id="sbBubble"></div>
+      <div class="sb-zzz" id="sbZzz" style="display:none">💤</div>
       <img id="sekibocchiImg" alt="せきぼっち" onclick="petSekibocchi()" style="display:none;width:min(52vw,220px);height:min(58vh,260px);object-fit:contain;margin:0 auto;cursor:pointer;">
       <canvas id="sekibocchiCanvas" width="240" height="170" onclick="petSekibocchi()" style="display:none;margin:0 auto;width:min(52vw,220px);height:auto;cursor:pointer;"></canvas>
     </div>
+    <div class="sb-status-row" id="sbStatusRow"></div>
     <div class="sb-prog" style="width:100%">
       <div class="sb-prog-label">
         <span id="sprogLabel">次の進化まで</span>
@@ -829,8 +856,14 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
     </div>
     <div class="sb-btns" style="width:100%">
       <button class="sb-btn sbtn-pet" onclick="petSekibocchi()">なでる</button>
-      <button class="sb-btn sbtn-ayu" id="ayuBtn" onclick="feedAyu()">🐟 飛騨の鮎をあげる</button>
+      <button class="sb-btn sbtn-clean" id="cleanBtn" onclick="cleanSekibocchi()" style="display:none">🧹 そうじする</button>
     </div>
+    <div class="sb-food-row" style="width:100%">
+      <button class="sb-food-btn" id="food-ayu" onclick="feedSekibocchi('ayu')">🐟<span>鮎</span></button>
+      <button class="sb-food-btn" id="food-kurumi" onclick="feedSekibocchi('kurumi')">🌰<span>くるみ</span></button>
+      <button class="sb-food-btn" id="food-sansai" onclick="feedSekibocchi('sansai')">🌿<span>山菜</span></button>
+    </div>
+    <button class="col-filter-btn" onclick="showSbStats()" style="margin-top:10px">📊 記録を見る</button>
   </div>
 </div>
 
@@ -1231,9 +1264,12 @@ function addToCollection(stone) {
 
 // ── Sound ─────────────────────────────────────────────────────────────────────
 const homeBgm=new Audio('home.mp3'); homeBgm.loop=true; homeBgm.volume=0;
-const BGM_VOL=.35;
+const BGM_VOL=.35, BGM_VOL_LOW=.12;
 let _bgmFade=null;
+let _sfxMuted=localStorage.getItem('sfxMuted')==='1';
+function _bgmTargetForScreen(id){ return id==='homeScreen'?BGM_VOL:BGM_VOL_LOW; }
 function fadeBgm(target){
+  if(_sfxMuted) target=0;
   if(_bgmFade)clearInterval(_bgmFade);
   if(target>0&&homeBgm.paused) homeBgm.play().catch(()=>{});
   _bgmFade=setInterval(()=>{
@@ -1242,15 +1278,27 @@ function fadeBgm(target){
     homeBgm.volume+=target>homeBgm.volume?step:-step;
   },40);
 }
-function playSfx(src){ const a=new Audio(src); a.volume=.7; a.play().catch(()=>{}); }
+function playSfx(src){ if(_sfxMuted)return; const a=new Audio(src); a.volume=.7; a.play().catch(()=>{}); }
 function playScanSfx(isSpecial,isNew){ playSfx(isSpecial?'special-scan-sound.mp3':isNew?'scan-sound.mp3':'already-done.mp3'); }
+function updateMuteBtnUI(){
+  const btn=document.getElementById('muteBtn'); if(!btn)return;
+  btn.textContent=_sfxMuted?'🔇':'🔊';
+}
+function toggleMute(){
+  _sfxMuted=!_sfxMuted;
+  localStorage.setItem('sfxMuted',_sfxMuted?'1':'0');
+  updateMuteBtnUI();
+  const active=document.querySelector('.screen.active');
+  fadeBgm(_sfxMuted?0:_bgmTargetForScreen(active&&active.id));
+}
 document.addEventListener('pointerdown',function unlockBgm(){
-  if(document.getElementById('homeScreen').classList.contains('active')) fadeBgm(BGM_VOL);
+  const active=document.querySelector('.screen.active');
+  fadeBgm(_bgmTargetForScreen(active&&active.id));
   document.removeEventListener('pointerdown',unlockBgm);
 },{once:true});
 document.addEventListener('click',function(e){
   const btn=e.target.closest('button');
-  if(!btn||btn.classList.contains('sbtn-pet')||btn.classList.contains('sbtn-ayu'))return;
+  if(!btn||btn.classList.contains('sbtn-pet')||btn.classList.contains('sb-food-btn'))return;
   playSfx('tap.mp3');
 });
 
@@ -1258,8 +1306,7 @@ document.addEventListener('click',function(e){
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  if(id==='homeScreen') fadeBgm(BGM_VOL);
-  else fadeBgm(0);
+  fadeBgm(_bgmTargetForScreen(id));
 }
 function goHome(){stopScan();showScreen('homeScreen');updateHomeCount();}
 
@@ -1283,7 +1330,8 @@ function _computeSbDecay(){
 function updateSbNeedsBadge(){
   const badge=document.getElementById('sbNeedsBadge'); if(!badge)return;
   const {happy,hungry}=_computeSbDecay();
-  badge.style.display=(happy<20||hungry<20)?'flex':'none';
+  const sick=localStorage.getItem('sbSick')==='1';
+  badge.style.display=(happy<20||hungry<20||sick)?'flex':'none';
 }
 function animateExcavCount(target){
   const el=document.getElementById('excavNum');
@@ -1941,14 +1989,14 @@ async function checkPetNotification(){
   if(Notification.permission!=='granted')return;
   if(localStorage.getItem('sbNotifOff')==='1')return;
   const today=new Date().toISOString().slice(0,10);
-  const lastFed=localStorage.getItem('sbLastFed');
-  if(lastFed===today)return;
+  const fedToday=['ayu','kurumi','sansai'].some(k=>localStorage.getItem('sbLastFed_'+k)===today);
+  if(fedToday)return;
   const lastOpen=localStorage.getItem('sbLastOpen');
   if(!lastOpen||lastOpen===today)return;
   if(localStorage.getItem('sbLastNotif')===today)return;
   try{
     const reg=await navigator.serviceWorker.ready;
-    reg.showNotification('🪨 せきぼっち',{body:'おなかすいたよ…鮎をあげにきて！',icon:'icon-192.png'});
+    reg.showNotification('🪨 せきぼっち',{body:'おなかすいたよ…ごはんをあげにきて！',icon:'icon-192.png'});
     localStorage.setItem('sbLastNotif',today);
   }catch(e){}
 }
@@ -2054,11 +2102,20 @@ const SEVO=[
   {name:'けんまくん',min:60, max:100, next:'石棒くんまで', img:'kenmakun.png'},
   {name:'石棒くん', min:100,max:100, next:'完成！'},
 ];
-let _sbF=0,_sbAnim=null,_sbSt='idle',_sbHappy=50,_sbHungry=50;
+let _sbF=0,_sbAnim=null,_sbSt='idle',_sbHappy=50,_sbHungry=50,_sbRestReturned=false,_sbBubbleTimer=null;
+const FOODS={
+  ayu:   {label:'鮎',   hungry:40, happy:10, msg:'鮎だ！うまい！！'},
+  kurumi:{label:'くるみ',hungry:25, happy:20, msg:'くるみ、こうばしい！'},
+  sansai:{label:'山菜', hungry:30, happy:15, msg:'山菜だ！しゃきしゃき！'},
+};
 
 function _getSevoIdx(total){
   if(total>=100)return 4; if(total>=60)return 3;
   if(total>=30)return 2;  if(total>=10)return 1; return 0;
+}
+function isSbAsleep(){ const h=new Date().getHours(); return h>=22||h<7; }
+function _bumpCareGood(){
+  localStorage.setItem('sbCareGood', String(parseInt(localStorage.getItem('sbCareGood')||'0')+1));
 }
 function _saveSb(){
   try{
@@ -2067,9 +2124,25 @@ function _saveSb(){
   }catch(e){}
 }
 function loadSekibocchi(){
-  const {happy,hungry}=_computeSbDecay();
-  _sbHappy=happy; _sbHungry=hungry;
-  localStorage.setItem('sbLastOpen', new Date().toISOString().slice(0,10));
+  if(!localStorage.getItem('sbBirthday')) localStorage.setItem('sbBirthday', new Date().toISOString().slice(0,10));
+  const last=localStorage.getItem('sbLastOpen');
+  const today=new Date().toISOString().slice(0,10);
+  const d=(last&&last!==today)?Math.floor((Date.now()-new Date(last).getTime())/86400000):0;
+  _sbRestReturned=false;
+  if(d>=7){
+    _sbHappy=30; _sbHungry=30;
+    localStorage.removeItem('sbSick'); localStorage.removeItem('sbSickCare'); localStorage.removeItem('sbDirty');
+    _sbRestReturned=true;
+  }else{
+    const {happy,hungry}=_computeSbDecay();
+    _sbHappy=happy; _sbHungry=hungry;
+    if(d>0){
+      const neglect=parseInt(localStorage.getItem('sbNeglectDays')||'0')+d;
+      localStorage.setItem('sbNeglectDays',String(neglect));
+    }
+    if(hungry<=0) localStorage.setItem('sbSick','1');
+  }
+  localStorage.setItem('sbLastOpen',today);
   _saveSb();
 }
 function _updateSevoBar(si){
@@ -2103,8 +2176,11 @@ function updateSekibocchiUI(){
   const num=document.getElementById('sprogNum');
   const fill=document.getElementById('sprogFill');
   if(!lbl)return;
-  if(si===4){lbl.textContent='石棒くんに進化済み！';num.textContent='';fill.style.width='100%';}
-  else{
+  if(si===4){
+    const neglect=parseInt(localStorage.getItem('sbNeglectDays')||'0');
+    lbl.textContent=neglect<=2?'✨ 立派な石棒くんに進化済み！':'石棒くんに進化済み！';
+    num.textContent='';fill.style.width='100%';
+  }else{
     const needed=stage.max-stage.min;
     const cur=Math.max(0,Math.min(total-stage.min,needed));
     lbl.textContent=stage.next; num.textContent=`${cur}/${needed}`;
@@ -2114,9 +2190,27 @@ function updateSekibocchiUI(){
   document.getElementById('spHappy').textContent=Math.round(_sbHappy)+'%';
   document.getElementById('sfHungry').style.width=_sbHungry+'%';
   document.getElementById('spHungry').textContent=Math.round(_sbHungry)+'%';
+
   const today=new Date().toISOString().slice(0,10);
-  const ayuBtn=document.getElementById('ayuBtn');
-  if(ayuBtn)ayuBtn.disabled=localStorage.getItem('sbLastFed')===today;
+  const asleep=isSbAsleep();
+  const sick=localStorage.getItem('sbSick')==='1';
+  const dirty=localStorage.getItem('sbDirty')==='1';
+
+  const statusRow=document.getElementById('sbStatusRow');
+  if(statusRow){
+    const pills=[];
+    if(asleep)pills.push('<span class="sb-pill sb-pill-sleep">😴 おやすみ中</span>');
+    if(sick)pills.push('<span class="sb-pill sb-pill-sick">🤒 元気がない</span>');
+    if(dirty)pills.push('<span class="sb-pill sb-pill-dirty">💩 よごれてる</span>');
+    statusRow.innerHTML=pills.join('');
+    statusRow.style.display=pills.length?'flex':'none';
+  }
+  const cleanBtn=document.getElementById('cleanBtn');
+  if(cleanBtn)cleanBtn.style.display=dirty?'':'none';
+  Object.keys(FOODS).forEach(k=>{
+    const b=document.getElementById('food-'+k);
+    if(b)b.disabled=localStorage.getItem('sbLastFed_'+k)===today;
+  });
 }
 function showSBBubble(txt){
   const el=document.getElementById('sbBubble'); if(!el)return;
@@ -2125,20 +2219,72 @@ function showSBBubble(txt){
 }
 function petSekibocchi(){
   playSfx('pet.mp3');
+  if(isSbAsleep()){
+    showSBBubble('（すやすや…）おこさないで…');
+    return;
+  }
+  localStorage.setItem('sbPetCount',String(parseInt(localStorage.getItem('sbPetCount')||'0')+1));
+  _bumpCareGood();
   _sbHappy=Math.min(100,_sbHappy+15); _sbSt='happy'; _saveSb(); updateSekibocchiUI();
   const p=['やったー！','うれしい！','なでるのすき！','ありがとう！'];
   showSBBubble(p[Math.floor(Math.random()*p.length)]);
   setTimeout(()=>_sbSt='idle',2500);
 }
-function feedAyu(){
+function feedSekibocchi(type){
+  const food=FOODS[type]; if(!food)return;
+  if(isSbAsleep()){ showSBBubble('（すやすや…）'); return; }
   const today=new Date().toISOString().slice(0,10);
-  if(localStorage.getItem('sbLastFed')===today){showSBBubble('また明日ね...');return;}
+  const key='sbLastFed_'+type;
+  if(localStorage.getItem(key)===today){showSBBubble('また明日ね...');return;}
   playSfx('ayu.mp3');
-  _sbHungry=Math.min(100,_sbHungry+40); _sbHappy=Math.min(100,_sbHappy+10);
-  localStorage.setItem('sbLastFed',today); _sbSt='happy'; _saveSb(); updateSekibocchiUI();
-  showSBBubble('鮎だ！うまい！！');
+  localStorage.setItem(key,today);
+  localStorage.setItem('sbFeedCount',String(parseInt(localStorage.getItem('sbFeedCount')||'0')+1));
+  _bumpCareGood();
+  if(localStorage.getItem('sbSick')==='1'){
+    const care=parseInt(localStorage.getItem('sbSickCare')||'0')+1;
+    if(care>=2){
+      localStorage.removeItem('sbSick'); localStorage.removeItem('sbSickCare');
+      _sbHappy=40; _sbHungry=40;
+      showSBBubble('げんきになった！');
+    }else{
+      localStorage.setItem('sbSickCare',String(care));
+      _sbHungry=Math.min(100,_sbHungry+15);
+      showSBBubble('すこしげんきが出た…');
+    }
+  }else{
+    _sbHungry=Math.min(100,_sbHungry+food.hungry); _sbHappy=Math.min(100,_sbHappy+food.happy);
+    showSBBubble(food.msg);
+    if(Math.random()<.6) localStorage.setItem('sbDirty','1');
+  }
+  _saveSb(); _sbSt='happy'; updateSekibocchiUI();
   if(navigator.vibrate)navigator.vibrate(30);
   setTimeout(()=>_sbSt='idle',2500);
+}
+function cleanSekibocchi(){
+  if(localStorage.getItem('sbDirty')!=='1')return;
+  localStorage.removeItem('sbDirty');
+  _bumpCareGood();
+  _sbHappy=Math.min(100,_sbHappy+5); _saveSb();
+  showSBBubble('きれいになった！');
+  updateSekibocchiUI();
+}
+function showSbStats(){
+  const birthday=localStorage.getItem('sbBirthday')||new Date().toISOString().slice(0,10);
+  const days=Math.max(1,Math.floor((Date.now()-new Date(birthday).getTime())/86400000)+1);
+  const pets=localStorage.getItem('sbPetCount')||'0';
+  const feeds=localStorage.getItem('sbFeedCount')||'0';
+  const name=localStorage.getItem('sbName')||'せきぼっち';
+  document.getElementById('detailInner').innerHTML=`
+    <div class="detail-close-row"><button class="detail-close" onclick="closeDetail()">✕</button></div>
+    <div style="padding:0 24px 28px;text-align:center">
+      <div style="font-size:1.05rem;font-weight:900;color:#4a2810;margin-bottom:18px">📊 ${name}の記録</div>
+      <div style="display:flex;flex-direction:column;gap:14px;text-align:left;font-size:.88rem;color:#3a2010">
+        <div>🗓 育成日数：<b>${days}日め</b></div>
+        <div>🖐 なでた回数：<b>${pets}回</b></div>
+        <div>🍽 ごはんをあげた回数：<b>${feeds}回</b></div>
+      </div>
+    </div>`;
+  document.getElementById('detailModal').classList.add('on');
 }
 function _sbRR(ctx,x,y,w,h,r){
   ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
@@ -2161,6 +2307,11 @@ function _sbFace(ctx,e){
     ctx.beginPath(); ctx.arc(0,5,5,0,Math.PI,true); ctx.stroke();
     ctx.fillStyle='rgba(100,160,220,.65)';
     ctx.beginPath(); ctx.ellipse(12,-3,2,3.5,.3,0,Math.PI*2); ctx.fill();
+  } else if(e==='sleep'){
+    ctx.strokeStyle='#1a0a02'; ctx.lineWidth=2.5; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(-10,-6); ctx.lineTo(-4,-6); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(4,-6); ctx.lineTo(10,-6); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0,1,4,0,Math.PI); ctx.stroke();
   } else {
     ctx.fillStyle='#1a0a02';
     ctx.beginPath(); ctx.arc(-7,-6,3.5,0,Math.PI*2); ctx.fill();
@@ -2177,21 +2328,29 @@ function drawSekibocchi(t){
   if(!cvs||!img)return;
   const col=loadCollection(); const total=col.reduce((s,c)=>s+(c.count||1),0);
   const si=_getSevoIdx(total);
-  const bounce=_sbSt==='happy'?Math.sin(t*.18)*6:Math.sin(t*.04)*3;
+  const asleep=isSbAsleep();
+  const sick=localStorage.getItem('sbSick')==='1';
+  const zzz=document.getElementById('sbZzz');
+  if(zzz)zzz.style.display=asleep?'block':'none';
+  const bounce=asleep?0:_sbSt==='happy'?Math.sin(t*.18)*6:Math.sin(t*.04)*3;
   if(si<4){
     cvs.style.display='none'; img.style.display='block';
     if(img.dataset.stage!==String(si)){ img.src=SEVO[si].img; img.dataset.stage=String(si); }
     img.style.transform=`translateY(${-bounce}px)`;
-    img.style.filter=_sbHungry<20&&_sbSt!=='happy'?'saturate(.55) brightness(.9)':'none';
+    img.style.filter = sick?'saturate(.3) brightness(.85) hue-rotate(60deg)'
+      : asleep?'brightness(.75) saturate(.7)'
+      : (_sbHungry<20&&_sbSt!=='happy')?'saturate(.55) brightness(.9)'
+      : 'none';
     return;
   }
   img.style.display='none'; cvs.style.display='block';
   const ctx=cvs.getContext('2d'); ctx.clearRect(0,0,240,160);
-  const eyes=_sbSt==='happy'?'happy':_sbHungry<20?'sad':'normal';
+  const eyes=asleep?'sleep':sick?'sad':_sbSt==='happy'?'happy':_sbHungry<20?'sad':'normal';
   const cx=120, cy=82+bounce;
   ctx.beginPath(); ctx.ellipse(cx,cy+52,22,5,0,0,Math.PI*2);
   ctx.fillStyle='rgba(0,0,0,.15)'; ctx.fill();
   ctx.save(); ctx.translate(cx,cy);
+  if(sick) ctx.filter='saturate(.4) brightness(.85) hue-rotate(60deg)';
   {
     const aw=_sbSt==='happy'?Math.sin(t*.22)*12:0;
     ctx.strokeStyle='#5a3a1a'; ctx.lineWidth=6; ctx.lineCap='round';
@@ -2212,6 +2371,16 @@ function drawSekibocchi(t){
     ctx.beginPath(); _sbRR(ctx,-14,-38,10,28,6); ctx.fill();
     ctx.save(); ctx.translate(0,-8); _sbFace(ctx,eyes); ctx.restore();
   }
+  ctx.filter='none';
+  if(!sick&&!asleep&&parseInt(localStorage.getItem('sbNeglectDays')||'0')<=2){
+    ctx.fillStyle='rgba(255,215,80,.9)';
+    [[-30,-50],[28,-46],[0,-58]].forEach(([sx,sy],i)=>{
+      const tw=(Math.sin(t*.1+i)+1)/2;
+      ctx.globalAlpha=.4+tw*.6;
+      ctx.beginPath(); ctx.arc(sx,sy,3,0,Math.PI*2); ctx.fill();
+    });
+    ctx.globalAlpha=1;
+  }
   ctx.restore();
 }
 function initSekibocchi(){
@@ -2219,13 +2388,28 @@ function initSekibocchi(){
   if(_sbAnim)cancelAnimationFrame(_sbAnim);
   _sbF=0;
   (function loop(){ _sbF++; drawSekibocchi(_sbF); _sbAnim=requestAnimationFrame(loop); })();
-  setInterval(()=>{
+  if(_sbRestReturned) setTimeout(()=>showSBBubble('おかえり…しばらく眠っていたみたい'),400);
+  if(_sbBubbleTimer)clearInterval(_sbBubbleTimer);
+  _sbBubbleTimer=setInterval(()=>{
     if(_sbSt!=='idle')return;
-    if(!document.getElementById('sekibocchiCanvas'))return;
+    if(!document.getElementById('sekibocchiScreen').classList.contains('active'))return;
+    if(isSbAsleep()){ if(Math.random()<.35)showSBBubble(['Zzz...','すやすや…'][Math.floor(Math.random()*2)]); return; }
+    if(Math.random()<.06){
+      const events=[
+        {msg:'🎁 お土産をみつけた！', happy:10, hungry:0},
+        {msg:'👋 お客さんが来たよ！', happy:5, hungry:5},
+      ];
+      const ev=events[Math.floor(Math.random()*events.length)];
+      _sbHappy=Math.min(100,_sbHappy+ev.happy); _sbHungry=Math.min(100,_sbHungry+ev.hungry);
+      _saveSb(); updateSekibocchiUI();
+      showSBBubble(ev.msg);
+      return;
+    }
     if(Math.random()>.35)return;
-    const p=_sbHungry<20
-      ?['おなかすいた...','鮎がほしい...','スキャンして...']
-      :['...','うむ','バーコードをさがせ'];
+    const sick=localStorage.getItem('sbSick')==='1';
+    const p = sick?['気分が悪い…','げんきがでない…']
+      : _sbHungry<20?['おなかすいた...','ごはんがほしい...','スキャンして...']
+      : ['...','うむ','バーコードをさがせ'];
     showSBBubble(p[Math.floor(Math.random()*p.length)]);
   },5000);
 }
@@ -2387,6 +2571,7 @@ function checkDailyBonus(){
 (function(){
   const saved=localStorage.getItem('theme')||'light';
   applyTheme(saved);
+  updateMuteBtnUI();
   initHomeDust();
   initHomeParticles();
   runHomeIntro();
