@@ -1516,11 +1516,27 @@ function playRevealAfterExcavation(stone,isNew){
 
   // complete collection → end roll
   if(isNew) checkCollectionComplete(2200);
+  checkSekibocchiEvolution();
 }
 function checkCollectionComplete(delay){
   if(loadCollection().length!==TOTAL||localStorage.getItem('sekiboCompleted')==='1')return;
   localStorage.setItem('sekiboCompleted','1');
   setTimeout(goCredits, delay||0);
+}
+function checkSekibocchiEvolution(){
+  const col=loadCollection();
+  const total=col.reduce((s,c)=>s+(c.count||1),0);
+  const si=_getSevoIdx(total);
+  const lastSi=localStorage.getItem('sbLastSi');
+  localStorage.setItem('sbLastSi',String(si));
+  if(lastSi===null)return; // first run: just record baseline, no false trigger
+  if(si>parseInt(lastSi)){
+    const name=localStorage.getItem('sbName')||'せきぼっち';
+    setTimeout(()=>{
+      showToast(`🎉 ${name}が「${SEVO[si].name}」に成長した！`);
+      if(navigator.vibrate)navigator.vibrate([30,40,30,40,60]);
+    },1600);
+  }
 }
 function goCredits(){
   showScreen('creditsScreen');
