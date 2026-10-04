@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>石棒スキャナー｜バーコードで縄文を発掘するゲーム</title>
+<meta name="description" content="身の回りのバーコードをスキャンして、縄文の遺物を発掘。全211種を集めて、石棒の相棒「せきぼっち」を育てよう。無料・インストール不要。">
+<meta property="og:title" content="石棒スキャナー｜バーコードで縄文を発掘するゲーム">
+<meta property="og:description" content="身の回りのバーコードをスキャンして、縄文の遺物を発掘。全211種を集めて、せきぼっちを育てよう。無料・インストール不要。">
+<meta property="og:image" content="https://shunpedesu.github.io/sekibo-scanner/og-image.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="icon-192.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  --cream:#fdf3e0; --sand:#f5e0b0; --gold:#c8a050; --brown:#4a2810; --brown2:#7a4820; --soft:#8a6030; --green:#4a7a38;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Hiragino Maru Gothic ProN','Hiragino Sans','Yu Gothic UI','Meiryo',sans-serif;
+  color:var(--brown); background:var(--cream); line-height:1.7;
+}
+section{
+  min-height:100svh; padding:56px 24px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; text-align:center; position:relative; overflow:hidden;
+}
+.inner{width:100%; max-width:960px; position:relative; z-index:1;}
+
+/* ── buttons ── */
+.cta{
+  display:inline-flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; white-space:nowrap;
+  background:linear-gradient(135deg,#d8602a,#f08038); color:#fff; font-weight:900;
+  font-size:1.2rem; letter-spacing:.14em; padding:18px 44px; border-radius:60px;
+  text-decoration:none; box-shadow:0 7px 0 rgba(120,50,10,.35),0 14px 28px rgba(120,60,10,.25);
+  transition:transform .12s, box-shadow .12s;
+}
+.cta:hover{transform:translateY(-2px);}
+.cta:active{transform:translateY(4px); box-shadow:0 3px 0 rgba(120,50,10,.35);}
+.cta small{display:block;font-size:.7rem;letter-spacing:.1em;font-weight:700;opacity:.9;}
+
+/* ── 1. hero ── */
+#hero{background:linear-gradient(160deg,#fdf3e0 0%,#f5e0b0 60%,#e8c878 100%);}
+.dot{position:absolute;border-radius:50%;background:radial-gradient(circle,#ffd700,rgba(200,150,40,0));opacity:.7;animation:float 4s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.hero-grid{display:flex;flex-direction:column;align-items:center;gap:28px;}
+.mascot-wrap{position:relative;width:min(48vw,200px);}
+.mascot-wrap::before{
+  content:'';position:absolute;inset:-30%;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,220,140,.95),rgba(255,220,140,0) 68%);
+}
+.mascot{position:relative;width:100%;display:block;filter:drop-shadow(0 14px 18px rgba(90,50,10,.3));animation:bob 3.2s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-12px) rotate(1.5deg)}}
+
+.eyebrow{font-size:.9rem;font-weight:700;color:var(--soft);letter-spacing:.2em;margin-bottom:14px;}
+.tablet-wrap{position:relative;display:inline-block;padding:18px 30px;margin-bottom:20px;}
+.tablet{
+  position:absolute;inset:0;filter:blur(.8px);
+  clip-path:polygon(6% 10%,20% 4%,35% 8%,50% 3%,65% 7%,80% 3%,94% 9%,97% 25%,100% 45%,96% 62%,99% 80%,93% 95%,78% 98%,62% 94%,47% 98%,32% 94%,16% 98%,5% 90%,7% 70%,2% 50%,5% 32%,3% 18%);
+}
+.tablet.back{background:#6a4a28;transform:translate(5px,7px);}
+.tablet.front{background:linear-gradient(160deg,#f0dcac,#e0c184);}
+h1{
+  position:relative;z-index:1;font-size:clamp(1.9rem,8.5vw,3.6rem);font-weight:900;letter-spacing:.06em;white-space:nowrap;
+  color:#5a3018;text-shadow:0 0 6px #fdf6e6,0 0 6px #fdf6e6,0 0 3px #fdf6e6,1px 1px 0 rgba(90,55,20,.25);
+}
+.lead{font-size:clamp(1.05rem,3.6vw,1.45rem);font-weight:700;line-height:1.8;margin-bottom:26px;}
+.free{margin-top:14px;font-size:.8rem;color:var(--soft);letter-spacing:.08em;}
+.qr-box{display:none;}
+.scroll-hint{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:.7rem;letter-spacing:.25em;color:var(--soft);animation:float 2s ease-in-out infinite;}
+
+/* ── 2. how ── */
+#how{background:#fff8ea;}
+h2{font-size:clamp(1.5rem,6vw,2.3rem);font-weight:900;letter-spacing:.08em;margin-bottom:8px;}
+h2 em{font-style:normal;color:#d8602a;}
+.sub{color:var(--soft);font-size:.95rem;margin-bottom:34px;}
+.steps{display:grid;grid-template-columns:1fr;gap:16px;}
+.step{
+  background:#fff;border:2px solid rgba(200,160,80,.35);border-radius:22px;padding:24px 20px;
+  box-shadow:0 6px 0 rgba(200,160,80,.22);display:flex;align-items:center;gap:18px;text-align:left;
+}
+.step .no{
+  flex-shrink:0;width:44px;height:44px;border-radius:50%;background:var(--gold);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.2rem;
+}
+.step .ico{font-size:2rem;flex-shrink:0;}
+.step b{display:block;font-size:1.1rem;margin-bottom:2px;}
+.step span{font-size:.88rem;color:var(--soft);line-height:1.6;display:block;}
+.rare{margin-top:26px;font-size:.95rem;font-weight:700;background:linear-gradient(90deg,transparent,rgba(255,215,0,.28),transparent);padding:12px;border-radius:14px;}
+
+/* ── 3. pet ── */
+#pet{background:linear-gradient(180deg,#f5e0b0,#e8c878);}
+.evo{display:flex;justify-content:center;align-items:flex-end;gap:2px;margin:6px 0 10px;flex-wrap:nowrap;}
+.evo figure{flex:1;max-width:120px;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.evo img{width:100%;height:auto;display:block;filter:drop-shadow(0 6px 8px rgba(90,50,10,.25));}
+.evo figure:nth-of-type(1) img{width:62%;} .evo figure:nth-of-type(2) img{width:70%;}
+.evo figure:nth-of-type(3) img{width:80%;} .evo figure:nth-of-type(4) img{width:90%;}
+.evo figure:nth-of-type(5) img{width:90%;filter:brightness(.3) drop-shadow(0 6px 8px rgba(0,0,0,.2));}
+.evo figcaption{font-size:.62rem;font-weight:700;color:var(--soft);letter-spacing:.02em;white-space:nowrap;}
+.arrow{align-self:center;color:var(--gold);font-weight:900;margin-bottom:22px;}
+.pet-note{font-size:.95rem;margin:14px auto 32px;max-width:420px;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:34px;}
+.chips span{background:rgba(255,255,255,.65);border-radius:30px;padding:6px 14px;font-size:.82rem;font-weight:700;color:var(--brown2);}
+
+footer{margin-top:44px;font-size:.78rem;color:var(--soft);line-height:2;}
+footer a{color:inherit;text-underline-offset:3px;}
+footer img{width:88px;display:block;margin:0 auto 10px;opacity:.9;}
+
+/* ── reveal ── */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease;}
+.rv.in{opacity:1;transform:none;}
+
+/* ── desktop ── */
+@media (min-width:820px){
+  .hero-grid{flex-direction:row-reverse;justify-content:center;gap:70px;text-align:left;}
+  .hero-text{text-align:left;}
+  .mascot-wrap{width:260px;}
+  .qr-box{display:flex;align-items:center;gap:14px;margin-top:26px;font-size:.8rem;color:var(--soft);}
+  .qr-box #qr{background:#fff;padding:8px;border-radius:10px;}
+  .steps{grid-template-columns:repeat(3,1fr);}
+  .step{flex-direction:column;text-align:center;padding:30px 20px;}
+  .evo figure{max-width:150px;}
+  .evo figcaption{font-size:.8rem;}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}.rv{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+
+<!-- 1 HERO -->
+<section id="hero">
+  <i class="dot" style="width:16px;height:16px;top:12%;left:14%"></i>
+  <i class="dot" style="width:10px;height:10px;top:22%;right:12%;animation-delay:-1.4s"></i>
+  <i class="dot" style="width:14px;height:14px;bottom:20%;left:20%;animation-delay:-2.2s"></i>
+  <div class="inner hero-grid">
+    <div class="mascot-wrap"><img class="mascot" src="gensekikun.png" alt="せきぼっち"></div>
+    <div class="hero-text">
+      <div class="eyebrow">🏺 縄文の遺物 発掘ゲーム</div>
+      <div class="tablet-wrap">
+        <div class="tablet back"></div><div class="tablet front"></div>
+        <h1>石棒スキャナー</h1>
+      </div>
+      <p class="lead">身の回りのバーコードが、<br>縄文の遺物になる。</p>
+      <a class="cta" href="https://shunpedesu.github.io/sekibo-scanner/"><span>📷 いますぐ発掘する</span><small>無料・ダウンロード不要</small></a>
+      <div class="qr-box"><div id="qr"></div><span>スマホで読み取って<br>そのままプレイ</span></div>
+    </div>
+  </div>
+  <div class="scroll-hint">SCROLL ↓</div>
+</section>
+
+<!-- 2 HOW -->
+<section id="how">
+  <div class="inner">
+    <h2 class="rv">遊び方は、<em>3つだけ</em></h2>
+    <p class="sub rv">お菓子の袋でも、本の裏でも。バーコードなら何でもOK。</p>
+    <div class="steps">
+      <div class="step rv"><span class="ico">📷</span><div><b>スキャンする</b><span>カメラをバーコードにかざすだけ。同じバーコードからは、いつも同じ遺物が出るよ。</span></div></div>
+      <div class="step rv"><span class="ico">🪨</span><div><b>土をなぞって発掘</b><span>指で土を払うと、土の中から遺物がゆっくり姿をあらわす。</span></div></div>
+      <div class="step rv"><span class="ico">📚</span><div><b>図鑑を埋める</b><span>全211種を目指そう。実物をもとにした3Dモデルも見られる。</span></div></div>
+    </div>
+    <p class="rare rv">⭐ 500回に1回、激レア「石棒くん」「メカ石棒くん」が出るかも</p>
+  </div>
+</section>
+
+<!-- 3 PET + footer -->
+<section id="pet">
+  <div class="inner">
+    <h2 class="rv">発掘するほど、<em>育つ</em></h2>
+    <p class="sub rv">相棒の「せきぼっち」は、発掘した数に合わせて進化する。</p>
+    <div class="evo rv">
+      <figure><img src="gensekikun.png" alt=""><figcaption>原石くん</figcaption></figure><span class="arrow">›</span>
+      <figure><img src="hakurikun.png" alt=""><figcaption>はくりくん</figcaption></figure><span class="arrow">›</span>
+      <figure><img src="koudakun.png" alt=""><figcaption>こうだくん</figcaption></figure><span class="arrow">›</span>
+      <figure><img src="kenmakun.png" alt=""><figcaption>けんまくん</figcaption></figure><span class="arrow">›</span>
+      <figure><img src="sekibo-kun.png" alt="？"><figcaption>？？？</figcaption></figure>
+    </div>
+    <p class="pet-note rv">なでたり、飛騨のごはんをあげたり。<br>世話をサボると、ちょっと元気がなくなるかも。</p>
+    <div class="chips rv"><span>🌰 ごはんは3種類</span><span>😴 夜は寝る</span><span>🎁 たまにお土産</span></div>
+    <a class="cta rv" href="https://shunpedesu.github.io/sekibo-scanner/">📷 発掘をはじめる</a>
+    <footer class="rv">
+      <a href="https://www.sekiboclub.com/" target="_blank" rel="noopener"><img src="logo.png" alt="石棒クラブ"></a>
+      3Dデータ提供：<a href="https://sketchfab.com/sekibo.club" target="_blank" rel="noopener">石棒クラブ</a>／<a href="https://www.city.hida.gifu.jp/map/s077.html" target="_blank" rel="noopener">飛騨みやがわ考古民俗館</a><br>
+      館に行くと、館内限定の遺物が手に入るかも。
+    </footer>
+  </div>
+</section>
+
+<script>
+// scroll reveal
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.15});
+document.querySelectorAll('.rv').forEach((el,i)=>{el.style.transitionDelay=(i%3)*90+'ms';io.observe(el);});
+// QR (desktop only)
+if(window.QRCode&&matchMedia('(min-width:820px)').matches){
+  new QRCode(document.getElementById('qr'),{text:'https://shunpedesu.github.io/sekibo-scanner/',width:96,height:96,colorDark:'#4a2810',colorLight:'#ffffff'});
+}
+</script>
+</body>
+</html>
