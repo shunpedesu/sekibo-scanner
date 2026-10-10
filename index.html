@@ -24,6 +24,7 @@
 <meta name="apple-mobile-web-app-title" content="石棒スキャナー">
 <link rel="apple-touch-icon" href="https://shunpedesu.github.io/sekibo-scanner/icon-512.png">
 <script src="https://unpkg.com/@zxing/library@0.20.0/umd/index.min.js"></script>
+<script src="release-notes.js"></script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; }
 html,body { width:100%; height:100%; height:100dvh; overflow:hidden; background:#fdf3e0; font-family:'Hiragino Maru Gothic ProN','Hiragino Sans','Arial Rounded MT Bold',sans-serif; }
@@ -36,7 +37,7 @@ html,body { width:100%; height:100%; height:100dvh; overflow:hidden; background:
   background:linear-gradient(160deg,#fdf3e0 0%,#f5e8c8 100%);
   align-items:center; justify-content:safe center; padding:14px 24px max(20px,env(safe-area-inset-bottom));
   overflow-y:auto;
-  padding-bottom:max(20px,calc(env(safe-area-inset-bottom) + 12px));
+  padding-bottom:max(26px,calc(env(safe-area-inset-bottom) + 16px));
 }
 #homeBgVideo {
   position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
@@ -608,8 +609,127 @@ body.theme-dark .col-goal   { color:#806040; }
 .sevo-name { font-size:7px; color:#b08050; letter-spacing:.04em; text-align:center; }
 .sevo-name.current { color:#4a2810; font-weight:900; }
 .sevo-line { flex-shrink:0; width:8px; height:1px; background:rgba(160,120,60,.3); margin-bottom:12px; }
-.sb-canvas-wrap { position:relative; display:flex; flex:1; min-height:0; align-items:center; justify-content:center; margin:4px 0; }
-.sb-bubble { position:absolute; top:6px; left:50%; transform:translateX(-50%); background:#f5eedc; color:#3a1a06; font-size:10px; font-weight:700; border-radius:10px; padding:4px 10px; white-space:nowrap; opacity:0; transition:opacity .3s; pointer-events:none; z-index:2; }
+/* 画面いっぱいの1枚のカード：上が部屋、下が操作パネル（すべて枠の中） */
+.sb-card { width:100%; flex:1; min-height:0; display:flex; flex-direction:column; border-radius:22px; overflow:hidden; border:3px solid #5a3a1a; box-shadow:inset 0 0 0 2px rgba(255,220,150,.35),0 6px 16px rgba(90,50,10,.25); background:#46290f; }
+.sb-canvas-wrap { position:relative; display:flex; flex:1; min-height:0; align-items:flex-end; justify-content:center; overflow:hidden; background:#c9a06a; --sb-h:200px; --sb-cw:300px; }
+.sb-info-btn { position:absolute; top:calc(9% + 8px); right:8px; z-index:5; width:36px; height:36px; border-radius:50%; border:2px solid rgba(255,230,170,.55); background:rgba(60,36,16,.78); color:#fff; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; }
+.sb-hud { flex-shrink:0; display:flex; flex-direction:column; gap:7px; padding:8px 12px max(10px,calc(env(safe-area-inset-bottom)*.4)); background:linear-gradient(#5e3d1e,#43270d); border-top:4px solid #2e1a06; box-shadow:inset 0 2px 0 rgba(255,220,150,.22); color:#fbeccb; }
+body .sb-hud .sb-prog { padding:0; }
+body .sb-hud .sb-prog-label { color:#f3dca4; font-size:12px; font-weight:700; margin-bottom:4px; }
+body .sb-hud #sprogNum { color:#ffd46a; font-family:monospace; font-size:12px; }
+body .sb-hud .sb-prog-bg, body .sb-hud .sb-stat-bg { background:rgba(0,0,0,.4); height:10px; border-radius:6px; }
+body .sb-hud .sb-prog-fill { border-radius:7px; }
+body .sb-hud .sb-stat-fill { border-radius:7px; }
+body .sb-hud .sb-stats { flex-direction:row; gap:12px; margin:0; }
+body .sb-hud .sb-stat-row { flex:1; min-width:0; display:grid; grid-template-columns:1fr auto; grid-template-areas:"lbl pct" "bar bar"; row-gap:4px; align-items:end; gap:0 8px; }
+body .sb-hud .sb-stat-lbl { grid-area:lbl; width:auto; color:#f3dca4; font-size:13px; white-space:nowrap; }
+body .sb-hud .sb-stat-pct { grid-area:pct; width:auto; color:#fff3d0; font-size:13px; font-weight:700; }
+body .sb-hud .sb-stat-bg { grid-area:bar; }
+body .sb-hud .sb-hint { display:block; width:100%; margin-top:6px; padding:5px 6px; background:rgba(255,236,170,.14); border:1px dashed rgba(255,230,170,.55); border-radius:10px; color:#ffe9b0; font-family:inherit; font-size:11px; font-weight:700; letter-spacing:.02em; cursor:pointer; }
+body .sb-hud .sb-hint:active { background:rgba(255,236,170,.26); }
+/* 操作ボタンは1行の小さなアイコンボタン（なでる／そうじ／ごはん3種） */
+.sb-actions { display:flex; gap:6px; }
+.sb-act { flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; gap:1px; padding:5px 2px 4px; border:none; border-radius:13px; font-size:20px; line-height:1.15; font-family:inherit; cursor:pointer; background:rgba(255,246,222,.94); box-shadow:0 3px 0 rgba(0,0,0,.28); transition:transform .1s,box-shadow .1s,opacity .1s; }
+.sb-act span { font-size:11px; font-weight:900; color:#5a3a10; letter-spacing:.02em; white-space:nowrap; }
+.sb-act:active { transform:translateY(2px); box-shadow:0 1px 0 rgba(0,0,0,.28); }
+.sb-act:disabled { opacity:.38; cursor:not-allowed; }
+.sb-act:disabled:active { transform:none; box-shadow:0 3px 0 rgba(0,0,0,.28); }
+.sb-act.sbtn-pet { background:linear-gradient(#f4c964,#dca83e); box-shadow:0 3px 0 #8a5a14; }
+.sb-act.sbtn-pet span { color:#3a2008; }
+.sb-act.sbtn-clean { background:rgba(255,244,214,.18); border:1.5px solid rgba(255,230,170,.55); box-shadow:none; }
+.sb-act.sbtn-clean span { color:#fbeccb; }
+
+/* ── せきぼっちのおへや（竪穴住居の中） ── */
+.sb-room { position:absolute; inset:0; z-index:0; --sky-top:#7cc4f0; --sky-bot:#cfeaff; --dim:0; --stars:0; --glow:.25;
+  background:radial-gradient(circle at 20% 30%,rgba(255,235,190,.2),transparent 42%),repeating-linear-gradient(90deg,rgba(90,55,25,.05) 0 3px,transparent 3px 11px),linear-gradient(#d6aa72,#c08f58); }
+.rm-beam { position:absolute; left:0; right:0; top:0; height:9%; background:linear-gradient(#6e4727,#573719); box-shadow:0 3px 6px rgba(0,0,0,.28); z-index:1; }
+.rm-beam::after { content:''; position:absolute; left:0; right:0; bottom:0; height:5px; background:repeating-linear-gradient(135deg,#d8bf86 0 4px,#a88a52 4px 8px); }
+.rm-orn { position:absolute; top:8%; width:0; height:0; z-index:1; transform-origin:50% 0; animation:ornSwing 3.4s ease-in-out infinite alternate; }
+.rm-orn::before { content:''; position:absolute; left:0; top:0; width:1px; height:var(--len,10px); background:#d8bf86; }
+.rm-orn span { position:absolute; left:-9px; top:var(--len,10px); font-size:16px; line-height:1; }
+@keyframes ornSwing { from{transform:rotate(-5deg)} to{transform:rotate(5deg)} }
+.rm-window { position:absolute; left:34%; width:32%; top:13%; height:36%; border-radius:999px 999px 6px 6px; overflow:hidden; border:3px solid #5a3a1a; box-shadow:inset 0 0 8px rgba(0,0,0,.35),0 2px 0 rgba(255,225,170,.5); z-index:2; }
+.rw-sky { position:absolute; inset:0; background:linear-gradient(var(--sky-top),var(--sky-bot)); transition:background 1s; }
+.rw-stars { position:absolute; inset:0; opacity:var(--stars); }
+.rw-stars i { position:absolute; width:2px; height:2px; background:#fff; border-radius:50%; animation:twinkle 2.4s ease-in-out infinite; }
+@keyframes twinkle { 0%,100%{opacity:.25} 50%{opacity:1} }
+.rw-body { position:absolute; width:15px; height:15px; border-radius:50%; transform:translate(-50%,-50%); }
+.rw-body.sun { background:#fff3b0; box-shadow:0 0 12px 6px rgba(255,220,120,.8); }
+.rw-body.moon { background:#f4f1d8; box-shadow:0 0 10px 3px rgba(240,240,200,.55),inset -4px -2px 0 rgba(200,200,170,.6); }
+.rw-cloud { position:absolute; height:7px; width:26px; background:rgba(255,255,255,.88); border-radius:8px; opacity:calc(1 - var(--dim)*1.7); animation:cloudDrift 30s linear infinite; }
+.rw-cloud::before { content:''; position:absolute; left:6px; top:-4px; width:12px; height:9px; background:inherit; border-radius:50%; }
+.rw-cloud.c1 { top:22%; left:-30%; }
+.rw-cloud.c2 { top:46%; left:-30%; animation-duration:44s; animation-delay:-18s; transform:scale(.75); }
+@keyframes cloudDrift { to { left:110%; } }
+.rw-frame { position:absolute; inset:0; pointer-events:none; background:linear-gradient(#5a3a1a,#5a3a1a) center/3px 100% no-repeat,linear-gradient(#5a3a1a,#5a3a1a) 0 62%/100% 3px no-repeat; }
+.rm-shelf { position:absolute; top:30%; width:27%; height:22%; display:flex; justify-content:space-evenly; align-items:flex-end; padding-bottom:6px; z-index:0; }
+.rm-shelf.left { left:4%; } .rm-shelf.right { right:4%; }
+.rm-shelf::after { content:''; position:absolute; left:0; right:0; bottom:0; height:5px; background:#6a4426; border-radius:2px; box-shadow:0 2px 3px rgba(0,0,0,.25); }
+.rm-item { width:36%; max-width:34px; aspect-ratio:1; border:2px solid #5a3a1a; border-radius:6px; background:#f7eccb; overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:11px; color:rgba(90,58,26,.5); font-weight:900; box-shadow:0 2px 3px rgba(0,0,0,.2); }
+.rm-item img { width:100%; height:100%; object-fit:cover; display:block; }
+.rm-item.empty { background:rgba(90,58,26,.12); border-style:dashed; box-shadow:none; }
+.rm-floor { position:absolute; left:0; right:0; bottom:0; height:34%; background:linear-gradient(#8f6038,#6f4524); border-top:4px solid #5a3a1a; }
+.rm-floor::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 30% 40%,rgba(255,220,160,.14),transparent 55%),repeating-linear-gradient(100deg,rgba(0,0,0,.07) 0 2px,transparent 2px 14px); }
+.rm-jar { position:absolute; right:6%; bottom:19%; width:34px; height:44px; }
+.rm-dish { position:absolute; right:20%; bottom:13%; width:46px; height:21px; }
+.rm-dim { position:absolute; inset:0; background:rgb(10,14,40); opacity:calc(var(--dim)*.78); pointer-events:none; z-index:1; }
+.rm-fire { position:absolute; left:8%; bottom:17%; width:34px; height:42px; z-index:2; }
+.rm-fire .stones { position:absolute; bottom:0; left:-4px; right:-4px; height:11px; border-radius:50%; background:#7a7468; box-shadow:inset 0 -3px 0 #55504a,0 2px 0 #3a3630; }
+.rm-fire .flame { position:absolute; bottom:7px; border-radius:50%/65% 65% 35% 35%; transform-origin:50% 100%; animation:flameFlick .6s ease-in-out infinite alternate; }
+.rm-fire .flame.a { left:8px; width:18px; height:28px; background:linear-gradient(#ffe27a,#ff8a2a 60%,#e2481e); }
+.rm-fire .flame.b { left:1px; width:12px; height:18px; background:linear-gradient(#ffd060,#ff7a22); animation-delay:-.2s; }
+.rm-fire .flame.c { left:20px; width:12px; height:20px; background:linear-gradient(#ffd060,#ff7a22); animation-delay:-.4s; }
+@keyframes flameFlick { 0%{transform:scale(1,.92) rotate(-3deg)} 100%{transform:scale(.94,1.1) rotate(3deg)} }
+.rm-fireglow { position:absolute; left:-8%; bottom:-4%; width:60%; height:82%; background:radial-gradient(circle at 28% 78%,rgba(255,170,70,.95),rgba(255,120,40,.28) 40%,transparent 68%); opacity:var(--glow); mix-blend-mode:screen; pointer-events:none; z-index:3; transform-origin:28% 78%; animation:glowPulse 1.7s ease-in-out infinite alternate; }
+@keyframes glowPulse { from{transform:scale(.94)} to{transform:scale(1.06)} }
+
+.sb-actor { position:relative; z-index:2; display:flex; align-items:flex-end; justify-content:center; margin-bottom:9%; will-change:transform; }
+.sb-actor img { display:none; height:var(--sb-h); width:auto; max-width:none; transform-origin:50% 100%; cursor:pointer; -webkit-user-drag:none; }
+.sb-actor canvas { display:none; width:var(--sb-cw); height:auto; margin-bottom:calc(var(--sb-cw)*-.125); transform-origin:50% 86%; cursor:pointer; }
+.sb-shadow { position:absolute; left:50%; bottom:-5px; width:calc(var(--sb-h)*.55); height:12px; border-radius:50%; background:radial-gradient(rgba(30,15,5,.5),transparent 70%); transform:translateX(-50%); }
+.sb-fx { position:absolute; inset:0; width:100%; height:100%; z-index:3; pointer-events:none; }
+.sb-evo { position:absolute; inset:0; z-index:4; display:none; pointer-events:none; overflow:hidden; }
+.sb-evo.on { display:block; }
+.evo-rays { position:absolute; left:50%; top:52%; width:170%; aspect-ratio:1; margin:-85% 0 0 -85%; background:repeating-conic-gradient(rgba(255,238,160,.9) 0 7deg,transparent 7deg 22deg); -webkit-mask:radial-gradient(circle,#000 0,transparent 62%); mask:radial-gradient(circle,#000 0,transparent 62%); opacity:0; animation:evoSpin 6s linear infinite; }
+.sb-evo.on .evo-rays { animation:evoSpin 6s linear infinite,evoFadeIn 1s ease forwards; }
+@keyframes evoSpin { to { transform:rotate(360deg); } }
+@keyframes evoFadeIn { to { opacity:1; } }
+.evo-flash { position:absolute; inset:0; background:radial-gradient(circle at 50% 55%,#fff,rgba(255,250,220,.85) 55%,rgba(255,240,180,.4)); opacity:0; }
+.sb-evo.flash .evo-flash { animation:evoFlash 1.1s ease-out forwards; }
+@keyframes evoFlash { 0%{opacity:0} 25%{opacity:1} 100%{opacity:0} }
+.evo-title { position:absolute; left:0; right:0; bottom:12%; text-align:center; font-weight:900; font-size:15px; letter-spacing:.06em; color:#fff; text-shadow:0 0 6px #d8602a,0 0 12px #d8602a,0 2px 0 #7a3a10; opacity:0; transform:translateY(10px); transition:opacity .5s,transform .5s; padding:0 10px; }
+.sb-evo.title .evo-title { opacity:1; transform:none; }
+.sb-actor.evo-sil img, .sb-actor.evo-sil canvas { filter:brightness(0) invert(1) !important; animation:evoPulse .5s ease-in-out infinite alternate; }
+@keyframes evoPulse { from{opacity:.75} to{opacity:1} }
+.sb-actor.evo-pop img, .sb-actor.evo-pop canvas { animation:evoPop .7s cubic-bezier(.17,.89,.32,1.4); }
+@keyframes evoPop { 0%{scale:.55} 60%{scale:1.18} 100%{scale:1} }
+
+/* ── 画面下のバージョン表示 ── */
+.ver-footer { position:fixed; left:50%; bottom:max(3px,calc(env(safe-area-inset-bottom)*.4)); transform:translateX(-50%); z-index:59; background:rgba(0,0,0,.24); color:rgba(255,255,255,.88); border:none; border-radius:10px; padding:2px 9px; font-size:10px; font-family:inherit; font-weight:700; letter-spacing:.08em; cursor:pointer; }
+/* ── アップデート案内 ── */
+.rn-backdrop { display:none; position:fixed; inset:0; z-index:180; background:rgba(0,0,0,.6); align-items:center; justify-content:center; padding:20px; }
+.rn-backdrop.on { display:flex; }
+.rn-card { background:#fffaf0; border-radius:22px; width:100%; max-width:340px; max-height:88vh; overflow-y:auto; padding:22px 20px 18px; text-align:center; animation:cardPop .3s ease both; position:relative; }
+.rn-card small { display:block; font-size:.7rem; font-weight:900; letter-spacing:.2em; color:#d8602a; margin-bottom:4px; }
+.rn-card h2 { font-size:1.15rem; font-weight:900; color:#4a2810; margin-bottom:6px; }
+.rn-lead { font-size:.82rem; color:#7a5030; line-height:1.7; margin-bottom:14px; }
+.rn-list { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; text-align:left; }
+.rn-list article { background:#fff; border:1.5px solid rgba(200,160,80,.35); border-radius:14px; padding:9px 12px; }
+.rn-list strong { display:block; font-size:.85rem; color:#4a2810; }
+.rn-list span { font-size:.76rem; color:#7a5030; line-height:1.6; display:block; margin-top:2px; }
+.rn-go { display:block; width:100%; border:none; border-radius:30px; padding:12px; font-size:.95rem; font-weight:900; letter-spacing:.15em; font-family:inherit; color:#fff; background:linear-gradient(135deg,#d8602a,#f08038); box-shadow:0 4px 0 rgba(120,50,10,.3); cursor:pointer; }
+.rn-more { background:none; border:none; margin-top:12px; font-family:inherit; font-size:.76rem; color:#8a6030; text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
+.rn-hist { text-align:left; margin-top:10px; display:none; flex-direction:column; gap:10px; }
+.rn-hist.on { display:flex; }
+.rn-hist section { border-top:1px dashed rgba(160,120,60,.4); padding-top:8px; }
+.rn-hist b { font-size:.8rem; color:#4a2810; } .rn-hist em { font-style:normal; font-size:.68rem; color:#a08050; margin-left:6px; }
+.rn-hist ul { list-style:none; margin-top:4px; } .rn-hist li { font-size:.72rem; color:#7a5030; line-height:1.6; }
+.rn-note { font-size:.64rem; color:#b09060; margin-top:10px; }
+body.theme-dark .rn-card { background:#1e1008; }
+body.theme-dark .rn-card h2, body.theme-dark .rn-list strong, body.theme-dark .rn-hist b { color:#e8c880; }
+body.theme-dark .rn-lead, body.theme-dark .rn-list span, body.theme-dark .rn-hist li, body.theme-dark .rn-more { color:#c8a860; }
+body.theme-dark .rn-list article { background:rgba(255,255,255,.05); border-color:rgba(200,160,80,.25); }
+.sb-bubble { position:absolute; top:calc(9% + 6px); left:50%; transform:translateX(-50%); background:#f5eedc; color:#3a1a06; font-size:10px; font-weight:700; border-radius:10px; padding:4px 10px; white-space:nowrap; opacity:0; transition:opacity .3s; pointer-events:none; z-index:5; }
 .sb-bubble.show { opacity:1; }
 .sb-bubble::after { content:''; position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); border:4px solid transparent; border-top-color:#f5eedc; border-bottom:none; }
 .sb-prog { padding:4px 0 10px; }
@@ -624,18 +744,6 @@ body.theme-dark .col-goal   { color:#806040; }
 .sbf-happy { background:#c8960c; }
 .sbf-hungry { background:#c8602a; }
 .sb-stat-pct { font-size:12px; color:#9a7030; width:36px; text-align:right; font-family:monospace; flex-shrink:0; }
-.sb-btns { display:flex; gap:10px; margin-bottom:12px; }
-.sb-btn { flex:1; padding:15px 8px; border-radius:24px; border:none; font-size:14px; font-weight:900; font-family:inherit; cursor:pointer; letter-spacing:.04em; transition:transform .1s,opacity .1s; }
-.sb-btn:active { transform:scale(.95); opacity:.85; }
-.sb-btn:disabled { opacity:.4; cursor:not-allowed; }
-.sb-btn:disabled:active { transform:none; }
-.sbtn-pet { background:#c8a050; color:#1c0e04; }
-.sbtn-clean { background:rgba(120,90,50,.15); color:#7a5010; border:1.5px solid rgba(160,120,60,.3); font-size:13px; }
-.sb-food-row { display:flex; gap:10px; width:100%; margin-bottom:12px; }
-.sb-food-btn { flex:1; display:flex; flex-direction:column; align-items:center; gap:5px; padding:14px 6px; border-radius:16px; border:1.5px solid rgba(160,120,60,.3); background:rgba(255,255,255,.5); font-size:28px; cursor:pointer; font-family:inherit; transition:transform .1s,opacity .1s; }
-.sb-food-btn span { font-size:11px; color:#7a5010; font-weight:700; letter-spacing:.02em; }
-.sb-food-btn:active { transform:scale(.95); }
-.sb-food-btn:disabled { opacity:.35; cursor:not-allowed; }
 .sb-status-row { display:none; gap:6px; margin-bottom:8px; flex-wrap:wrap; justify-content:center; }
 .sb-pill { font-size:10px; font-weight:700; padding:3px 10px; border-radius:12px; background:rgba(0,0,0,.08); color:#7a5010; letter-spacing:.02em; }
 .sb-pill-sick { background:rgba(200,80,40,.15); color:#a04020; }
@@ -645,16 +753,11 @@ body.theme-dark .col-goal   { color:#806040; }
 .sb-stats-list { display:flex; flex-direction:column; gap:14px; text-align:left; font-size:.88rem; color:#3a2010; }
 body.theme-dark .sb-stats-title { color:#e8c880; }
 body.theme-dark .sb-stats-list { color:#c8a860; }
-.sb-zzz { position:absolute; top:6px; right:14px; font-size:22px; animation:sbZzzFloat 2.2s ease-in-out infinite; pointer-events:none; }
-@keyframes sbZzzFloat { 0%,100%{transform:translateY(0);opacity:.65} 50%{transform:translateY(-8px);opacity:1} }
 body.theme-dark .sekibocchi-title { color:#f0c060; }
 body.theme-dark .sevo-name.current { color:#f0c060; }
 body.theme-dark .sb-stat-lbl,.theme-dark .sb-stat-pct,.theme-dark .sb-prog-label { color:#a08040; }
 body.theme-dark .sb-stat-bg,.theme-dark .sb-prog-bg { background:rgba(255,255,255,.08); }
 body.theme-dark .sekibocchi-section { background:rgba(0,0,0,.2); border-color:rgba(200,160,80,.15); }
-body.theme-dark .sbtn-clean { color:#c8a040; border-color:rgba(200,160,80,.3); background:rgba(0,0,0,.2); }
-body.theme-dark .sb-food-btn { background:rgba(0,0,0,.2); border-color:rgba(200,160,80,.2); }
-body.theme-dark .sb-food-btn span { color:#c8a040; }
 body.theme-dark .sb-pill { background:rgba(255,255,255,.08); color:#c8a040; }
 body.theme-dark .col-item   { background:#2a1808; box-shadow:0 2px 8px rgba(0,0,0,.3); }
 body.theme-dark .col-item-found { border-color:#c8a040; box-shadow:0 2px 12px rgba(200,150,40,.2); }
@@ -707,11 +810,33 @@ body.theme-dark .backup-btn:active { background:#2a1808; }
 .badge-museum { background:#e8d8ff; color:#5a28a0; font-size:.65rem; padding:2px 8px; border-radius:10px; font-weight:900; letter-spacing:.05em; }
 body.theme-dark .stone-card.ultra-rare { background:#2a2000; }
 body.theme-dark .stone-card.museum-rare { background:#1e1030; }
+/* 状態のチップ（おやすみ中など）は、部屋の左上に重ねて表示する */
+body .sb-canvas-wrap .sb-status-row { position:absolute; top:calc(9% + 8px); left:8px; z-index:5; margin:0; flex-direction:column; align-items:flex-start; justify-content:flex-start; gap:4px; }
+body .sb-canvas-wrap .sb-pill, body.theme-dark .sb-canvas-wrap .sb-pill { background:rgba(60,36,16,.82); color:#fbeccb; font-size:11px; padding:4px 10px; border:1px solid rgba(255,230,170,.35); }
+/* 操作パネルは、ライト／ダークどちらでも同じ配色（暗い木目に明るい文字） */
+body.theme-dark .sb-hud .sb-prog-label, body.theme-dark .sb-hud .sb-stat-lbl { color:#f3dca4; }
+body.theme-dark .sb-hud .sb-stat-pct { color:#fff3d0; }
+body.theme-dark .sb-hud .sb-prog-bg, body.theme-dark .sb-hud .sb-stat-bg { background:rgba(0,0,0,.4); }
+/* 広い画面（PC・タブレット）では、スマホ幅の縦長カラムを中央に置く。他のルールより後ろに置くこと */
+@media (min-width:600px){
+  .screen { left:0; right:0; margin:0 auto; max-width:480px; box-shadow:0 0 60px rgba(90,50,10,.28); }
+  .mute-btn { right:calc(50% - 240px + 58px); }
+  html,body { background:#e9d9b4; }
+  body.theme-dark, body.theme-dark html { background:#0e0805; }
+}
+/* 小さい画面（高さ700px以下）のホームは少し詰めて、1画面に収める。他のルールより後ろに置くこと */
+@media (max-height:700px){
+  .home-deco { width:92px; height:92px; margin-bottom:6px; }
+  .home-thumb,.home-thumb-placeholder { width:42px; height:30px; }
+  .home-logo { width:70px; margin-top:6px; }
+}
 </style>
 </head>
 <body>
 
 <button id="muteBtn" class="mute-btn" onclick="toggleMute()" title="音量ON/OFF">🔊</button>
+<button id="verFooter" class="ver-footer" onclick="openReleaseNotice()" aria-label="アップデート情報"></button>
+<div id="releaseNotice" class="rn-backdrop" role="dialog" aria-modal="true" aria-labelledby="rnTitle" onclick="closeReleaseNotice(event)"><section class="rn-card" id="rnCard"></section></div>
 
 <!-- HOME -->
 <div class="screen active" id="homeScreen">
@@ -852,21 +977,48 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
     <div class="col-title" id="sbTitle" style="cursor:pointer" onclick="renameSekibocchi()">せきぼっち ✏️</div>
     <div style="width:40px"></div>
   </div>
-  <div style="display:flex;flex-direction:column;align-items:center;flex:1;min-height:0;width:100%;padding:16px 16px max(16px,env(safe-area-inset-bottom));gap:0">
+  <div style="display:flex;flex-direction:column;align-items:center;flex:1;min-height:0;width:100%;padding:12px 16px max(26px,calc(env(safe-area-inset-bottom) + 12px));gap:0">
     <div class="sevo-bar" id="sevoBar" style="width:100%;margin-bottom:8px"></div>
-    <div class="sb-canvas-wrap" style="width:100%">
+    <div class="sb-card">
+    <div class="sb-canvas-wrap" id="sbWrap">
+      <button class="sb-info-btn" onclick="showSbStats()" aria-label="記録を見る" title="記録を見る">📊</button>
+      <div class="sb-status-row" id="sbStatusRow"></div>
+      <div class="sb-room" id="sbRoom" aria-hidden="true">
+        <div class="rm-beam"></div>
+        <div id="rmOrns"></div>
+        <div class="rm-window" id="rmWindow">
+          <div class="rw-sky"></div>
+          <div class="rw-stars" id="rwStars"></div>
+          <div class="rw-body sun" id="rwBody"></div>
+          <div class="rw-cloud c1"></div><div class="rw-cloud c2"></div>
+          <div class="rw-frame"></div>
+        </div>
+        <div class="rm-shelf left" id="rmShelfL"></div>
+        <div class="rm-shelf right" id="rmShelfR"></div>
+        <div class="rm-floor"></div>
+        <svg class="rm-jar" viewBox="0 0 40 52"><path d="M10 6 L12 2 L16 6 L20 1 L24 6 L28 2 L30 6 Q38 16 33 30 Q32 44 26 50 H14 Q8 44 7 30 Q2 16 10 6Z" fill="#b3623a" stroke="#5a3a1a" stroke-width="2"/><path d="M8 20 Q20 26 33 20 M7 28 Q20 34 33 28 M9 36 Q20 41 31 36" fill="none" stroke="#7a3e22" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 3"/></svg>
+        <svg class="rm-dish" viewBox="0 0 54 24"><ellipse cx="24" cy="14" rx="22" ry="8" fill="#8d8478" stroke="#5a5348" stroke-width="2"/><ellipse cx="24" cy="12" rx="15" ry="4.5" fill="#a39a8c"/><ellipse cx="46" cy="16" rx="6" ry="4" fill="#7a7266" stroke="#55504a" stroke-width="1.5"/></svg>
+        <div class="rm-dim" id="rmDim"></div>
+        <div class="rm-fire"><div class="stones"></div><div class="flame b"></div><div class="flame c"></div><div class="flame a"></div></div>
+        <div class="rm-fireglow"></div>
+      </div>
+      <div class="sb-actor" id="sbActor">
+        <div class="sb-shadow" id="sbShadow"></div>
+        <img id="sekibocchiImg" alt="せきぼっち" draggable="false" onclick="petSekibocchi()">
+        <canvas id="sekibocchiCanvas" width="240" height="170" onclick="petSekibocchi()"></canvas>
+      </div>
+      <canvas class="sb-fx" id="sbFx"></canvas>
+      <div class="sb-evo" id="sbEvo"><div class="evo-rays"></div><div class="evo-flash"></div><div class="evo-title" id="evoTitle"></div></div>
       <div class="sb-bubble" id="sbBubble"></div>
-      <div class="sb-zzz" id="sbZzz" style="display:none">💤</div>
-      <img id="sekibocchiImg" alt="せきぼっち" onclick="petSekibocchi()" style="display:none;width:min(52vw,220px);height:min(58vh,260px);object-fit:contain;margin:0 auto;cursor:pointer;">
-      <canvas id="sekibocchiCanvas" width="240" height="170" onclick="petSekibocchi()" style="display:none;margin:0 auto;width:min(52vw,220px);height:auto;cursor:pointer;"></canvas>
     </div>
-    <div class="sb-status-row" id="sbStatusRow"></div>
-    <div class="sb-prog" style="width:100%">
+    <div class="sb-hud">
+    <div class="sb-prog">
       <div class="sb-prog-label">
         <span id="sprogLabel">次の進化まで</span>
-        <span id="sprogNum" style="font-family:monospace;color:#c8960c"></span>
+        <span id="sprogNum"></span>
       </div>
       <div class="sb-prog-bg"><div class="sb-prog-fill" id="sprogFill" style="width:0%"></div></div>
+      <button class="sb-hint" id="sbHint" onclick="goScanFlash()">📷 スキャンするほど、図鑑が充実＆せきぼっちも成長！</button>
     </div>
     <div class="sb-stats" style="width:100%">
       <div class="sb-stat-row">
@@ -880,16 +1032,15 @@ body.theme-dark .stone-card.museum-rare { background:#1e1030; }
         <span class="sb-stat-pct" id="spHungry">50%</span>
       </div>
     </div>
-    <div class="sb-btns" style="width:100%">
-      <button class="sb-btn sbtn-pet" onclick="petSekibocchi()">なでる</button>
-      <button class="sb-btn sbtn-clean" id="cleanBtn" onclick="cleanSekibocchi()" style="display:none">🧹 そうじする</button>
+    <div class="sb-actions">
+      <button class="sb-act sbtn-pet" onclick="petSekibocchi()">🖐️<span>なでる</span></button>
+      <button class="sb-act sbtn-clean" id="cleanBtn" onclick="cleanSekibocchi()" style="display:none">🧹<span>そうじ</span></button>
+      <button class="sb-act sb-food-btn" id="food-ayu" onclick="feedSekibocchi('ayu')">🐟<span>鮎</span></button>
+      <button class="sb-act sb-food-btn" id="food-kurumi" onclick="feedSekibocchi('kurumi')">🌰<span>くるみ</span></button>
+      <button class="sb-act sb-food-btn" id="food-sansai" onclick="feedSekibocchi('sansai')">🌿<span>山菜</span></button>
     </div>
-    <div class="sb-food-row" style="width:100%">
-      <button class="sb-food-btn" id="food-ayu" onclick="feedSekibocchi('ayu')">🐟<span>鮎</span></button>
-      <button class="sb-food-btn" id="food-kurumi" onclick="feedSekibocchi('kurumi')">🌰<span>くるみ</span></button>
-      <button class="sb-food-btn" id="food-sansai" onclick="feedSekibocchi('sansai')">🌿<span>山菜</span></button>
     </div>
-    <button class="col-filter-btn" onclick="showSbStats()" style="margin-top:10px">📊 記録を見る</button>
+    </div>
   </div>
 </div>
 
@@ -2144,18 +2295,43 @@ const SEVO=[
   {name:'けんまくん',min:60, max:100, next:'石棒くんまで', img:'kenmakun.png'},
   {name:'石棒くん', min:100,max:100, next:'完成！'},
 ];
-let _sbF=0,_sbAnim=null,_sbSt='idle',_sbHappy=50,_sbHungry=50,_sbRestReturned=false,_sbBubbleTimer=null;
+let _sbAnim=null,_sbSt='idle',_sbHappy=50,_sbHungry=50,_sbRestReturned=false,_sbBubbleTimer=null,_sbEnvTimer=null,_sbLast=0;
+let _sbState={si:0,asleep:false,sick:false,dirty:false,neglect:0}; // 毎フレーム読まないよう、状態はここにキャッシュ
+let _sbShownSi=0,_sbEvoLock=false;
 const FOODS={
-  ayu:   {label:'鮎',   hungry:40, happy:10, msg:'鮎だ！うまい！！'},
-  kurumi:{label:'くるみ',hungry:25, happy:20, msg:'くるみ、こうばしい！'},
-  sansai:{label:'山菜', hungry:30, happy:15, msg:'山菜だ！しゃきしゃき！'},
+  ayu:   {label:'鮎',   emoji:'🐟', hungry:40, happy:10, msg:'鮎だ！うまい！！'},
+  kurumi:{label:'くるみ',emoji:'🌰', hungry:25, happy:20, msg:'くるみ、こうばしい！'},
+  sansai:{label:'山菜', emoji:'🌿', hungry:30, happy:15, msg:'山菜だ！しゃきしゃき！'},
 };
 
 function _getSevoIdx(total){
   if(total>=100)return 4; if(total>=60)return 3;
   if(total>=30)return 2;  if(total>=10)return 1; return 0;
 }
-function isSbAsleep(){ const h=new Date().getHours(); return h>=22||h<7; }
+// 時間と季節。?hour=23 ?season=autumn でテスト用に強制できる
+const _sbQS=new URLSearchParams(location.search);
+function sbNow(){
+  const d=new Date();
+  let hour=d.getHours()+d.getMinutes()/60;
+  const ho=parseFloat(_sbQS.get('hour'));
+  if(!isNaN(ho)) hour=((ho%24)+24)%24;
+  const m=d.getMonth()+1;
+  let season=m>=3&&m<=5?'spring':m>=6&&m<=8?'summer':m>=9&&m<=11?'autumn':'winter';
+  const so=_sbQS.get('season');
+  if(['spring','summer','autumn','winter'].includes(so)) season=so;
+  return {hour,season};
+}
+function isSbAsleep(){ const h=sbNow().hour; return h>=22||h<7; }
+function refreshSbState(){
+  const col=loadCollection();
+  const total=col.reduce((s,c)=>s+(c.count||1),0);
+  _sbState={
+    si:_getSevoIdx(total), asleep:isSbAsleep(),
+    sick:localStorage.getItem('sbSick')==='1', dirty:localStorage.getItem('sbDirty')==='1',
+    neglect:parseInt(localStorage.getItem('sbNeglectDays')||'0'),
+  };
+  if(!_sbEvoLock) _sbShownSi=_sbState.si;
+}
 function _bumpCareGood(){
   localStorage.setItem('sbCareGood', String(parseInt(localStorage.getItem('sbCareGood')||'0')+1));
 }
@@ -2210,6 +2386,7 @@ function renameSekibocchi(){
   refreshSbTitle();
 }
 function updateSekibocchiUI(){
+  refreshSbState();
   const col=loadCollection();
   const total=col.reduce((s,c)=>s+(c.count||1),0);
   const si=_getSevoIdx(total); const stage=SEVO[si];
@@ -2228,6 +2405,8 @@ function updateSekibocchiUI(){
     lbl.textContent=stage.next; num.textContent=`${cur}/${needed}`;
     fill.style.width=(cur/needed*100)+'%';
   }
+  const hint=document.getElementById('sbHint');
+  if(hint) hint.textContent=si===4?'📷 スキャンして、図鑑をぜんぶ集めよう！':'📷 スキャンするほど、図鑑が充実＆せきぼっちも成長！';
   document.getElementById('sfHappy').style.width=_sbHappy+'%';
   document.getElementById('spHappy').textContent=Math.round(_sbHappy)+'%';
   document.getElementById('sfHungry').style.width=_sbHungry+'%';
@@ -2268,6 +2447,7 @@ function petSekibocchi(){
   localStorage.setItem('sbPetCount',String(parseInt(localStorage.getItem('sbPetCount')||'0')+1));
   _bumpCareGood();
   _sbHappy=Math.min(100,_sbHappy+15); _sbSt='happy'; _saveSb(); updateSekibocchiUI();
+  sbAction('squish',.45); fxHearts();
   const p=['やったー！','うれしい！','なでるのすき！','ありがとう！'];
   showSBBubble(p[Math.floor(Math.random()*p.length)]);
   setTimeout(()=>_sbSt='idle',2500);
@@ -2282,25 +2462,33 @@ function feedSekibocchi(type){
   localStorage.setItem(key,today);
   localStorage.setItem('sbFeedCount',String(parseInt(localStorage.getItem('sbFeedCount')||'0')+1));
   _bumpCareGood();
+  let msg;
   if(localStorage.getItem('sbSick')==='1'){
     const care=parseInt(localStorage.getItem('sbSickCare')||'0')+1;
     if(care>=2){
       localStorage.removeItem('sbSick'); localStorage.removeItem('sbSickCare');
       _sbHappy=40; _sbHungry=40;
-      showSBBubble('げんきになった！');
+      msg='げんきになった！';
     }else{
       localStorage.setItem('sbSickCare',String(care));
       _sbHungry=Math.min(100,_sbHungry+15);
-      showSBBubble('すこしげんきが出た…');
+      msg='すこしげんきが出た…';
     }
   }else{
     _sbHungry=Math.min(100,_sbHungry+food.hungry); _sbHappy=Math.min(100,_sbHappy+food.happy);
-    showSBBubble(food.msg);
+    msg=food.msg;
     if(Math.random()<.6) localStorage.setItem('sbDirty','1');
   }
-  _saveSb(); _sbSt='happy'; updateSekibocchiUI();
-  if(navigator.vibrate)navigator.vibrate(30);
-  setTimeout(()=>_sbSt='idle',2500);
+  _saveSb(); updateSekibocchiUI();
+  // ごはんが飛んでくる → もぐもぐ → ごきげんにジャンプ
+  fxFood(food.emoji,()=>{
+    sbAction('eat',1.1);
+    setTimeout(()=>{
+      _sbSt='happy'; fxHearts(); showSBBubble(msg);
+      if(navigator.vibrate)navigator.vibrate(30);
+      setTimeout(()=>_sbSt='idle',1800);
+    },1100);
+  });
 }
 function cleanSekibocchi(){
   if(localStorage.getItem('sbDirty')!=='1')return;
@@ -2309,6 +2497,7 @@ function cleanSekibocchi(){
   _sbHappy=Math.min(100,_sbHappy+5); _saveSb();
   showSBBubble('きれいになった！');
   updateSekibocchiUI();
+  fxSparkles(18); sbAction('squish',.4);
 }
 function showSbStats(){
   const birthday=localStorage.getItem('sbBirthday')||new Date().toISOString().slice(0,10);
@@ -2365,36 +2554,259 @@ function _sbFace(ctx,e){
     ctx.beginPath(); ctx.moveTo(-4,1); ctx.lineTo(4,1); ctx.stroke();
   }
 }
-function drawSekibocchi(t){
-  const cvs=document.getElementById('sekibocchiCanvas'); const img=document.getElementById('sekibocchiImg');
-  if(!cvs||!img)return;
-  const col=loadCollection(); const total=col.reduce((s,c)=>s+(c.count||1),0);
-  const si=_getSevoIdx(total);
-  const asleep=isSbAsleep();
-  const sick=localStorage.getItem('sbSick')==='1';
-  const zzz=document.getElementById('sbZzz');
-  if(zzz)zzz.style.display=asleep?'block':'none';
-  const bounce=asleep?0:_sbSt==='happy'?Math.sin(t*.18)*6:Math.sin(t*.04)*3;
+// ── せきぼっちのおへや：環境・動き・演出 ───────────────────────────────────
+const _reduceMotion=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+// 時刻ごとの空 [時, 空の上, 空の下, 暗さ]。間は直線で補間する
+const SKY=[
+  [0,[11,16,48],[26,37,80],.5],[5,[29,42,94],[75,74,134],.45],[6,[244,169,127],[251,217,160],.25],
+  [8,[124,196,240],[207,234,255],0],[12,[106,184,238],[216,241,255],0],[16,[134,191,232],[246,228,196],0],
+  [17.5,[244,138,79],[251,197,122],.08],[19,[106,74,140],[224,138,106],.25],[20.5,[42,47,106],[90,74,134],.42],
+  [22,[14,20,56],[31,42,90],.5],[24,[11,16,48],[26,37,80],.5],
+];
+function skyAt(h){
+  for(let i=0;i<SKY.length-1;i++){
+    const a=SKY[i],b=SKY[i+1];
+    if(h>=a[0]&&h<=b[0]){
+      const t=(h-a[0])/(b[0]-a[0]), L=(x,y)=>Math.round(x+(y-x)*t);
+      return {top:a[1].map((v,k)=>L(v,b[1][k])),bot:a[2].map((v,k)=>L(v,b[2][k])),dim:a[3]+(b[3]-a[3])*t};
+    }
+  }
+  return {top:SKY[0][1],bot:SKY[0][2],dim:.5};
+}
+function celestialAt(h){
+  const day=h>=6&&h<18;
+  const p=(day?h-6:(h>=18?h-18:h+6))/12;
+  return {kind:day?'sun':'moon',x:10+80*p,y:72-58*Math.sin(Math.PI*p)};
+}
+const ORNS={spring:'🌸',summer:'🎐',autumn:'🍁',winter:'❄️'};
+let _rmKey='',_dimNow=0;
+function updateRoomEnv(){
+  const room=document.getElementById('sbRoom'); if(!room)return;
+  const {hour,season}=sbNow();
+  const s=skyAt(hour), c=celestialAt(hour); _dimNow=s.dim;
+  const st=room.style;
+  st.setProperty('--sky-top',`rgb(${s.top})`); st.setProperty('--sky-bot',`rgb(${s.bot})`);
+  st.setProperty('--dim',s.dim.toFixed(3));
+  st.setProperty('--stars',Math.max(0,Math.min(1,(s.dim-.2)/.3)).toFixed(2));
+  st.setProperty('--glow',(.25+s.dim*1.1).toFixed(2));
+  const body=document.getElementById('rwBody');
+  body.className='rw-body '+c.kind; body.style.left=c.x+'%'; body.style.top=c.y+'%';
+  const col=loadCollection().slice(0,4);
+  const key=season+'|'+col.map(x=>x.spec.no).join(',');
+  if(key===_rmKey)return; _rmKey=key;
+  document.getElementById('rmOrns').innerHTML=[[12,10],[24,16],[76,14],[88,9]]
+    .map(([x,l],i)=>`<div class="rm-orn" style="left:${x}%;--len:${l}px;animation-delay:-${(i*.7).toFixed(1)}s"><span>${ORNS[season]}</span></div>`).join('');
+  const item=x=>x?`<div class="rm-item"><img src="${x.spec.thumb}" alt="" loading="lazy" onerror="this.parentNode.classList.add('empty');this.parentNode.textContent='？'"></div>`:'<div class="rm-item empty">？</div>';
+  document.getElementById('rmShelfL').innerHTML=item(col[0])+item(col[1]);
+  document.getElementById('rmShelfR').innerHTML=item(col[2])+item(col[3]);
+}
+function buildStars(){
+  const el=document.getElementById('rwStars'); if(!el||el.childElementCount)return;
+  let h='';
+  for(let i=0;i<16;i++) h+=`<i style="left:${(Math.random()*92+3).toFixed(0)}%;top:${(Math.random()*70+4).toFixed(0)}%;animation-delay:-${(Math.random()*2.4).toFixed(1)}s"></i>`;
+  el.innerHTML=h;
+}
+
+// ── 粒・演出（canvasに描く） ────────────────────────────────────────────
+const _fx=[],_fxWin=[];
+let _fxCtx=null,_fxW=300,_fxH=300,_fxDpr=1,_winRect=null,_fxRO=null;
+const _rnd=(a,b)=>a+Math.random()*(b-a);
+function fxResize(){
+  const wrap=document.getElementById('sbWrap'),cv=document.getElementById('sbFx'),win=document.getElementById('rmWindow'),sc=document.getElementById('sekibocchiCanvas');
+  if(!wrap||!cv||!win)return;
+  const r=wrap.getBoundingClientRect(); if(r.width<10||r.height<10)return;
+  _fxDpr=Math.min(window.devicePixelRatio||1,2); _fxW=r.width; _fxH=r.height;
+  cv.width=Math.round(_fxW*_fxDpr); cv.height=Math.round(_fxH*_fxDpr); _fxCtx=cv.getContext('2d');
+  const h=Math.max(100,Math.min(260,_fxH*.46)), cw=Math.min(h*2.3,_fxW*.95);
+  wrap.style.setProperty('--sb-h',h+'px'); wrap.style.setProperty('--sb-cw',cw+'px');
+  sc.width=Math.round(cw*_fxDpr); sc.height=Math.round(cw*_fxDpr*170/240);
+  const w=win.getBoundingClientRect(); _winRect={x:w.left-r.left,y:w.top-r.top,w:w.width,h:w.height};
+  if(!_fxRO&&window.ResizeObserver){ _fxRO=new ResizeObserver(fxResize); _fxRO.observe(wrap); }
+}
+function sbAnchor(){
+  const wrap=document.getElementById('sbWrap'),isImg=_sbShownSi<4;
+  const el=document.getElementById(isImg?'sekibocchiImg':'sekibocchiCanvas');
+  const wr=wrap.getBoundingClientRect(),r=el.getBoundingClientRect();
+  const top=r.top-wr.top+r.height*(isImg?.05:.2), h=r.height*(isImg?.85:.64);
+  return {cx:r.left-wr.left+r.width/2,top,h,w:Math.min(r.width,_fxH*.5)};
+}
+function fxEmoji(ch,x,y,vx,vy,life,size,o){ _fx.push(Object.assign({k:'e',ch,x,y,vx,vy,life,max:life,size,g:0,vr:0,rot:0},o)); }
+function fxDot(x,y,vx,vy,life,r,col,o){ _fx.push(Object.assign({k:'d',x,y,vx,vy,life,max:life,r,col,g:0},o)); }
+function fxStep(dt){
+  for(const arr of [_fx,_fxWin]){
+    for(let i=arr.length-1;i>=0;i--){
+      const p=arr[i];
+      if(p.fly){
+        const f=p.fly; f.t+=dt;
+        const q=Math.min(1,f.t/f.T), e=f.ease==='in'?q*q:q;
+        p.x=f.x0+(f.x1-f.x0)*e;
+        p.y=f.y0+(f.y1-f.y0)*e-Math.sin(q*Math.PI)*(f.arc||0)-(f.hop?Math.abs(Math.sin(f.t*10))*f.hop:0)+(f.wave?Math.sin(f.t*3)*f.wave:0);
+        if(q>=1){ arr.splice(i,1); if(p.onEnd)p.onEnd(); }
+        continue;
+      }
+      p.life-=dt; if(p.life<=0){ arr.splice(i,1); continue; }
+      p.vy+=p.g*dt; p.x+=p.vx*dt; p.y+=p.vy*dt; p.rot+=p.vr*dt;
+      if(p.sway) p.x+=Math.sin((p.max-p.life)*p.sway)*p.swayAmp*dt;
+    }
+  }
+}
+const _EMO='"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+function fxDraw(){
+  const ctx=_fxCtx; if(!ctx)return;
+  ctx.setTransform(_fxDpr,0,0,_fxDpr,0,0); ctx.clearRect(0,0,_fxW,_fxH);
+  const paint=arr=>{
+    for(const p of arr){
+      const fade=p.fly?1:Math.min(1,(p.max-p.life)/.12,p.life/(p.fade||.35));
+      if(fade<=0)continue;
+      ctx.globalAlpha=fade*(p.flick?(.55+.45*Math.sin(p.life*9)):1);
+      if(p.k==='d'){
+        ctx.fillStyle=p.col; if(p.glow){ctx.shadowColor=p.col;ctx.shadowBlur=8;}
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,6.283); ctx.fill(); ctx.shadowBlur=0;
+      }else{
+        ctx.save(); ctx.translate(p.x,p.y); if(p.rot)ctx.rotate(p.rot);
+        const sz=p.size+(p.grow?p.grow*(p.max-p.life):0);
+        if(p.k==='t'){ ctx.font=`900 ${sz}px sans-serif`; ctx.fillStyle=p.col; }
+        else ctx.font=`${sz}px ${_EMO}`;
+        ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(p.ch,0,0); ctx.restore();
+      }
+    }
+    ctx.globalAlpha=1;
+  };
+  if(_winRect){ ctx.save(); ctx.beginPath(); ctx.rect(_winRect.x+2,_winRect.y+2,_winRect.w-4,_winRect.h-4); ctx.clip(); paint(_fxWin); ctx.restore(); }
+  if(_sbState.dirty){ ctx.font=`20px ${_EMO}`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('💩',_fxW*.8,_fxH*.88); }
+  paint(_fx);
+}
+function fxHearts(){
+  if(!_fxCtx)return; const a=sbAnchor();
+  for(let i=0;i<6;i++) fxEmoji(['❤️','💗','💖'][i%3],a.cx+_rnd(-.3,.3)*a.w,a.top+a.h*.3,_rnd(-16,16),-_rnd(30,52),1.3+_rnd(0,.5),_rnd(13,19),{});
+}
+function fxSparkleAt(x,y,n){
+  for(let i=0;i<n;i++) fxDot(x,y,_rnd(-46,46),-_rnd(8,56),.9+_rnd(0,.7),_rnd(1.6,3.4),['#ffe27a','#fff','#ffd0f0'][i%3],{g:70,glow:true});
+}
+function fxSparkles(n){
+  if(!_fxCtx)return; const a=sbAnchor();
+  for(let i=0;i<n;i++){
+    const x=a.cx+_rnd(-.4,.4)*a.w, y=a.top+_rnd(0,1)*a.h;
+    if(i%3===0) fxEmoji('✨',x,y,_rnd(-8,8),-_rnd(10,30),1+_rnd(0,.6),_rnd(12,17),{});
+    else fxDot(x,y,_rnd(-30,30),-_rnd(5,40),.9+_rnd(0,.6),_rnd(1.6,3),['#ffe27a','#fff','#ffd0f0'][i%3],{g:50,glow:true});
+  }
+}
+function fxFood(ch,cb){
+  if(!_fxCtx){ if(cb)cb(); return; }
+  const a=sbAnchor(), mx=a.cx, my=a.top+a.h*.4, sx=mx+_rnd(-50,50);
+  _fx.push({k:'e',ch,x:sx,y:-12,vx:0,vy:0,life:1,max:1,size:24,g:0,vr:0,rot:0,fly:{x0:sx,y0:-12,x1:mx,y1:my,arc:46,T:.6,t:0},onEnd:cb});
+}
+function fxWalk(ch,x0,x1,y,T,hop,onEnd,o){
+  _fx.push(Object.assign({k:'e',ch,x:x0,y,vx:0,vy:0,life:1,max:1,size:26,g:0,vr:0,rot:0,fly:{x0,y0:y,x1,y1:y,arc:0,T,t:0,hop,wave:o&&o.wave},onEnd},o));
+}
+function fxVisitor(){
+  if(!_fxCtx)return;
+  const ch=['🐿️','🦊','🐗','🐇','🦉'][Math.floor(Math.random()*5)], fy=_fxH*.84, a=sbAnchor();
+  const tx=Math.min(_fxW*.82,a.cx+_fxW*.3);
+  fxWalk(ch,_fxW+24,tx,fy,2.2,5,()=>{
+    fxEmoji(ch,tx,fy,0,0,1.8,26,{fade:.3});
+    setTimeout(()=>fxWalk(ch,tx,_fxW+24,fy,2,5,null,{}),1700);
+  },{});
+}
+function fxGift(){
+  if(!_fxCtx)return;
+  const a=sbAnchor(), x=Math.min(_fxW*.84,Math.max(_fxW*.16,a.cx+(Math.random()<.5?-1:1)*_fxW*.24)), fy=_fxH*.84;
+  _fx.push({k:'e',ch:'🎁',x,y:-14,vx:0,vy:0,life:1,max:1,size:24,g:0,vr:0,rot:0,fly:{x0:x,y0:-14,x1:x,y1:fy,arc:0,T:.7,t:0,ease:'in'},onEnd:()=>{
+    fxEmoji('🎁',x,fy,0,0,2.6,24,{fade:.7}); fxSparkleAt(x,fy-8,12);
+  }});
+}
+const _amb={z:0,drop:0,petal:0,ff:0,bf:0};
+function sbAmbient(dt){
+  if(_reduceMotion||!_fxCtx||_sbEvoLock||!_winRect)return;
+  const S=_sbState,season=sbNow().season,win=_winRect;
+  // 窓の外：花びら／落ち葉／雪
+  _amb.petal+=dt;
+  const gap={spring:.5,summer:0,autumn:.6,winter:.13}[season];
+  if(gap&&_amb.petal>gap){
+    _amb.petal=0; const x=win.x+Math.random()*win.w, y=win.y-4, life=win.h/(season==='winter'?20:15);
+    if(season==='winter') _fxWin.push({k:'d',x,y,vx:_rnd(-3,3),vy:_rnd(14,24),life,max:life,r:_rnd(1.2,2.6),col:'#fff',g:0,sway:2,swayAmp:5,rot:0,vr:0});
+    else _fxWin.push({k:'e',ch:season==='spring'?'🌸':(Math.random()<.5?'🍁':'🍂'),x,y,vx:-4,vy:_rnd(12,20),life,max:life,size:_rnd(8,11),g:0,vr:1.5,rot:0,sway:2.5,swayAmp:6});
+  }
+  if(S.asleep){
+    _amb.z+=dt;
+    if(_amb.z>1.5){ _amb.z=0; const a=sbAnchor(); _fx.push({k:'t',ch:'Z',col:'#7a8cf0',x:a.cx+a.w*.28,y:a.top+a.h*.12,vx:8,vy:-16,life:2.4,max:2.4,size:10,grow:6,g:0,vr:0,rot:0}); }
+  }
+  if(S.sick&&!S.asleep){
+    _amb.drop+=dt;
+    if(_amb.drop>1.6){ _amb.drop=0; const a=sbAnchor(); fxEmoji('💧',a.cx+a.w*.3,a.top+a.h*.18,2,22,1.1,12,{}); }
+  }
+  if(season==='summer'&&_dimNow>.3){
+    _amb.ff+=dt;
+    if(_amb.ff>.7){ _amb.ff=0; fxDot(Math.random()*_fxW,_fxH*_rnd(.3,.8),_rnd(-7,7),_rnd(-5,5),5,2,'#ffe96a',{glow:true,flick:true,fade:1}); }
+  }
+  if((season==='spring'||season==='summer')&&_dimNow<.1){
+    _amb.bf+=dt;
+    if(_amb.bf>14){ _amb.bf=0; if(Math.random()<.6) fxWalk('🦋',-20,_fxW+20,_fxH*_rnd(.3,.55),9,0,null,{size:18,wave:14}); }
+  }
+}
+
+// ── 動き ───────────────────────────────────────────────────────────────
+const SBM={x:0,mode:'idle',next:0,tx:0,look:0,last:0,action:null};
+function sbAction(name,dur){ SBM.action={name,start:performance.now(),dur:dur*1000}; }
+function sbMotion(now){
+  const m=SBM,S=_sbState,tt=now/1000,R=(_fxW||320)*.2;
+  const dtm=Math.min(.05,(now-(m.last||now))/1000); m.last=now;
+  if(m.x>R)m.x=R; if(m.x<-R)m.x=-R;
+  let x=m.x,y=0,rot=0,sx=1,sy=1;
+  let act=m.action; if(act&&now>act.start+act.dur){ m.action=null; act=null; }
+  if(S.asleep){ const b=Math.sin(tt*1.1); sy=1+.02*b; sx=1-.012*b; rot=1.5; }
+  else if(S.sick){ x=m.x+Math.sin(tt*38)*.6; const b=Math.sin(tt*1.6); sy=1+.012*b; rot=-2+Math.sin(tt*.9)*1.5; y=2; }
+  else if(act&&act.name==='eat'){ const p=(now-act.start)/act.dur,c=Math.abs(Math.sin(p*Math.PI*8)); sy=1-.09*c; sx=1+.05*c; rot=Math.sin(p*Math.PI*8)*2; }
+  else if(act&&act.name==='squish'){ const p=(now-act.start)/act.dur,e=Math.sin(p*Math.PI)*(1-p*.4); sx=1+.2*e; sy=1-.2*e; }
+  else if(_sbSt==='happy'&&!_reduceMotion){ const ph=tt*9,a=Math.abs(Math.sin(ph)); y=-a*13; rot=Math.sin(ph)*3; sy=1+.05*(1-a); sx=1-.03*(1-a); }
+  else{
+    if(!_reduceMotion&&now>m.next){
+      const r=Math.random();
+      if(r<.5){ m.mode='idle'; m.next=now+1500+Math.random()*2500; }
+      else if(r<.8){ m.mode='walk'; m.tx=(Math.random()*2-1)*R; m.next=now+6000; }
+      else{ m.mode='look'; m.look=Math.random()<.5?-1:1; m.next=now+1100; }
+    }
+    const b=Math.sin(tt*2.4); sy=1+.025*b; sx=1-.014*b;
+    if(m.mode==='walk'&&!_reduceMotion){
+      const d=m.tx-m.x;
+      if(Math.abs(d)<2){ m.mode='idle'; m.next=now+800+Math.random()*1800; }
+      else{ m.x+=Math.sign(d)*46*dtm; x=m.x; y=-Math.abs(Math.sin(tt*10))*5; rot=Math.sign(d)*3; }
+    }else if(m.mode==='look'&&!_reduceMotion){
+      rot=m.look*5*Math.sin(Math.max(0,Math.min(1,(m.next-now)/1100))*Math.PI);
+    }
+  }
+  return {x,y,rot,sx,sy};
+}
+
+function drawSekibocchi(now){
+  const cvs=document.getElementById('sekibocchiCanvas'),img=document.getElementById('sekibocchiImg'),actor=document.getElementById('sbActor');
+  if(!cvs||!img||!actor)return;
+  const S=_sbState,si=_sbShownSi,asleep=S.asleep,sick=S.sick,tt=now/1000;
+  const m=sbMotion(now);
+  actor.style.transform=`translateX(${m.x.toFixed(1)}px)`;
+  const tf=`translateY(${m.y.toFixed(1)}px) rotate(${m.rot.toFixed(2)}deg) scale(${m.sx.toFixed(3)},${m.sy.toFixed(3)})`;
+  document.getElementById('sbShadow').style.transform=`translateX(-50%) scaleX(${(1-Math.min(.4,Math.abs(m.y)/55)).toFixed(3)})`;
   if(si<4){
     cvs.style.display='none'; img.style.display='block';
     if(img.dataset.stage!==String(si)){ img.src=SEVO[si].img; img.dataset.stage=String(si); }
-    img.style.transform=`translateY(${-bounce}px)`;
+    img.style.transform=tf;
     img.style.filter = sick?'saturate(.3) brightness(.85) hue-rotate(60deg)'
-      : asleep?'brightness(.75) saturate(.7)'
+      : asleep?'brightness(.78) saturate(.75)'
       : (_sbHungry<20&&_sbSt!=='happy')?'saturate(.55) brightness(.9)'
       : 'none';
     return;
   }
-  img.style.display='none'; cvs.style.display='block';
-  const ctx=cvs.getContext('2d'); ctx.clearRect(0,0,240,160);
+  img.style.display='none'; cvs.style.display='block'; cvs.style.transform=tf;
+  const ctx=cvs.getContext('2d'),k=cvs.width/240;
+  ctx.setTransform(k,0,0,k,0,0); ctx.clearRect(0,0,240,170);
   const eyes=asleep?'sleep':sick?'sad':_sbSt==='happy'?'happy':_sbHungry<20?'sad':'normal';
-  const cx=120, cy=82+bounce;
-  ctx.beginPath(); ctx.ellipse(cx,cy+52,22,5,0,0,Math.PI*2);
-  ctx.fillStyle='rgba(0,0,0,.15)'; ctx.fill();
+  const cx=120,cy=82;
+  ctx.beginPath(); ctx.ellipse(cx,cy+60,22,5,0,0,Math.PI*2); ctx.fillStyle='rgba(0,0,0,.12)'; ctx.fill();
   ctx.save(); ctx.translate(cx,cy);
   if(sick) ctx.filter='saturate(.4) brightness(.85) hue-rotate(60deg)';
+  else if(asleep) ctx.filter='brightness(.8) saturate(.8)';
   {
-    const aw=_sbSt==='happy'?Math.sin(t*.22)*12:0;
+    const aw=_sbSt==='happy'?Math.sin(tt*13)*12:0;
     ctx.strokeStyle='#5a3a1a'; ctx.lineWidth=6; ctx.lineCap='round';
     ctx.beginPath(); ctx.moveTo(-10,40); ctx.lineTo(-12,52); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(10,40); ctx.lineTo(12,52); ctx.stroke();
@@ -2414,37 +2826,78 @@ function drawSekibocchi(t){
     ctx.save(); ctx.translate(0,-8); _sbFace(ctx,eyes); ctx.restore();
   }
   ctx.filter='none';
-  if(!sick&&!asleep&&parseInt(localStorage.getItem('sbNeglectDays')||'0')<=2){
+  if(!sick&&!asleep&&S.neglect<=2){
     ctx.fillStyle='rgba(255,215,80,.9)';
     [[-30,-50],[28,-46],[0,-58]].forEach(([sx,sy],i)=>{
-      const tw=(Math.sin(t*.1+i)+1)/2;
-      ctx.globalAlpha=.4+tw*.6;
+      ctx.globalAlpha=.4+((Math.sin(tt*6+i)+1)/2)*.6;
       ctx.beginPath(); ctx.arc(sx,sy,3,0,Math.PI*2); ctx.fill();
     });
     ctx.globalAlpha=1;
   }
   ctx.restore();
 }
+
+function sbLoop(now){
+  const scr=document.getElementById('sekibocchiScreen');
+  if(!scr||!scr.classList.contains('active')){ _sbAnim=null; return; }
+  const dt=Math.min(.05,(now-(_sbLast||now))/1000); _sbLast=now;
+  drawSekibocchi(now); sbAmbient(dt); fxStep(dt); fxDraw();
+  _sbAnim=requestAnimationFrame(sbLoop);
+}
+
+// ── 進化のシーン（進化段階が上がったあと、はじめてせきぼっち画面を開いたとき） ──
+function checkEvolutionScene(){
+  const seen=localStorage.getItem('sbSeenSi'),si=_sbState.si;
+  if(seen===null){ localStorage.setItem('sbSeenSi',String(si)); return; }
+  const from=parseInt(seen);
+  if(si<=from){ if(si<from)localStorage.setItem('sbSeenSi',String(si)); return; }
+  if(_reduceMotion){ localStorage.setItem('sbSeenSi',String(si)); return; }
+  _sbEvoLock=true; _sbShownSi=from;
+  setTimeout(()=>playEvolution(si),700);
+}
+function playEvolution(to){
+  const evo=document.getElementById('sbEvo'),actor=document.getElementById('sbActor'),title=document.getElementById('evoTitle');
+  const name=localStorage.getItem('sbName')||'せきぼっち';
+  title.textContent=`✨ ${name}が「${SEVO[to].name}」に進化！`;
+  evo.className='sb-evo on'; actor.classList.add('evo-sil'); playSfx('special-scan-sound.mp3');
+  setTimeout(()=>evo.classList.add('flash'),1500);
+  setTimeout(()=>{
+    _sbShownSi=to; actor.classList.remove('evo-sil'); actor.classList.add('evo-pop');
+    fxSparkles(34); fxHearts(); playSfx('celebration.mp3'); evo.classList.add('title');
+    if(navigator.vibrate)navigator.vibrate([30,40,30,40,60]);
+  },1900);
+  setTimeout(()=>{
+    actor.classList.remove('evo-pop'); evo.className='sb-evo'; _sbEvoLock=false;
+    localStorage.setItem('sbSeenSi',String(to)); refreshSbState();
+  },4700);
+}
+
 function initSekibocchi(){
   loadSekibocchi(); updateSekibocchiUI(); refreshSbTitle();
+  buildStars(); fxResize(); updateRoomEnv(); checkEvolutionScene();
   if(_sbAnim)cancelAnimationFrame(_sbAnim);
-  _sbF=0;
-  (function loop(){ _sbF++; drawSekibocchi(_sbF); _sbAnim=requestAnimationFrame(loop); })();
+  _sbLast=0; SBM.last=0; SBM.next=0;
+  _sbAnim=requestAnimationFrame(sbLoop);
   if(_sbRestReturned) setTimeout(()=>showSBBubble('おかえり…しばらく眠っていたみたい'),400);
+  if(_sbEnvTimer)clearInterval(_sbEnvTimer);
+  _sbEnvTimer=setInterval(()=>{
+    if(!document.getElementById('sekibocchiScreen').classList.contains('active'))return;
+    refreshSbState(); updateRoomEnv();
+  },20000);
   if(_sbBubbleTimer)clearInterval(_sbBubbleTimer);
   _sbBubbleTimer=setInterval(()=>{
-    if(_sbSt!=='idle')return;
+    if(_sbSt!=='idle'||_sbEvoLock)return;
     if(!document.getElementById('sekibocchiScreen').classList.contains('active'))return;
     if(isSbAsleep()){ if(Math.random()<.35)showSBBubble(['Zzz...','すやすや…'][Math.floor(Math.random()*2)]); return; }
     if(Math.random()<.06){
       const events=[
-        {msg:'🎁 お土産をみつけた！', happy:10, hungry:0},
-        {msg:'👋 お客さんが来たよ！', happy:5, hungry:5},
+        {msg:'🎁 お土産をみつけた！', happy:10, hungry:0, fx:fxGift},
+        {msg:'👋 お客さんが来たよ！', happy:5, hungry:5, fx:fxVisitor},
       ];
       const ev=events[Math.floor(Math.random()*events.length)];
       _sbHappy=Math.min(100,_sbHappy+ev.happy); _sbHungry=Math.min(100,_sbHungry+ev.hungry);
       _saveSb(); updateSekibocchiUI();
-      showSBBubble(ev.msg);
+      showSBBubble(ev.msg); ev.fx();
       return;
     }
     if(Math.random()>.35)return;
@@ -2610,10 +3063,46 @@ function checkDailyBonus(){
   }
 }
 
+// ── バージョン表示とアップデート案内（正本は release-notes.js の先頭） ─────────────
+const _REL=(typeof RELEASES!=='undefined')?RELEASES:[];
+const APP_VER=_REL[0]?_REL[0].version:'';
+const REL_SEEN_KEY='sekibo_release_notice_'+APP_VER+'_seen';
+const _esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function renderReleaseNotice(){
+  const L=_REL[0], card=document.getElementById('rnCard'); if(!L||!card)return;
+  const items=L.highlights.map(h=>`<article><strong>${_esc(h.title)}</strong><span>${_esc(h.body)}</span></article>`).join('');
+  const hist=_REL.slice(1).map(r=>`<section><b>Ver.${_esc(r.version)} ${_esc(r.name)}</b><em>${_esc(r.date)}</em><ul>${r.highlights.map(h=>`<li>・${_esc(h.title)}</li>`).join('')}</ul></section>`).join('');
+  card.innerHTML=`<small>Ver.${_esc(L.version)} UPDATE</small><h2 id="rnTitle">${_esc(L.name)}</h2><p class="rn-lead">${_esc(L.lead)}</p><div class="rn-list">${items}</div><button class="rn-go" onclick="closeReleaseNotice()">ゲームへ</button>`
+    +(hist?`<button class="rn-more" onclick="document.getElementById('rnHist').classList.toggle('on')">これまでの更新を見る</button><div class="rn-hist" id="rnHist">${hist}</div>`:'')
+    +`<p class="rn-note">このお知らせは、バージョンごとに一度のみ表示されます</p>`;
+}
+function openReleaseNotice(){
+  renderReleaseNotice();
+  document.getElementById('releaseNotice').classList.add('on');
+}
+function closeReleaseNotice(e){
+  const m=document.getElementById('releaseNotice');
+  if(e&&e.target!==m)return;
+  m.classList.remove('on');
+  try{ localStorage.setItem(REL_SEEN_KEY,'1'); }catch(err){}
+}
+// 遊んだことがある人にのみ出す。はじめての人には出さず、既読として記録する（古い内容が新規の人に出る事故を避ける）
+function initReleaseNotice(hadSave){
+  const f=document.getElementById('verFooter');
+  if(f) f.textContent=APP_VER?('Ver.'+APP_VER):'';
+  if(!APP_VER)return;
+  let seen=false; try{ seen=localStorage.getItem(REL_SEEN_KEY)==='1'; }catch(err){}
+  if(seen)return;
+  if(!hadSave){ try{ localStorage.setItem(REL_SEEN_KEY,'1'); }catch(err){} return; }
+  setTimeout(openReleaseNotice,900);
+}
+
 (function(){
+  const hadSave=!!(localStorage.getItem('sekiboLastVisit')||localStorage.getItem('sekiboCol'));
   const saved=localStorage.getItem('theme')||'light';
   applyTheme(saved);
   updateMuteBtnUI();
+  initReleaseNotice(hadSave);
   initHomeDust();
   initHomeParticles();
   runHomeIntro();

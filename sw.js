@@ -1,5 +1,5 @@
-const CACHE = 'sekibo-v5';
-const APP_SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './logo.png'];
+const CACHE = 'sekibo-v6';
+const APP_SHELL = ['./', './index.html', './release-notes.js', './manifest.json', './icon-192.png', './icon-512.png', './logo.png'];
 
 self.addEventListener('install', e => {
   self.skipWaiting();
