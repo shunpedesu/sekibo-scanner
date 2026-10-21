@@ -1612,7 +1612,7 @@ function hashCode(str) {
 
 // ── Generate stone from barcode ───────────────────────────────────────────────
 function generateStone(barcode) {
-  if (barcode === 'HIDAMIYAGAWA_SEKIBOSCANNER') {
+  if (barcode === 'HIDAMIYAGAWA_SEKIBOSCANNER' || barcode === 'HIDA210') { // 館内用。短い HIDA210 は読み取りやすさのために追加（旧文字列も有効）
     return { barcode, id:'museum-special', spec:SPECIMENS[209], ts:Date.now(), isNew:true, isMuseum:true };
   }
   const h = hashCode(barcode);
