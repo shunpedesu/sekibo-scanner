@@ -1,4 +1,4 @@
-const CACHE = 'sekibo-v10';
+const CACHE = 'sekibo-v11';
 const APP_SHELL = ['./', './index.html', './release-notes.js', './manifest.json', './icon-192.png', './icon-512.png', './logo.png'];
 
 self.addEventListener('install', e => {
@@ -17,7 +17,8 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   e.respondWith(
-    fetch(e.request).then(res => {
+    // 同じオリジンは、ブラウザの一時保存（HTTPキャッシュ）を使わず、常に最新を取りにいく
+    fetch(e.request, new URL(e.request.url).origin === self.location.origin ? { cache: 'no-store' } : undefined).then(res => {
       if (res && (res.ok || res.type === 'opaque')) {
         const clone = res.clone();
         caches.open(CACHE).then(cache => cache.put(e.request, clone)).catch(() => {});
