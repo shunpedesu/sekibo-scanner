@@ -1672,12 +1672,12 @@ function addToCollection(stone) {
 
 // ── Sound ─────────────────────────────────────────────────────────────────────
 const homeBgm=new Audio('home.mp3'); homeBgm.loop=true; homeBgm.volume=0;
-const BGM_VOL=.35, BGM_VOL_LOW=.12;
-let _bgmFade=null;
+const BGM_VOL=.18, BGM_VOL_LOW=.12;
+let _bgmFade=null, _bgmAway=false; // _bgmAway: アプリが見えていない・操作されていない間は、音を出さない
 let _sfxMuted=localStorage.getItem('sfxMuted')==='1';
 function _bgmTargetForScreen(id){ return id==='homeScreen'?BGM_VOL:BGM_VOL_LOW; }
 function fadeBgm(target){
-  if(_sfxMuted) target=0;
+  if(_sfxMuted||_bgmAway) target=0;
   if(_bgmFade)clearInterval(_bgmFade);
   if(target>0&&homeBgm.paused) homeBgm.play().catch(()=>{});
   _bgmFade=setInterval(()=>{
@@ -1686,7 +1686,7 @@ function fadeBgm(target){
     homeBgm.volume+=target>homeBgm.volume?step:-step;
   },40);
 }
-function playSfx(src){ if(_sfxMuted)return; const a=new Audio(src); a.volume=.7; a.play().catch(()=>{}); }
+function playSfx(src){ if(_sfxMuted||_bgmAway)return; const a=new Audio(src); a.volume=.7; a.play().catch(()=>{}); }
 function playScanSfx(isSpecial,isNew){ playSfx(isSpecial?'special-scan-sound.mp3':isNew?'scan-sound.mp3':'already-done.mp3'); }
 function updateMuteBtnUI(){
   const btn=document.getElementById('muteBtn'); if(!btn)return;
@@ -1706,13 +1706,18 @@ document.addEventListener('pointerdown',function unlockBgm(){
   fadeBgm(_bgmTargetForScreen(active&&active.id));
   document.removeEventListener('pointerdown',unlockBgm);
 },{once:true});
-// アプリを最小化・別アプリへ切り替え・画面ロックしたら、BGMを止める。戻ってきたら再開する。
-function _bgmSuspend(){ if(_bgmFade){ clearInterval(_bgmFade); _bgmFade=null; } homeBgm.pause(); }
-document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='hidden') _bgmSuspend();
-  else if(_bgmUnlocked){ const a=document.querySelector('.screen.active'); fadeBgm(_bgmTargetForScreen(a&&a.id)); }
-});
+// アプリを最小化・別アプリやほかのウィンドウへ切り替え・画面ロックしたら、BGMを止める。戻ってきたら再開する。
+// （PCでブラウザを開いたまま別のウィンドウを使っているときも止める＝ウィンドウのフォーカスも見る）
+function _bgmSuspend(){ _bgmAway=true; if(_bgmFade){ clearInterval(_bgmFade); _bgmFade=null; } homeBgm.pause(); }
+function _bgmResume(){
+  _bgmAway=false;
+  if(_bgmUnlocked){ const a=document.querySelector('.screen.active'); fadeBgm(_bgmTargetForScreen(a&&a.id)); }
+}
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') _bgmSuspend(); else _bgmResume(); });
+window.addEventListener('blur',_bgmSuspend);
+window.addEventListener('focus',()=>{ if(document.visibilityState==='visible') _bgmResume(); });
 window.addEventListener('pagehide',_bgmSuspend);
+window.addEventListener('pageshow',()=>{ if(document.visibilityState==='visible') _bgmResume(); });
 document.addEventListener('click',function(e){
   const btn=e.target.closest('button');
   if(!btn||btn.classList.contains('sbtn-pet')||btn.classList.contains('sb-food-btn')||btn.dataset.nosfx)return;

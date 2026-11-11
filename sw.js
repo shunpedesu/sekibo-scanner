@@ -1,4 +1,4 @@
-const CACHE = 'sekibo-v11';
+const CACHE = 'sekibo-v12';
 const APP_SHELL = ['./', './index.html', './release-notes.js', './manifest.json', './icon-192.png', './icon-512.png', './logo.png'];
 
 self.addEventListener('install', e => {
